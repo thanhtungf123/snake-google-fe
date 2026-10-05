@@ -33,13 +33,16 @@ export function seoFromContent(c: PageContent | null) {
 // Đọc nội dung trang từ backend (DB). Trả null nếu chưa có / lỗi — khi đó
 // trang dùng text mặc định từ i18n (fallback).
 export async function getPageContent(
+
   pageKey: PageKey,
   locale: Locale
 ): Promise<PageContent | null> {
   try {
     // ISR: trang SEO vẫn được cache/nhanh, nhưng tự cập nhật nội dung admin trong ~60s.
+    // Timeout 5s: lúc build (Vercel) nếu backend chưa sẵn, fetch không treo → fallback i18n.
     const res = await fetch(`${API_URL}/api/content/${pageKey}/${locale}`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -47,4 +50,5 @@ export async function getPageContent(
   } catch {
     return null;
   }
+
 }

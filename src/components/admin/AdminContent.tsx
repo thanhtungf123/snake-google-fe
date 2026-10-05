@@ -195,7 +195,7 @@ export default function AdminContent() {
         <Labeled label={pageKey === 'home' ? 'Tiêu đề khối SEO (H2)' : 'H1'}>
           <input className={field} value={form.h1} onChange={(e) => set('h1', e.target.value)} />
         </Labeled>
-        <Labeled label="Nội dung (HTML được phép: p, h2, h3, ul, ol, li, a, strong, em)">
+        <Labeled label="Nội dung (HTML được phép: p, br, h2–h4, ul, ol, li, a, strong, em, b, i, u, blockquote, code, pre, span — thẻ/script khác bị loại bỏ khi lưu)">
           <textarea
             className={`${field} font-mono`}
             rows={8}

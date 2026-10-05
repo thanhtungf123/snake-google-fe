@@ -11,6 +11,8 @@ import {
 } from '@/lib/api';
 import LeaderboardList from '@/components/LeaderboardList';
 import MyLeaderboardRank from '@/components/MyLeaderboardRank';
+import JsonLd from '@/components/JsonLd';
+import { breadcrumbJsonLd } from '@/lib/seo/jsonld';
 
 export async function generateMetadata({
   params,
@@ -59,6 +61,7 @@ export default async function LeaderboardPage({
   const { period: periodRaw } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'Leaderboard' });
+  const nav = await getTranslations({ locale, namespace: 'Nav' });
 
   const period: Period =
     periodRaw && PERIODS.includes(periodRaw as Period) ? (periodRaw as Period) : 'all';
@@ -66,6 +69,7 @@ export default async function LeaderboardPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
+      <JsonLd data={breadcrumbJsonLd(locale, nav('play'), { label: t('h1'), path: '/leaderboard' })} />
       <h1 className="mb-4 text-3xl font-bold">{t('h1')}</h1>
 
       <div className="mb-5 flex flex-wrap gap-2">

@@ -4,6 +4,8 @@ import { buildMetadata } from '@/lib/seo/metadata';
 import type { Locale } from '@/i18n/routing';
 import RankedGameEmbed from '@/components/game/RankedGameEmbed';
 import HomeTopBoard from '@/components/HomeTopBoard';
+import JsonLd from '@/components/JsonLd';
+import { websiteJsonLd, gameJsonLd } from '@/lib/seo/jsonld';
 import { getPageContent, seoFromContent } from '@/lib/content';
 
 export async function generateMetadata({
@@ -33,8 +35,12 @@ export default async function HomePage({
   const t = await getTranslations({ locale, namespace: 'Home' });
   const c = await getPageContent('home', locale);
 
+  const title = c?.seoTitle || t('title');
+  const description = c?.metaDescription || t('intro');
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
+      <JsonLd data={[websiteJsonLd(locale, title, description), gameJsonLd(locale, title, description)]} />
       <h1 className="mb-2 text-center text-3xl font-bold">{t('h1')}</h1>
       <p className="mx-auto mb-6 max-w-2xl text-center opacity-80">
         {t('intro')}

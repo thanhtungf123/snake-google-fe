@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { getPathname, routing, type Pathnames, type Locale } from '@/i18n/routing';
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const BASE = SITE_URL;
 
 function withTrailingSlash(p: string): string {
   if (p === '/') return '/';
@@ -11,6 +12,11 @@ function withTrailingSlash(p: string): string {
 function absolute(path: Pathnames, locale: Locale): string {
   const p = getPathname({ href: path, locale });
   return BASE + withTrailingSlash(p);
+}
+
+// URL tuyệt đối (kèm trailing slash) của một trang theo ngôn ngữ — dùng cho JSON-LD.
+export function absoluteUrl(path: Pathnames, locale: Locale): string {
+  return absolute(path, locale);
 }
 
 export function buildMetadata(opts: {
