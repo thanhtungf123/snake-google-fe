@@ -1,0 +1,137 @@
+{
+  "Nav": {
+    "play": "Play",
+    "leaderboard": "Leaderboard",
+    "mods": "Mods",
+    "howToPlay": "How to Play",
+    "rewards": "Rewards",
+    "about": "About",
+    "login": "Log in",
+    "admin": "Admin"
+  },
+  "Home": {
+    "title": "Play Snake",
+    "h1": "Play Snake Online",
+    "intro": "Classic snake game, right in your browser. Eat apples, grow longer, and climb the leaderboard. No download required.",
+    "score": "Score",
+    "best": "Best",
+    "start": "Press an arrow key or tap to start",
+    "restart": "Play again",
+    "gameOver": "Game Over",
+    "seoHeading": "About this Snake game",
+    "seoBody": "This is a free online snake game you can play instantly. Guide the snake with the arrow keys or swipe on mobile, eat the apples to grow longer, and avoid hitting the walls or your own tail."
+  },
+  "Leaderboard": {
+    "h1": "Leaderboard",
+    "soon": "The leaderboard will appear here once score saving is live.",
+    "rank": "Rank",
+    "player": "Player",
+    "points": "Score",
+    "topTitle": "Top players",
+    "viewAll": "View full leaderboard",
+    "yourPosition": "Your position",
+    "yourRank": "You are ranked #{rank} with {best} points",
+    "notRanked": "Play a game to get ranked this period.",
+    "loadMore": "Load more"
+  },
+  "Mods": {
+    "h1": "Play with Mods",
+    "intro": "Try the classic modded Snake experience. Note: scores here do NOT count toward the leaderboard.",
+    "notRanked": "Fun mode — scores are not ranked.",
+    "openFull": "Open full screen"
+  },
+  "HowToPlay": {
+    "h1": "How to Play",
+    "body": "Use the arrow keys (or WASD) to steer the snake. On mobile, swipe in the direction you want to go. Eat apples to grow and score points. The game ends if you hit a wall or your own body."
+  },
+  "Rewards": {
+    "h1": "Rewards",
+    "body": "Rewards and seasonal events are coming soon."
+  },
+  "About": {
+    "h1": "About",
+    "body": "A fast, free snake game built for the browser, with leaderboards and a classic mods mode."
+  },
+  "Auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "nickname": "Nickname",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "needAccount": "No account? Sign up",
+    "haveAccount": "Already have an account? Log in",
+    "guest": "Guest",
+    "genericError": "Something went wrong. Please try again.",
+    "admin": "Admin"
+  },
+  "Profile": {
+    "title": "Profile",
+    "joined": "Joined",
+    "personalBest": "Personal Best",
+    "rank": "Rank",
+    "gamesPlayed": "Games played",
+    "recentGames": "Recent games",
+    "noGames": "No games yet. Play a round!",
+    "score": "Score",
+    "playedAt": "Played",
+    "flagged": "under review",
+    "loginRequired": "Please log in to view your profile.",
+    "goLogin": "Log in",
+    "viewStats": "View stats",
+    "viewHistory": "View history",
+    "editAccount": "Edit profile & settings"
+  },
+  "Account": {
+    "title": "Account Settings",
+    "profileSection": "Profile",
+    "nickname": "Nickname",
+    "email": "Email",
+    "avatarUrl": "Avatar image URL",
+    "avatarHint": "Paste a link to an image, or leave empty to use your initial.",
+    "saveProfile": "Save changes",
+    "passwordSection": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "savePassword": "Update password",
+    "saved": "Saved.",
+    "passwordChanged": "Password updated.",
+    "loginRequired": "Please log in to manage your account.",
+    "goLogin": "Log in"
+  },
+  "Stats": {
+    "title": "Your Stats",
+    "totalGames": "Games played",
+    "totalScore": "Total points",
+    "best": "Best score",
+    "avg": "Average score",
+    "timePlayed": "Time played",
+    "distribution": "Score distribution",
+    "trend": "Recent scores",
+    "empty": "No stats yet. Play a few rounds!",
+    "loginRequired": "Please log in to view your stats.",
+    "goLogin": "Log in"
+  },
+  "History": {
+    "title": "Game History",
+    "score": "Score",
+    "duration": "Duration",
+    "status": "Status",
+    "playedAt": "Played",
+    "all": "All",
+    "valid": "Valid",
+    "flagged": "Under review",
+    "rejected": "Rejected",
+    "loadMore": "Load more",
+    "empty": "No games yet.",
+    "loginRequired": "Please log in to view your history.",
+    "goLogin": "Log in",
+    "showing": "Showing {count} of {total}"
+  },
+  "Footer": {
+    "language": "Language",
+    "rights": "A fan-made snake game. Not affiliated with Google."
+  }
+}

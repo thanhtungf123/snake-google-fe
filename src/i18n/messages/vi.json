@@ -1,0 +1,137 @@
+{
+  "Nav": {
+    "play": "Chơi",
+    "leaderboard": "Bảng xếp hạng",
+    "mods": "Mod",
+    "howToPlay": "Cách chơi",
+    "rewards": "Phần thưởng",
+    "about": "Giới thiệu",
+    "login": "Đăng nhập",
+    "admin": "Quản trị"
+  },
+  "Home": {
+    "title": "Chơi Rắn Săn Mồi",
+    "h1": "Chơi Rắn Săn Mồi Online",
+    "intro": "Game rắn săn mồi cổ điển, chơi ngay trên trình duyệt. Ăn táo, dài ra và leo lên bảng xếp hạng. Không cần tải về.",
+    "score": "Điểm",
+    "best": "Cao nhất",
+    "start": "Nhấn phím mũi tên hoặc chạm để bắt đầu",
+    "restart": "Chơi lại",
+    "gameOver": "Kết thúc",
+    "seoHeading": "Giới thiệu game rắn săn mồi",
+    "seoBody": "Đây là game rắn săn mồi miễn phí, chơi ngay không cần cài đặt. Điều khiển rắn bằng phím mũi tên hoặc vuốt trên điện thoại, ăn táo để dài ra và ghi điểm, tránh đâm vào tường hoặc vào thân mình."
+  },
+  "Leaderboard": {
+    "h1": "Bảng xếp hạng",
+    "soon": "Bảng xếp hạng sẽ hiển thị ở đây khi tính năng lưu điểm hoạt động.",
+    "rank": "Hạng",
+    "player": "Người chơi",
+    "points": "Điểm",
+    "topTitle": "Top người chơi",
+    "viewAll": "Xem bảng đầy đủ",
+    "yourPosition": "Vị trí của bạn",
+    "yourRank": "Bạn đang hạng #{rank} với {best} điểm",
+    "notRanked": "Chơi một ván để được xếp hạng trong kỳ này.",
+    "loadMore": "Tải thêm"
+  },
+  "Mods": {
+    "h1": "Chơi với Mod",
+    "intro": "Trải nghiệm bản Snake có mod cổ điển. Lưu ý: điểm ở đây KHÔNG tính vào bảng xếp hạng.",
+    "notRanked": "Chế độ giải trí — điểm không được xếp hạng.",
+    "openFull": "Mở toàn màn hình"
+  },
+  "HowToPlay": {
+    "h1": "Cách chơi",
+    "body": "Dùng phím mũi tên (hoặc WASD) để điều khiển rắn. Trên điện thoại, vuốt theo hướng muốn đi. Ăn táo để dài ra và ghi điểm. Trò chơi kết thúc khi bạn đâm vào tường hoặc vào thân mình."
+  },
+  "Rewards": {
+    "h1": "Phần thưởng",
+    "body": "Phần thưởng và sự kiện theo mùa sẽ sớm ra mắt."
+  },
+  "About": {
+    "h1": "Giới thiệu",
+    "body": "Game rắn săn mồi nhanh, miễn phí, chạy trên trình duyệt, có bảng xếp hạng và chế độ mod cổ điển."
+  },
+  "Auth": {
+    "loginTitle": "Đăng nhập",
+    "registerTitle": "Tạo tài khoản",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "nickname": "Biệt danh",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất",
+    "needAccount": "Chưa có tài khoản? Đăng ký",
+    "haveAccount": "Đã có tài khoản? Đăng nhập",
+    "guest": "Khách",
+    "genericError": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "admin": "Quản trị"
+  },
+  "Profile": {
+    "title": "Hồ sơ",
+    "joined": "Tham gia",
+    "personalBest": "Điểm cao nhất",
+    "rank": "Hạng",
+    "gamesPlayed": "Số ván đã chơi",
+    "recentGames": "Ván gần đây",
+    "noGames": "Chưa có ván nào. Chơi thử đi!",
+    "score": "Điểm",
+    "playedAt": "Lúc",
+    "flagged": "đang xem xét",
+    "loginRequired": "Vui lòng đăng nhập để xem hồ sơ.",
+    "goLogin": "Đăng nhập",
+    "viewStats": "Xem thống kê",
+    "viewHistory": "Xem lịch sử",
+    "editAccount": "Sửa hồ sơ & cài đặt"
+  },
+  "Account": {
+    "title": "Cài đặt tài khoản",
+    "profileSection": "Hồ sơ",
+    "nickname": "Biệt danh",
+    "email": "Email",
+    "avatarUrl": "URL ảnh đại diện",
+    "avatarHint": "Dán link ảnh, hoặc để trống để dùng chữ cái đầu.",
+    "saveProfile": "Lưu thay đổi",
+    "passwordSection": "Đổi mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "savePassword": "Cập nhật mật khẩu",
+    "saved": "Đã lưu.",
+    "passwordChanged": "Đã đổi mật khẩu.",
+    "loginRequired": "Vui lòng đăng nhập để quản lý tài khoản.",
+    "goLogin": "Đăng nhập"
+  },
+  "Stats": {
+    "title": "Thống kê của bạn",
+    "totalGames": "Số ván đã chơi",
+    "totalScore": "Tổng điểm",
+    "best": "Điểm cao nhất",
+    "avg": "Điểm trung bình",
+    "timePlayed": "Thời gian chơi",
+    "distribution": "Phân bố điểm",
+    "trend": "Điểm gần đây",
+    "empty": "Chưa có thống kê. Chơi vài ván nhé!",
+    "loginRequired": "Vui lòng đăng nhập để xem thống kê.",
+    "goLogin": "Đăng nhập"
+  },
+  "History": {
+    "title": "Lịch sử ván chơi",
+    "score": "Điểm",
+    "duration": "Thời lượng",
+    "status": "Trạng thái",
+    "playedAt": "Lúc",
+    "all": "Tất cả",
+    "valid": "Hợp lệ",
+    "flagged": "Đang xem xét",
+    "rejected": "Bị loại",
+    "loadMore": "Tải thêm",
+    "empty": "Chưa có ván nào.",
+    "loginRequired": "Vui lòng đăng nhập để xem lịch sử.",
+    "goLogin": "Đăng nhập",
+    "showing": "Đang hiện {count} / {total}"
+  },
+  "Footer": {
+    "language": "Ngôn ngữ",
+    "rights": "Game rắn săn mồi do fan làm. Không liên kết với Google."
+  }
+}

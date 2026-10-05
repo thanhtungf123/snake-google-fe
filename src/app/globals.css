@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-white font-sans text-gray-900 antialiased;
+}
+
+/* Nội dung HTML do admin soạn (SeoContent.bodyHtml) */
+.content-html {
+  line-height: 1.7;
+}
+.content-html h2 {
+  @apply mb-2 mt-5 text-xl font-semibold;
+}
+.content-html h3 {
+  @apply mb-1 mt-4 text-lg font-semibold;
+}
+.content-html p {
+  @apply mb-3;
+}
+.content-html ul {
+  @apply mb-3 list-disc pl-6;
+}
+.content-html ol {
+  @apply mb-3 list-decimal pl-6;
+}
+.content-html a {
+  @apply text-snake underline;
+}
