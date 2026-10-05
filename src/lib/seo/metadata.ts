@@ -1,7 +1,15 @@
 import type { Metadata } from 'next';
 import { getPathname, routing, type Pathnames, type Locale } from '@/i18n/routing';
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+// Chuẩn hoá URL gốc: bỏ '/' thừa ở cuối và tự thêm https:// nếu quên scheme.
+// Tránh new URL() ném lỗi lúc build khi NEXT_PUBLIC_SITE_URL nhập thiếu "https://".
+function normalizeBase(raw: string | undefined): string {
+  const v = (raw ?? 'http://localhost:3000').trim().replace(/\/+$/, '');
+  if (!v) return 'http://localhost:3000';
+  return /^https?:\/\//i.test(v) ? v : `https://${v}`;
+}
+
+export const SITE_URL = normalizeBase(process.env.NEXT_PUBLIC_SITE_URL);
 const BASE = SITE_URL;
 
 function withTrailingSlash(p: string): string {
