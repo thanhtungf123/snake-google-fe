@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
 import { Pager } from './AdminUsers';
+import ConfirmModal from './ConfirmModal';
 
 interface Row {
   id: string;
@@ -24,6 +25,12 @@ const FILTER_LABEL: Record<Filter, string> = {
   flagged: 'Nghi ngờ',
   rejected: 'Bị loại',
 };
+type GuestFilter = 'all' | 'exclude' | 'only';
+const GUEST_LABEL: Record<GuestFilter, string> = {
+  all: 'Tất cả',
+  exclude: 'Chỉ người dùng',
+  only: 'Chỉ khách',
+};
 const PAGE = 25;
 
 export default function AdminScores() {
@@ -31,32 +38,43 @@ export default function AdminScores() {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [filter, setFilter] = useState<Filter>('flagged');
+  const [guestF, setGuestF] = useState<GuestFilter>('all');
+  const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [modal, setModal] = useState<{ type: 'reject' | 'accept'; score: Row } | null>(null);
 
-  const load = useCallback(async (f: Filter, sk: number) => {
+  const load = useCallback(async (f: Filter, sk: number, guest: GuestFilter, query: string) => {
     setErr(null);
     const qs = new URLSearchParams({ skip: String(sk), limit: String(PAGE) });
     if (f !== 'all') qs.set('status', f);
+    if (guest !== 'all') qs.set('guest', guest);
+    if (query) qs.set('q', query);
     const d = await adminGet<{ rows: Row[]; total: number }>(`/api/admin/scores?${qs}`);
     setRows(d.rows);
     setTotal(d.total);
   }, []);
 
   useEffect(() => {
-    load(filter, skip).catch((e) => setErr(e.message));
+    load(filter, skip, guestF, q).catch((e) => setErr(e.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, skip]);
+  }, [filter, skip, guestF]);
 
-  async function setStatus(s: Row, status: Row['status']) {
-    let reason: string | undefined;
-    if (status === 'rejected') {
-      reason = window.prompt(`Lý do loại điểm ${s.score} của "${s.nickname}"?`, 'Gian lận') ?? undefined;
-    }
+  function search(e: React.FormEvent) {
+    e.preventDefault();
+    setSkip(0);
+    load(filter, 0, guestF, q).catch((er) => setErr(er.message));
+  }
+
+  async function doAction(reason: string) {
+    if (!modal) return;
+    const { type, score } = modal;
+    const status: Row['status'] = type === 'reject' ? 'rejected' : 'valid';
+    setModal(null);
     setBusy(true);
     try {
-      await adminSend(`/api/admin/scores/${s.id}/status`, 'POST', { status, reason });
-      await load(filter, skip);
+      await adminSend(`/api/admin/scores/${score.id}/status`, 'POST', { status, reason });
+      await load(filter, skip, guestF, q);
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -69,7 +87,7 @@ export default function AdminScores() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {FILTERS.map((f) => (
           <button
             key={f}
@@ -84,7 +102,31 @@ export default function AdminScores() {
             {FILTER_LABEL[f]}
           </button>
         ))}
+        <select
+          value={guestF}
+          onChange={(e) => {
+            setSkip(0);
+            setGuestF(e.target.value as GuestFilter);
+          }}
+          className="ml-auto rounded border border-black/15 px-2 py-1.5 text-sm"
+        >
+          {(Object.keys(GUEST_LABEL) as GuestFilter[]).map((g) => (
+            <option key={g} value={g}>
+              {GUEST_LABEL[g]}
+            </option>
+          ))}
+        </select>
       </div>
+
+      <form onSubmit={search} className="flex gap-2">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Tìm theo nickname người chơi…"
+          className="flex-1 rounded border border-black/15 px-3 py-2 text-sm"
+        />
+        <button className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white">Tìm</button>
+      </form>
 
       {err && <p className="text-red-600">{err}</p>}
 
@@ -120,7 +162,7 @@ export default function AdminScores() {
                     {s.status !== 'valid' && (
                       <button
                         disabled={busy}
-                        onClick={() => setStatus(s, 'valid')}
+                        onClick={() => setModal({ type: 'accept', score: s })}
                         className="rounded bg-black/5 px-2 py-1 hover:bg-black/10 disabled:opacity-50"
                       >
                         Chấp nhận
@@ -129,7 +171,7 @@ export default function AdminScores() {
                     {s.status !== 'rejected' && (
                       <button
                         disabled={busy}
-                        onClick={() => setStatus(s, 'rejected')}
+                        onClick={() => setModal({ type: 'reject', score: s })}
                         className="rounded bg-red-600 px-2 py-1 text-white hover:bg-red-700 disabled:opacity-50"
                       >
                         Loại
@@ -151,6 +193,29 @@ export default function AdminScores() {
       </div>
 
       <Pager total={total} skip={skip} page={PAGE} onChange={setSkip} />
+
+      <ConfirmModal
+        open={modal?.type === 'reject'}
+        title={`Loại điểm ${modal?.score.score ?? ''} của "${modal?.score.nickname ?? ''}"?`}
+        message="Điểm bị loại sẽ không tính vào bảng xếp hạng. Vui lòng nhập lý do."
+        reasonLabel="Lý do loại điểm"
+        reasonRequired
+        reasonDefault="Gian lận"
+        confirmText="Loại điểm"
+        danger
+        onConfirm={doAction}
+        onCancel={() => setModal(null)}
+      />
+      <ConfirmModal
+        open={modal?.type === 'accept'}
+        title={`Gỡ/khôi phục điểm ${modal?.score.score ?? ''} của "${modal?.score.nickname ?? ''}"?`}
+        message="Điểm sẽ được tính lại vào bảng xếp hạng. Vui lòng nhập lý do gỡ."
+        reasonLabel="Lý do gỡ điểm"
+        reasonRequired
+        confirmText="Gỡ điểm"
+        onConfirm={doAction}
+        onCancel={() => setModal(null)}
+      />
     </div>
   );
 }

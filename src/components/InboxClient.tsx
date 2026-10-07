@@ -5,14 +5,10 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
 import { NOTIF_EVENT } from '@/lib/notifications';
+import { renderNotif, type NotifLike } from '@/lib/notifRender';
 
-interface Notif {
+interface Notif extends NotifLike {
   id: string;
-  type: 'achievement' | 'challenge' | 'reward' | 'system';
-  messageKey: string | null;
-  data: Record<string, unknown> | null;
-  title: string | null;
-  body: string | null;
   read: boolean;
   createdAt: string | null;
 }
@@ -63,30 +59,7 @@ export default function InboxClient() {
     window.dispatchEvent(new Event(NOTIF_EVENT));
   }
 
-  // Dựng văn bản thông báo: ưu tiên title/body ghi đè; nếu không thì render theo i18n.
-  function render(n: Notif): { title: string; body: string } {
-    if (n.title || n.body) return { title: n.title ?? '', body: n.body ?? '' };
-    // Chỉ giữ tham số kiểu nguyên thuỷ để hợp với i18n (TranslationValues).
-    const data: Record<string, string | number> = {};
-    for (const [k, v] of Object.entries(n.data ?? {})) {
-      if (typeof v === 'string' || typeof v === 'number') data[k] = v;
-    }
-    const code = typeof data.code === 'string' ? data.code : null;
-    // Chèn tên/mô tả thành tích hoặc thử thách (namespace riêng) vào tham số.
-    if (code && n.type === 'achievement') {
-      if (t.has(`Achievements.defs.${code}.name`)) data.name = t(`Achievements.defs.${code}.name`);
-      if (t.has(`Achievements.defs.${code}.desc`)) data.desc = t(`Achievements.defs.${code}.desc`);
-    }
-    if (code && n.type === 'challenge') {
-      if (t.has(`Challenges.defs.${code}.name`)) data.name = t(`Challenges.defs.${code}.name`, data);
-    }
-    const key = n.messageKey;
-    const titleKey = key ? `Inbox.messages.${key}` : null;
-    const bodyKey = key ? `Inbox.messages.${key}Body` : null;
-    const title = titleKey && t.has(titleKey) ? t(titleKey, data) : (key ?? '');
-    const body = bodyKey && t.has(bodyKey) ? t(bodyKey, data) : '';
-    return { title, body };
-  }
+  const render = (n: Notif) => renderNotif(t, n);
 
   if (state === 'loading') return <p className="opacity-60">…</p>;
 
