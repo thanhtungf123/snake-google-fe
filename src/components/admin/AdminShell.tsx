@@ -16,6 +16,7 @@ const TABS = [
   { href: '/admin/seasons/', label: 'Mùa giải' },
   { href: '/admin/content/', label: 'Nội dung' },
   { href: '/admin/pages/', label: 'Trang tùy chỉnh' },
+  { href: '/admin/settings/', label: 'Cấu hình' },
 ];
 
 export default function AdminShell({ children }: { children: ReactNode }) {

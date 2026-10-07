@@ -54,6 +54,8 @@ function describe(a: AuditRow): string {
       const tiers = m.rewardTiers != null ? `, thưởng Top ${m.rewardTiers}` : '';
       return `chốt mùa giải tháng ${mk}${tiers}`;
     }
+    case 'settings.update':
+      return 'cập nhật cấu hình site';
     case 'content.upsert':
       return `cập nhật nội dung ${m.pageKey ?? ''}/${m.locale ?? ''}`;
     case 'page.create':

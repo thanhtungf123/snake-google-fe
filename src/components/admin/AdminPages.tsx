@@ -189,6 +189,16 @@ export default function AdminPages() {
                       )}
                     </td>
                     <td className="py-2 pr-3">
+                      {r.isPublished && (
+                        <a
+                          href={`${SITE_URL}${r.locale === 'en' ? '' : '/vi'}/p/${r.slug}/`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mr-3 text-snake underline"
+                        >
+                          Xem
+                        </a>
+                      )}
                       <button onClick={() => startEdit(r)} className="mr-3 text-snake underline">
                         Sửa
                       </button>
