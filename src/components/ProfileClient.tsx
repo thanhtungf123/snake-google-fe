@@ -103,6 +103,12 @@ export default function ProfileClient() {
           {t('viewHistory')} →
         </Link>
         <Link
+          href="/achievements"
+          className="rounded bg-black/5 px-4 py-2 text-sm font-medium hover:bg-black/10"
+        >
+          {t('viewAchievements')} →
+        </Link>
+        <Link
           href="/account"
           className="rounded bg-black/5 px-4 py-2 text-sm font-medium hover:bg-black/10"
         >

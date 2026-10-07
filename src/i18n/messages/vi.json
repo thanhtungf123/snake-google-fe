@@ -82,6 +82,7 @@
     "goLogin": "Đăng nhập",
     "viewStats": "Xem thống kê",
     "viewHistory": "Xem lịch sử",
+    "viewAchievements": "Thành tích",
     "editAccount": "Sửa hồ sơ & cài đặt"
   },
   "Account": {
@@ -152,6 +153,26 @@
       "challengeCompleted": "🎯 Hoàn thành thử thách: {name}",
       "rewardGranted": "🎁 Bạn đạt hạng #{rank} tháng {month}!",
       "rewardGrantedBody": "Chúc mừng — bạn đã lọt top bảng xếp hạng tháng."
+    }
+  },
+  "Achievements": {
+    "title": "Thành tích",
+    "progress": "Đã mở {count}/{total}",
+    "locked": "Chưa mở",
+    "loginRequired": "Vui lòng đăng nhập để xem thành tích.",
+    "goLogin": "Đăng nhập",
+    "defs": {
+      "first_game": { "name": "Ván đầu tiên", "desc": "Chơi ván đầu tiên" },
+      "score_10": { "name": "Khởi động", "desc": "Đạt 10 điểm trong một ván" },
+      "score_25": { "name": "Thuần rắn", "desc": "Đạt 25 điểm trong một ván" },
+      "score_50": { "name": "Nửa trăm", "desc": "Đạt 50 điểm trong một ván" },
+      "score_100": { "name": "Trăm điểm", "desc": "Đạt 100 điểm trong một ván" },
+      "games_10": { "name": "Quen tay", "desc": "Chơi 10 ván" },
+      "games_50": { "name": "Chuyên cần", "desc": "Chơi 50 ván" },
+      "games_100": { "name": "Kỳ cựu", "desc": "Chơi 100 ván" },
+      "total_500": { "name": "Nhà sưu tầm", "desc": "Tích lũy 500 điểm" },
+      "total_2000": { "name": "Tích trữ", "desc": "Tích lũy 2000 điểm" },
+      "survivor": { "name": "Trụ vững", "desc": "Sống sót 2 phút trong một ván" }
     }
   },
   "Footer": {
