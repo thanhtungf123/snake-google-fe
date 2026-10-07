@@ -13,6 +13,7 @@ const TABS = [
   { href: '/admin/', label: 'Tổng quan' },
   { href: '/admin/users/', label: 'Người dùng' },
   { href: '/admin/scores/', label: 'Điểm' },
+  { href: '/admin/seasons/', label: 'Mùa giải' },
   { href: '/admin/content/', label: 'Nội dung' },
   { href: '/admin/pages/', label: 'Trang tùy chỉnh' },
 ];

@@ -32,7 +32,13 @@
     "yourPosition": "Vị trí của bạn",
     "yourRank": "Bạn đang hạng #{rank} với {best} điểm",
     "notRanked": "Chơi một ván để được xếp hạng trong kỳ này.",
-    "loadMore": "Tải thêm"
+    "loadMore": "Tải thêm",
+    "seasonTitle": "Mùa giải theo tháng",
+    "seasonCurrent": "hiện tại",
+    "seasonOpen": "Đang diễn ra",
+    "seasonClosed": "Đã chốt",
+    "seasonRewardNote": "Top {n} được thưởng",
+    "seasonEmpty": "Chưa có người chơi xếp hạng trong tháng này."
   },
   "Mods": {
     "h1": "Chơi với Mod",

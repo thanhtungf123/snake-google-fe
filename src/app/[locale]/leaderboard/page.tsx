@@ -11,6 +11,7 @@ import {
 } from '@/lib/api';
 import LeaderboardList from '@/components/LeaderboardList';
 import MyLeaderboardRank from '@/components/MyLeaderboardRank';
+import SeasonBoard from '@/components/SeasonBoard';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbJsonLd } from '@/lib/seo/jsonld';
 
@@ -89,6 +90,8 @@ export default async function LeaderboardPage({
       <MyLeaderboardRank period={period} />
 
       <LeaderboardList initialRows={rows} period={period} />
+
+      <SeasonBoard />
     </div>
   );
 }

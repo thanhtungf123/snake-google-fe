@@ -32,7 +32,13 @@
     "yourPosition": "Your position",
     "yourRank": "You are ranked #{rank} with {best} points",
     "notRanked": "Play a game to get ranked this period.",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "seasonTitle": "Monthly season",
+    "seasonCurrent": "current",
+    "seasonOpen": "In progress",
+    "seasonClosed": "Final",
+    "seasonRewardNote": "Top {n} get rewarded",
+    "seasonEmpty": "No ranked players this month yet."
   },
   "Mods": {
     "h1": "Play with Mods",
