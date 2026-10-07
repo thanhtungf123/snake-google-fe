@@ -138,6 +138,22 @@
     "goLogin": "Đăng nhập",
     "showing": "Đang hiện {count} / {total}"
   },
+  "Inbox": {
+    "title": "Hộp thư",
+    "empty": "Chưa có thông báo nào.",
+    "markRead": "Đánh dấu đã đọc",
+    "markAllRead": "Đọc tất cả",
+    "loadMore": "Xem thêm",
+    "loginRequired": "Vui lòng đăng nhập để xem hộp thư.",
+    "goLogin": "Đăng nhập",
+    "messages": {
+      "achievementUnlocked": "🏆 Mở khóa thành tích: {name}",
+      "achievementUnlockedBody": "{desc}",
+      "challengeCompleted": "🎯 Hoàn thành thử thách: {name}",
+      "rewardGranted": "🎁 Bạn đạt hạng #{rank} tháng {month}!",
+      "rewardGrantedBody": "Chúc mừng — bạn đã lọt top bảng xếp hạng tháng."
+    }
+  },
   "Footer": {
     "language": "Ngôn ngữ",
     "rights": "Game rắn săn mồi do fan làm. Không liên kết với Google."

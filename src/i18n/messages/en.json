@@ -138,6 +138,22 @@
     "goLogin": "Log in",
     "showing": "Showing {count} of {total}"
   },
+  "Inbox": {
+    "title": "Inbox",
+    "empty": "No notifications yet.",
+    "markRead": "Mark read",
+    "markAllRead": "Mark all read",
+    "loadMore": "Load more",
+    "loginRequired": "Please log in to view your inbox.",
+    "goLogin": "Log in",
+    "messages": {
+      "achievementUnlocked": "🏆 Achievement unlocked: {name}",
+      "achievementUnlockedBody": "{desc}",
+      "challengeCompleted": "🎯 Challenge completed: {name}",
+      "rewardGranted": "🎁 You placed #{rank} in {month}!",
+      "rewardGrantedBody": "Congratulations — you reached the top of the monthly leaderboard."
+    }
+  },
   "Footer": {
     "language": "Language",
     "rights": "A fan-made snake game. Not affiliated with Google."
