@@ -35,6 +35,9 @@ export default function AdminSeasons() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
+  const [closeTarget, setCloseTarget] = useState<SeasonRow | null>(null);
+  const [tiersInput, setTiersInput] = useState('3');
+  const [forceChecked, setForceChecked] = useState(false);
 
   const load = useCallback(async () => {
     setErr(null);
@@ -59,34 +62,27 @@ export default function AdminSeasons() {
     }
   }
 
-  async function close(s: SeasonRow) {
-    const tiersStr = window.prompt(
-      `Chốt mùa giải ${s.monthKey}.\nSố bậc được thưởng (Top mấy)?`,
-      String(defaultTiers)
-    );
-    if (tiersStr === null) return;
-    const rewardTiers = Number(tiersStr);
+  // Mở popup chốt mùa giải.
+  function openCloseModal(s: SeasonRow) {
+    setErr(null);
+    setMsg(null);
+    setCloseTarget(s);
+    setTiersInput(String(defaultTiers));
+    setForceChecked(false);
+  }
+
+  async function confirmClose() {
+    if (!closeTarget) return;
+    const s = closeTarget;
+    const rewardTiers = Number(tiersInput);
     if (!Number.isFinite(rewardTiers) || rewardTiers < 1) {
       setErr('Số bậc thưởng không hợp lệ');
       return;
     }
+    const needsForce = s.pendingFlagged > 0 || s.isCurrent;
+    const force = needsForce ? forceChecked : false;
 
-    let force = false;
-    if (s.pendingFlagged > 0) {
-      force = window.confirm(
-        `Còn ${s.pendingFlagged} điểm NGHI NGỜ chưa duyệt trong tháng ${s.monthKey}.\n` +
-          `Nên duyệt hết trước khi chốt.\n\nOK = vẫn chốt (force), Cancel = huỷ.`
-      );
-      if (!force) return;
-    } else if (s.isCurrent) {
-      force = window.confirm(
-        `Tháng ${s.monthKey} là THÁNG HIỆN TẠI, chưa kết thúc.\nOK = vẫn chốt sớm (force), Cancel = huỷ.`
-      );
-      if (!force) return;
-    } else {
-      if (!window.confirm(`Xác nhận CHỐT & đóng băng mùa giải ${s.monthKey}?`)) return;
-    }
-
+    setCloseTarget(null);
     setBusy(true);
     setErr(null);
     setMsg(null);
@@ -162,7 +158,7 @@ export default function AdminSeasons() {
                     </button>
                     {s.status === 'open' && (
                       <button
-                        onClick={() => close(s)}
+                        onClick={() => openCloseModal(s)}
                         disabled={busy}
                         className="rounded bg-snake px-2 py-1 text-xs font-medium text-white disabled:opacity-60"
                       >
@@ -212,6 +208,79 @@ export default function AdminSeasons() {
             ))}
             {preview.rows.length === 0 && <li className="opacity-60">Chưa có dữ liệu.</li>}
           </ol>
+        </div>
+      )}
+
+      {closeTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setCloseTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold">Chốt mùa giải {closeTarget.monthKey}</h3>
+            <p className="mt-1 text-sm opacity-70">
+              Chốt sẽ đóng băng bảng xếp hạng (không đổi về sau) và gửi thông báo cho Top.
+            </p>
+
+            <label className="mt-3 block">
+              <span className="mb-1 block text-sm opacity-70">
+                Số bậc được thưởng (Top mấy)?<span className="text-red-600"> *</span>
+              </span>
+              <input
+                type="number"
+                min={1}
+                value={tiersInput}
+                onChange={(e) => setTiersInput(e.target.value)}
+                className="w-full rounded border border-black/15 px-3 py-2 text-sm outline-none focus:border-snake"
+                autoFocus
+              />
+            </label>
+
+            {closeTarget.pendingFlagged > 0 && (
+              <div className="mt-3 rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+                ⚠ Còn <b>{closeTarget.pendingFlagged}</b> điểm nghi ngờ chưa duyệt trong tháng này.
+                Nên duyệt hết trước khi chốt.
+              </div>
+            )}
+            {closeTarget.pendingFlagged === 0 && closeTarget.isCurrent && (
+              <div className="mt-3 rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+                ⚠ Đây là <b>tháng hiện tại</b>, chưa kết thúc. Chốt sớm sẽ đóng băng ngay bây giờ.
+              </div>
+            )}
+
+            {(closeTarget.pendingFlagged > 0 || closeTarget.isCurrent) && (
+              <label className="mt-3 flex items-start gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={forceChecked}
+                  onChange={(e) => setForceChecked(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span>Tôi hiểu cảnh báo trên và vẫn muốn chốt (force).</span>
+              </label>
+            )}
+
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setCloseTarget(null)}
+                className="rounded bg-black/5 px-4 py-2 text-sm hover:bg-black/10"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={confirmClose}
+                disabled={
+                  (closeTarget.pendingFlagged > 0 || closeTarget.isCurrent) && !forceChecked
+                }
+                className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                Chốt mùa giải
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
