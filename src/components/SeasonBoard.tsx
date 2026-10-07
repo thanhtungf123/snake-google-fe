@@ -41,7 +41,7 @@ export default function SeasonBoard() {
 
   // Nạp danh sách tháng khi mount.
   useEffect(() => {
-    apiFetch('/api/leaderboard/seasons')
+    apiFetch('/api/leaderboard/seasons?count=12')
       .then((r) => r.json())
       .then((d: { current: string; seasons: SeasonMeta[] }) => {
         setSeasons(d.seasons ?? []);

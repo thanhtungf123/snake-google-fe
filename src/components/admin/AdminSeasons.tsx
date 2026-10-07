@@ -181,7 +181,7 @@ export default function AdminSeasons() {
         <div className="rounded-lg border border-black/10 p-4">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-semibold">
-              Xem trước {preview.monthKey}{' '}
+              Top 10 — {preview.monthKey}{' '}
               <span className="text-sm font-normal opacity-60">
                 ({preview.frozen ? 'đã đóng băng' : 'đang tính sống'} · {preview.total} người ·
                 thưởng Top {preview.rewardTiers})
