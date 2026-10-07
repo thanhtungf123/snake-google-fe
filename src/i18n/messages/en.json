@@ -83,6 +83,7 @@
     "viewStats": "View stats",
     "viewHistory": "View history",
     "viewAchievements": "Achievements",
+    "viewChallenges": "Challenges",
     "editAccount": "Edit profile & settings"
   },
   "Account": {
@@ -173,6 +174,22 @@
       "total_500": { "name": "Collector", "desc": "Accumulate 500 total points" },
       "total_2000": { "name": "Hoarder", "desc": "Accumulate 2000 total points" },
       "survivor": { "name": "Survivor", "desc": "Survive 2 minutes in one game" }
+    }
+  },
+  "Challenges": {
+    "title": "Challenges",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "done": "Done",
+    "loginRequired": "Please log in to view your challenges.",
+    "goLogin": "Log in",
+    "defs": {
+      "daily_play_3": { "name": "Play 3 games" },
+      "daily_score_30": { "name": "Score 30 in a game" },
+      "daily_points_50": { "name": "Earn 50 points" },
+      "weekly_play_20": { "name": "Play 20 games" },
+      "weekly_score_80": { "name": "Score 80 in a game" },
+      "weekly_points_300": { "name": "Earn 300 points" }
     }
   },
   "Footer": {

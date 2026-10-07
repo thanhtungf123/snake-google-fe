@@ -57,6 +57,10 @@ export const routing = defineRouting({
       en: '/achievements',
       vi: '/thanh-tich',
     },
+    '/challenges': {
+      en: '/challenges',
+      vi: '/thu-thach',
+    },
   },
 });
 

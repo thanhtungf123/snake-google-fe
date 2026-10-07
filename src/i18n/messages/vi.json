@@ -83,6 +83,7 @@
     "viewStats": "Xem thống kê",
     "viewHistory": "Xem lịch sử",
     "viewAchievements": "Thành tích",
+    "viewChallenges": "Thử thách",
     "editAccount": "Sửa hồ sơ & cài đặt"
   },
   "Account": {
@@ -173,6 +174,22 @@
       "total_500": { "name": "Nhà sưu tầm", "desc": "Tích lũy 500 điểm" },
       "total_2000": { "name": "Tích trữ", "desc": "Tích lũy 2000 điểm" },
       "survivor": { "name": "Trụ vững", "desc": "Sống sót 2 phút trong một ván" }
+    }
+  },
+  "Challenges": {
+    "title": "Thử thách",
+    "daily": "Hằng ngày",
+    "weekly": "Hằng tuần",
+    "done": "Hoàn thành",
+    "loginRequired": "Vui lòng đăng nhập để xem thử thách.",
+    "goLogin": "Đăng nhập",
+    "defs": {
+      "daily_play_3": { "name": "Chơi 3 ván" },
+      "daily_score_30": { "name": "Đạt 30 điểm một ván" },
+      "daily_points_50": { "name": "Kiếm 50 điểm" },
+      "weekly_play_20": { "name": "Chơi 20 ván" },
+      "weekly_score_80": { "name": "Đạt 80 điểm một ván" },
+      "weekly_points_300": { "name": "Kiếm 300 điểm" }
     }
   },
   "Footer": {
