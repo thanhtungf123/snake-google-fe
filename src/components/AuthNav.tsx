@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
+import NotificationBell from './NotificationBell';
 
 interface Me {
   nickname: string;
@@ -52,6 +53,7 @@ export default function AuthNav() {
             {t('admin')}
           </a>
         )}
+        <NotificationBell />
         <Link href="/profile" className="font-medium hover:underline">
           {user.nickname}
         </Link>

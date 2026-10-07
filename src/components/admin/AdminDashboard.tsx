@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { adminGet } from '@/lib/adminApi';
 
 interface Stats {
@@ -18,22 +18,80 @@ interface AuditRow {
   action: string;
   targetType: string;
   reason: string | null;
+  meta: Record<string, unknown> | null;
   at: string | null;
+}
+
+type AuditFilter = 'all' | 'user' | 'score' | 'tournament' | 'content' | 'page';
+const AUDIT_FILTER_LABEL: Record<AuditFilter, string> = {
+  all: 'Tất cả',
+  user: 'Người dùng',
+  score: 'Điểm',
+  tournament: 'Mùa giải',
+  content: 'Nội dung',
+  page: 'Trang',
+};
+
+// Diễn giải một dòng nhật ký thành câu dễ đọc tiếng Việt.
+function describe(a: AuditRow): string {
+  const m = a.meta ?? {};
+  const nick = typeof m.nickname === 'string' ? `"${m.nickname}"` : '';
+  const score = m.score != null ? ` ${m.score}` : '';
+  switch (a.action) {
+    case 'user.ban':
+      return `cấm người dùng ${nick}`;
+    case 'user.unban':
+      return `mở khoá người dùng ${nick}`;
+    case 'score.status': {
+      const to = m.to;
+      if (to === 'rejected') return `loại điểm${score} của ${nick}`;
+      if (to === 'valid') return `gỡ/khôi phục điểm${score} của ${nick}`;
+      if (to === 'flagged') return `đánh dấu nghi ngờ điểm${score} của ${nick}`;
+      return `đổi trạng thái điểm${score} của ${nick}`;
+    }
+    case 'season.close': {
+      const mk = m.monthKey ?? '';
+      const tiers = m.rewardTiers != null ? `, thưởng Top ${m.rewardTiers}` : '';
+      return `chốt mùa giải tháng ${mk}${tiers}`;
+    }
+    case 'settings.update':
+      return 'cập nhật cấu hình site';
+    case 'content.upsert':
+      return `cập nhật nội dung ${m.pageKey ?? ''}/${m.locale ?? ''}`;
+    case 'page.create':
+      return `tạo trang "${m.slug ?? ''}"`;
+    case 'page.update':
+      return `sửa trang "${m.slug ?? ''}"`;
+    case 'page.delete':
+      return `xoá trang "${m.slug ?? ''}"`;
+    default:
+      return `${a.action} (${a.targetType})`;
+  }
 }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [audit, setAudit] = useState<AuditRow[]>([]);
+  const [auditF, setAuditF] = useState<AuditFilter>('all');
   const [err, setErr] = useState<string | null>(null);
+
+  const loadAudit = useCallback((f: AuditFilter) => {
+    const qs = new URLSearchParams({ limit: '20' });
+    if (f !== 'all') qs.set('targetType', f);
+    adminGet<{ rows: AuditRow[] }>(`/api/admin/audit?${qs}`)
+      .then((d) => setAudit(d.rows))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     adminGet<{ stats: Stats }>('/api/admin/stats')
       .then((d) => setStats(d.stats))
       .catch((e) => setErr(e.message));
-    adminGet<{ rows: AuditRow[] }>('/api/admin/audit?limit=15')
-      .then((d) => setAudit(d.rows))
-      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    loadAudit(auditF);
+  }, [auditF, loadAudit]);
 
   if (err) return <p className="text-red-600">{err}</p>;
   if (!stats) return <p className="opacity-60">Đang tải…</p>;
@@ -60,18 +118,30 @@ export default function AdminDashboard() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-lg font-semibold">Nhật ký quản trị gần đây</h2>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold">Nhật ký quản trị gần đây</h2>
+          <select
+            value={auditF}
+            onChange={(e) => setAuditF(e.target.value as AuditFilter)}
+            className="rounded border border-black/15 px-2 py-1 text-sm"
+          >
+            {(Object.keys(AUDIT_FILTER_LABEL) as AuditFilter[]).map((f) => (
+              <option key={f} value={f}>
+                {AUDIT_FILTER_LABEL[f]}
+              </option>
+            ))}
+          </select>
+        </div>
         {audit.length === 0 ? (
           <p className="opacity-60">Chưa có hoạt động nào.</p>
         ) : (
           <ul className="divide-y divide-black/10 text-sm">
             {audit.map((a) => (
-              <li key={a.id} className="flex flex-wrap items-center gap-x-2 py-2">
+              <li key={a.id} className="flex flex-wrap items-baseline gap-x-2 py-2">
                 <span className="font-medium">{a.actor}</span>
-                <span className="rounded bg-black/5 px-2 py-0.5 text-xs">{a.action}</span>
-                <span className="opacity-60">{a.targetType}</span>
+                <span>{describe(a)}</span>
                 {a.reason && <span className="opacity-60">— {a.reason}</span>}
-                <span className="ml-auto opacity-50">
+                <span className="ml-auto whitespace-nowrap opacity-50">
                   {a.at ? new Date(a.at).toLocaleString('vi-VN') : ''}
                 </span>
               </li>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
+import RichTextEditor from './RichTextEditor';
 
 interface Row {
   pageKey: string;
@@ -195,15 +196,18 @@ export default function AdminContent() {
         <Labeled label={pageKey === 'home' ? 'Tiêu đề khối SEO (H2)' : 'H1'}>
           <input className={field} value={form.h1} onChange={(e) => set('h1', e.target.value)} />
         </Labeled>
-        <Labeled label="Nội dung (HTML được phép: p, br, h2–h4, ul, ol, li, a, strong, em, b, i, u, blockquote, code, pre, span — thẻ/script khác bị loại bỏ khi lưu)">
-          <textarea
-            className={`${field} font-mono`}
-            rows={8}
+        <div className="text-sm">
+          <span className="mb-1 block opacity-60">
+            Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách… — để trống sẽ
+            dùng text mặc định từ i18n)
+          </span>
+          <RichTextEditor
             value={form.bodyHtml}
-            onChange={(e) => set('bodyHtml', e.target.value)}
-            placeholder="<p>Để trống sẽ dùng text mặc định từ i18n.</p>"
+            resetKey={`${pageKey}-${locale}`}
+            onChange={(html) => set('bodyHtml', html)}
+            placeholder="Nhập nội dung tại đây…"
           />
-        </Labeled>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Labeled label="OG Title (để trống = dùng SEO Title)">
             <input className={field} value={form.ogTitle} onChange={(e) => set('ogTitle', e.target.value)} />

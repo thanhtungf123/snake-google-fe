@@ -32,7 +32,13 @@
     "yourPosition": "Vị trí của bạn",
     "yourRank": "Bạn đang hạng #{rank} với {best} điểm",
     "notRanked": "Chơi một ván để được xếp hạng trong kỳ này.",
-    "loadMore": "Tải thêm"
+    "loadMore": "Tải thêm",
+    "seasonTitle": "Mùa giải theo tháng",
+    "seasonCurrent": "hiện tại",
+    "seasonOpen": "Đang diễn ra",
+    "seasonClosed": "Đã chốt",
+    "seasonRewardNote": "Top {n} được thưởng",
+    "seasonEmpty": "Chưa có người chơi xếp hạng trong tháng này."
   },
   "Mods": {
     "h1": "Chơi với Mod",
@@ -65,7 +71,20 @@
     "haveAccount": "Đã có tài khoản? Đăng nhập",
     "guest": "Khách",
     "genericError": "Có lỗi xảy ra. Vui lòng thử lại.",
-    "admin": "Quản trị"
+    "admin": "Quản trị",
+    "forgotPassword": "Quên mật khẩu?",
+    "forgotTitle": "Đặt lại mật khẩu",
+    "forgotHint": "Nhập email tài khoản, chúng tôi sẽ gửi link đặt lại mật khẩu.",
+    "forgotSubmit": "Gửi link đặt lại",
+    "forgotSent": "Nếu email tồn tại, link đặt lại đã được gửi. Vui lòng kiểm tra hộp thư.",
+    "backToLogin": "Về trang đăng nhập",
+    "resetTitle": "Đặt mật khẩu mới",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "resetSubmit": "Cập nhật mật khẩu",
+    "resetDone": "Đã cập nhật mật khẩu. Đang chuyển tới trang đăng nhập…",
+    "resetNoToken": "Link đặt lại không hợp lệ hoặc thiếu.",
+    "passwordMismatch": "Mật khẩu xác nhận không khớp."
   },
   "Profile": {
     "title": "Hồ sơ",
@@ -82,6 +101,8 @@
     "goLogin": "Đăng nhập",
     "viewStats": "Xem thống kê",
     "viewHistory": "Xem lịch sử",
+    "viewAchievements": "Thành tích",
+    "viewChallenges": "Thử thách",
     "editAccount": "Sửa hồ sơ & cài đặt"
   },
   "Account": {
@@ -108,6 +129,14 @@
     "best": "Điểm cao nhất",
     "avg": "Điểm trung bình",
     "timePlayed": "Thời gian chơi",
+    "longestGame": "Ván dài nhất",
+    "byPeriod": "Theo kỳ",
+    "day": "Hôm nay",
+    "week": "Tuần này",
+    "month": "Tháng này",
+    "periodGames": "Số ván",
+    "periodBest": "Cao nhất",
+    "periodTotal": "Điểm",
     "distribution": "Phân bố điểm",
     "trend": "Điểm gần đây",
     "empty": "Chưa có thống kê. Chơi vài ván nhé!",
@@ -129,6 +158,59 @@
     "loginRequired": "Vui lòng đăng nhập để xem lịch sử.",
     "goLogin": "Đăng nhập",
     "showing": "Đang hiện {count} / {total}"
+  },
+  "Inbox": {
+    "title": "Hộp thư",
+    "empty": "Chưa có thông báo nào.",
+    "markRead": "Đánh dấu đã đọc",
+    "markAllRead": "Đọc tất cả",
+    "loadMore": "Xem thêm",
+    "viewAll": "Xem tất cả",
+    "loginRequired": "Vui lòng đăng nhập để xem hộp thư.",
+    "goLogin": "Đăng nhập",
+    "messages": {
+      "achievementUnlocked": "🏆 Mở khóa thành tích: {name}",
+      "achievementUnlockedBody": "{desc}",
+      "challengeCompleted": "🎯 Hoàn thành thử thách: {name}",
+      "rewardGranted": "🎁 Bạn đạt hạng #{rank} tháng {month}!",
+      "rewardGrantedBody": "Chúc mừng — bạn đã lọt top bảng xếp hạng tháng."
+    }
+  },
+  "Achievements": {
+    "title": "Thành tích",
+    "progress": "Đã mở {count}/{total}",
+    "locked": "Chưa mở",
+    "loginRequired": "Vui lòng đăng nhập để xem thành tích.",
+    "goLogin": "Đăng nhập",
+    "defs": {
+      "first_game": { "name": "Ván đầu tiên", "desc": "Chơi ván đầu tiên" },
+      "score_10": { "name": "Khởi động", "desc": "Đạt 10 điểm trong một ván" },
+      "score_25": { "name": "Thuần rắn", "desc": "Đạt 25 điểm trong một ván" },
+      "score_50": { "name": "Nửa trăm", "desc": "Đạt 50 điểm trong một ván" },
+      "score_100": { "name": "Trăm điểm", "desc": "Đạt 100 điểm trong một ván" },
+      "games_10": { "name": "Quen tay", "desc": "Chơi 10 ván" },
+      "games_50": { "name": "Chuyên cần", "desc": "Chơi 50 ván" },
+      "games_100": { "name": "Kỳ cựu", "desc": "Chơi 100 ván" },
+      "total_500": { "name": "Nhà sưu tầm", "desc": "Tích lũy 500 điểm" },
+      "total_2000": { "name": "Tích trữ", "desc": "Tích lũy 2000 điểm" },
+      "survivor": { "name": "Trụ vững", "desc": "Sống sót 2 phút trong một ván" }
+    }
+  },
+  "Challenges": {
+    "title": "Thử thách",
+    "daily": "Hằng ngày",
+    "weekly": "Hằng tuần",
+    "done": "Hoàn thành",
+    "loginRequired": "Vui lòng đăng nhập để xem thử thách.",
+    "goLogin": "Đăng nhập",
+    "defs": {
+      "daily_play_3": { "name": "Chơi 3 ván" },
+      "daily_score_30": { "name": "Đạt 30 điểm một ván" },
+      "daily_points_50": { "name": "Kiếm 50 điểm" },
+      "weekly_play_20": { "name": "Chơi 20 ván" },
+      "weekly_score_80": { "name": "Đạt 80 điểm một ván" },
+      "weekly_points_300": { "name": "Kiếm 300 điểm" }
+    }
   },
   "Footer": {
     "language": "Ngôn ngữ",

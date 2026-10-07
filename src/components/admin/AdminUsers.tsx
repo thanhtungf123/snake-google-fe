@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
+import ConfirmModal from './ConfirmModal';
 
 interface Row {
   id: string;
@@ -15,6 +16,10 @@ interface Row {
   joinedAt: string | null;
 }
 
+type StatusFilter = 'all' | 'active' | 'banned';
+type RoleFilter = 'all' | 'user' | 'admin';
+const STATUS_LABEL: Record<StatusFilter, string> = { all: 'Tất cả', active: 'Hoạt động', banned: 'Bị khoá' };
+const ROLE_LABEL: Record<RoleFilter, string> = { all: 'Mọi vai trò', user: 'Người dùng', admin: 'Admin' };
 const PAGE = 25;
 
 export default function AdminUsers() {
@@ -22,47 +27,45 @@ export default function AdminUsers() {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [q, setQ] = useState('');
+  const [statusF, setStatusF] = useState<StatusFilter>('all');
+  const [roleF, setRoleF] = useState<RoleFilter>('all');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [modal, setModal] = useState<{ type: 'ban' | 'unban'; user: Row } | null>(null);
 
-  const load = useCallback(async (query: string, sk: number) => {
-    setErr(null);
-    const qs = new URLSearchParams({ skip: String(sk), limit: String(PAGE) });
-    if (query) qs.set('q', query);
-    const d = await adminGet<{ rows: Row[]; total: number }>(`/api/admin/users?${qs}`);
-    setRows(d.rows);
-    setTotal(d.total);
-  }, []);
+  const load = useCallback(
+    async (query: string, sk: number, status: StatusFilter, role: RoleFilter) => {
+      setErr(null);
+      const qs = new URLSearchParams({ skip: String(sk), limit: String(PAGE) });
+      if (query) qs.set('q', query);
+      if (status !== 'all') qs.set('status', status);
+      if (role !== 'all') qs.set('role', role);
+      const d = await adminGet<{ rows: Row[]; total: number }>(`/api/admin/users?${qs}`);
+      setRows(d.rows);
+      setTotal(d.total);
+    },
+    []
+  );
 
   useEffect(() => {
-    load(q, skip).catch((e) => setErr(e.message));
+    load(q, skip, statusF, roleF).catch((e) => setErr(e.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [skip]);
+  }, [skip, statusF, roleF]);
 
   function search(e: React.FormEvent) {
     e.preventDefault();
     setSkip(0);
-    load(q, 0).catch((er) => setErr(er.message));
+    load(q, 0, statusF, roleF).catch((er) => setErr(er.message));
   }
 
-  async function ban(u: Row) {
-    const reason = window.prompt(`Lý do khoá "${u.nickname}"?`, '') ?? undefined;
+  async function doAction(reason: string) {
+    if (!modal) return;
+    const { type, user } = modal;
+    setModal(null);
     setBusy(true);
     try {
-      await adminSend(`/api/admin/users/${u.id}/ban`, 'POST', { reason });
-      await load(q, skip);
-    } catch (e) {
-      setErr((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function unban(u: Row) {
-    setBusy(true);
-    try {
-      await adminSend(`/api/admin/users/${u.id}/unban`, 'POST');
-      await load(q, skip);
+      await adminSend(`/api/admin/users/${user.id}/${type}`, 'POST', { reason: reason || undefined });
+      await load(q, skip, statusF, roleF);
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -72,13 +75,41 @@ export default function AdminUsers() {
 
   return (
     <div className="space-y-4">
-      <form onSubmit={search} className="flex gap-2">
+      <form onSubmit={search} className="flex flex-wrap gap-2">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Tìm theo nickname hoặc email…"
           className="flex-1 rounded border border-black/15 px-3 py-2 text-sm"
         />
+        <select
+          value={statusF}
+          onChange={(e) => {
+            setSkip(0);
+            setStatusF(e.target.value as StatusFilter);
+          }}
+          className="rounded border border-black/15 px-2 py-2 text-sm"
+        >
+          {(Object.keys(STATUS_LABEL) as StatusFilter[]).map((s) => (
+            <option key={s} value={s}>
+              {STATUS_LABEL[s]}
+            </option>
+          ))}
+        </select>
+        <select
+          value={roleF}
+          onChange={(e) => {
+            setSkip(0);
+            setRoleF(e.target.value as RoleFilter);
+          }}
+          className="rounded border border-black/15 px-2 py-2 text-sm"
+        >
+          {(Object.keys(ROLE_LABEL) as RoleFilter[]).map((r) => (
+            <option key={r} value={r}>
+              {ROLE_LABEL[r]}
+            </option>
+          ))}
+        </select>
         <button className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white">Tìm</button>
       </form>
 
@@ -123,7 +154,7 @@ export default function AdminUsers() {
                   ) : u.status === 'banned' ? (
                     <button
                       disabled={busy}
-                      onClick={() => unban(u)}
+                      onClick={() => setModal({ type: 'unban', user: u })}
                       className="rounded bg-black/5 px-3 py-1 hover:bg-black/10 disabled:opacity-50"
                     >
                       Mở khoá
@@ -131,7 +162,7 @@ export default function AdminUsers() {
                   ) : (
                     <button
                       disabled={busy}
-                      onClick={() => ban(u)}
+                      onClick={() => setModal({ type: 'ban', user: u })}
                       className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:opacity-50"
                     >
                       Khoá
@@ -152,6 +183,27 @@ export default function AdminUsers() {
       </div>
 
       <Pager total={total} skip={skip} page={PAGE} onChange={setSkip} />
+
+      <ConfirmModal
+        open={modal?.type === 'ban'}
+        title={`Khoá người dùng "${modal?.user.nickname ?? ''}"?`}
+        message="Người dùng sẽ không đăng nhập được. Vui lòng nhập lý do."
+        reasonLabel="Lý do khoá"
+        reasonRequired
+        confirmText="Khoá"
+        danger
+        onConfirm={doAction}
+        onCancel={() => setModal(null)}
+      />
+      <ConfirmModal
+        open={modal?.type === 'unban'}
+        title={`Mở khoá người dùng "${modal?.user.nickname ?? ''}"?`}
+        message="Người dùng sẽ đăng nhập lại được bình thường."
+        reasonLabel="Lý do mở khoá (tuỳ chọn)"
+        confirmText="Mở khoá"
+        onConfirm={doAction}
+        onCancel={() => setModal(null)}
+      />
     </div>
   );
 }

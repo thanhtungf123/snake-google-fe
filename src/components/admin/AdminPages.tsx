@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
+import RichTextEditor from './RichTextEditor';
 
 interface Row {
   id: string;
@@ -188,6 +189,16 @@ export default function AdminPages() {
                       )}
                     </td>
                     <td className="py-2 pr-3">
+                      {r.isPublished && (
+                        <a
+                          href={`${SITE_URL}${r.locale === 'en' ? '' : '/vi'}/p/${r.slug}/`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mr-3 text-snake underline"
+                        >
+                          Xem
+                        </a>
+                      )}
                       <button onClick={() => startEdit(r)} className="mr-3 text-snake underline">
                         Sửa
                       </button>
@@ -262,14 +273,17 @@ export default function AdminPages() {
         <Labeled label="H1 (tiêu đề hiển thị)">
           <input className={field} value={form.h1} onChange={(e) => set('h1', e.target.value)} />
         </Labeled>
-        <Labeled label="Nội dung (HTML được phép: p, br, h2–h4, ul, ol, li, a, strong, em, b, i, u, blockquote, code, pre, span — thẻ/script khác bị loại bỏ khi lưu)">
-          <textarea
-            className={`${field} font-mono`}
-            rows={8}
+        <div className="text-sm">
+          <span className="mb-1 block opacity-60">
+            Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách…)
+          </span>
+          <RichTextEditor
             value={form.bodyHtml}
-            onChange={(e) => set('bodyHtml', e.target.value)}
+            resetKey={editingId ?? 'new'}
+            onChange={(html) => set('bodyHtml', html)}
+            placeholder="Nhập nội dung tại đây…"
           />
-        </Labeled>
+        </div>
 
         <div className="flex flex-wrap gap-5 text-sm">
           <label className="flex items-center gap-2">

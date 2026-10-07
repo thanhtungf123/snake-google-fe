@@ -109,6 +109,14 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
           </Link>
         )}
       </p>
+
+      {mode === 'login' && (
+        <p className="text-center text-sm">
+          <Link href="/forgot-password" className="opacity-70 hover:underline">
+            {t('forgotPassword')}
+          </Link>
+        </p>
+      )}
     </form>
   );
 }

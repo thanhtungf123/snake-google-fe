@@ -33,6 +33,14 @@ export const routing = defineRouting({
       en: '/register',
       vi: '/dang-ky',
     },
+    '/forgot-password': {
+      en: '/forgot-password',
+      vi: '/quen-mat-khau',
+    },
+    '/reset-password': {
+      en: '/reset-password',
+      vi: '/dat-lai-mat-khau',
+    },
     '/profile': {
       en: '/profile',
       vi: '/ho-so',
@@ -48,6 +56,18 @@ export const routing = defineRouting({
     '/account': {
       en: '/account',
       vi: '/tai-khoan',
+    },
+    '/inbox': {
+      en: '/inbox',
+      vi: '/hop-thu',
+    },
+    '/achievements': {
+      en: '/achievements',
+      vi: '/thanh-tich',
+    },
+    '/challenges': {
+      en: '/challenges',
+      vi: '/thu-thach',
     },
   },
 });

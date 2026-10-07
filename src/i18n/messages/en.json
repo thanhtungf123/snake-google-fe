@@ -32,7 +32,13 @@
     "yourPosition": "Your position",
     "yourRank": "You are ranked #{rank} with {best} points",
     "notRanked": "Play a game to get ranked this period.",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "seasonTitle": "Monthly season",
+    "seasonCurrent": "current",
+    "seasonOpen": "In progress",
+    "seasonClosed": "Final",
+    "seasonRewardNote": "Top {n} get rewarded",
+    "seasonEmpty": "No ranked players this month yet."
   },
   "Mods": {
     "h1": "Play with Mods",
@@ -65,7 +71,20 @@
     "haveAccount": "Already have an account? Log in",
     "guest": "Guest",
     "genericError": "Something went wrong. Please try again.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Reset password",
+    "forgotHint": "Enter your account email and we'll send you a reset link.",
+    "forgotSubmit": "Send reset link",
+    "forgotSent": "If that email exists, a reset link has been sent. Please check your inbox.",
+    "backToLogin": "Back to log in",
+    "resetTitle": "Set a new password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "resetSubmit": "Update password",
+    "resetDone": "Your password has been updated. Redirecting to log in…",
+    "resetNoToken": "Invalid or missing reset link.",
+    "passwordMismatch": "Passwords do not match."
   },
   "Profile": {
     "title": "Profile",
@@ -82,6 +101,8 @@
     "goLogin": "Log in",
     "viewStats": "View stats",
     "viewHistory": "View history",
+    "viewAchievements": "Achievements",
+    "viewChallenges": "Challenges",
     "editAccount": "Edit profile & settings"
   },
   "Account": {
@@ -108,6 +129,14 @@
     "best": "Best score",
     "avg": "Average score",
     "timePlayed": "Time played",
+    "longestGame": "Longest game",
+    "byPeriod": "By period",
+    "day": "Today",
+    "week": "This week",
+    "month": "This month",
+    "periodGames": "Games",
+    "periodBest": "Best",
+    "periodTotal": "Points",
     "distribution": "Score distribution",
     "trend": "Recent scores",
     "empty": "No stats yet. Play a few rounds!",
@@ -129,6 +158,59 @@
     "loginRequired": "Please log in to view your history.",
     "goLogin": "Log in",
     "showing": "Showing {count} of {total}"
+  },
+  "Inbox": {
+    "title": "Inbox",
+    "empty": "No notifications yet.",
+    "markRead": "Mark read",
+    "markAllRead": "Mark all read",
+    "loadMore": "Load more",
+    "viewAll": "View all",
+    "loginRequired": "Please log in to view your inbox.",
+    "goLogin": "Log in",
+    "messages": {
+      "achievementUnlocked": "🏆 Achievement unlocked: {name}",
+      "achievementUnlockedBody": "{desc}",
+      "challengeCompleted": "🎯 Challenge completed: {name}",
+      "rewardGranted": "🎁 You placed #{rank} in {month}!",
+      "rewardGrantedBody": "Congratulations — you reached the top of the monthly leaderboard."
+    }
+  },
+  "Achievements": {
+    "title": "Achievements",
+    "progress": "{count}/{total} unlocked",
+    "locked": "Locked",
+    "loginRequired": "Please log in to view your achievements.",
+    "goLogin": "Log in",
+    "defs": {
+      "first_game": { "name": "First Game", "desc": "Play your first game" },
+      "score_10": { "name": "Getting Started", "desc": "Score 10 in one game" },
+      "score_25": { "name": "Snake Charmer", "desc": "Score 25 in one game" },
+      "score_50": { "name": "Half Century", "desc": "Score 50 in one game" },
+      "score_100": { "name": "Centurion", "desc": "Score 100 in one game" },
+      "games_10": { "name": "Regular", "desc": "Play 10 games" },
+      "games_50": { "name": "Dedicated", "desc": "Play 50 games" },
+      "games_100": { "name": "Veteran", "desc": "Play 100 games" },
+      "total_500": { "name": "Collector", "desc": "Accumulate 500 total points" },
+      "total_2000": { "name": "Hoarder", "desc": "Accumulate 2000 total points" },
+      "survivor": { "name": "Survivor", "desc": "Survive 2 minutes in one game" }
+    }
+  },
+  "Challenges": {
+    "title": "Challenges",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "done": "Done",
+    "loginRequired": "Please log in to view your challenges.",
+    "goLogin": "Log in",
+    "defs": {
+      "daily_play_3": { "name": "Play 3 games" },
+      "daily_score_30": { "name": "Score 30 in a game" },
+      "daily_points_50": { "name": "Earn 50 points" },
+      "weekly_play_20": { "name": "Play 20 games" },
+      "weekly_score_80": { "name": "Score 80 in a game" },
+      "weekly_points_300": { "name": "Earn 300 points" }
+    }
   },
   "Footer": {
     "language": "Language",

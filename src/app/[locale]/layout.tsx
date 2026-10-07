@@ -3,15 +3,24 @@ import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { routing, type Locale } from '@/i18n/routing';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
+import { getSiteSettings } from '@/lib/settings';
 import '../globals.css';
 
 const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+// Favicon lấy từ cấu hình site (admin đổi được). Không có thì để Next tự xử lý.
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  if (!settings.faviconUrl) return {};
+  return { icons: { icon: settings.faviconUrl } };
 }
 
 export default async function LocaleLayout({
@@ -27,6 +36,7 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
   const messages = await getMessages();
+  const settings = await getSiteSettings();
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -42,9 +52,9 @@ export default async function LocaleLayout({
         )}
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-screen flex-col">
-            <Nav />
+            <Nav settings={{ siteTitle: settings.siteTitle, logoUrl: settings.logoUrl }} />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <Footer text={settings.footerText} />
           </div>
         </NextIntlClientProvider>
       </body>

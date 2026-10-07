@@ -13,12 +13,19 @@ interface TrendPoint {
   score: number;
   at: string | null;
 }
+interface PeriodStat {
+  games: number;
+  best: number;
+  totalScore: number;
+}
 interface Stats {
   totalGames: number;
   totalScore: number;
   best: number;
   avg: number;
   totalDurationMs: number;
+  longestGameMs: number;
+  periods: { day: PeriodStat; week: PeriodStat; month: PeriodStat };
   distribution: Bucket[];
   trend: TrendPoint[];
 }
@@ -89,6 +96,34 @@ export default function StatsClient() {
         <Stat label={t('avg')} value={stats.avg} />
         <Stat label={t('totalScore')} value={stats.totalScore} />
         <Stat label={t('timePlayed')} value={fmtDuration(stats.totalDurationMs)} />
+        <Stat label={t('longestGame')} value={fmtDuration(stats.longestGameMs)} />
+      </div>
+
+      {/* Tách theo kỳ: hôm nay / tuần này / tháng này */}
+      <div>
+        <h3 className="mb-2 text-lg font-semibold">{t('byPeriod')}</h3>
+        <div className="overflow-hidden rounded-lg border border-black/10">
+          <table className="w-full text-sm">
+            <thead className="bg-black/5 text-left">
+              <tr>
+                <th className="px-3 py-2 font-medium opacity-70" />
+                <th className="px-3 py-2 text-right font-medium opacity-70">{t('periodGames')}</th>
+                <th className="px-3 py-2 text-right font-medium opacity-70">{t('periodBest')}</th>
+                <th className="px-3 py-2 text-right font-medium opacity-70">{t('periodTotal')}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/5">
+              {(['day', 'week', 'month'] as const).map((key) => (
+                <tr key={key}>
+                  <td className="px-3 py-2 font-medium">{t(key)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{stats.periods[key].games}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{stats.periods[key].best}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{stats.periods[key].totalScore}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Trend */}

@@ -1,0 +1,24 @@
+import type { Metadata } from 'next';
+import { setRequestLocale } from 'next-intl/server';
+import type { Locale } from '@/i18n/routing';
+import AdminShell from '@/components/admin/AdminShell';
+import AdminSeasons from '@/components/admin/AdminSeasons';
+
+export const metadata: Metadata = {
+  title: 'Admin · Mùa giải',
+  robots: { index: false, follow: false },
+};
+
+export default async function AdminSeasonsPage({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  return (
+    <AdminShell>
+      <AdminSeasons />
+    </AdminShell>
+  );
+}
