@@ -65,7 +65,20 @@
     "haveAccount": "Already have an account? Log in",
     "guest": "Guest",
     "genericError": "Something went wrong. Please try again.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Reset password",
+    "forgotHint": "Enter your account email and we'll send you a reset link.",
+    "forgotSubmit": "Send reset link",
+    "forgotSent": "If that email exists, a reset link has been sent. Please check your inbox.",
+    "backToLogin": "Back to log in",
+    "resetTitle": "Set a new password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "resetSubmit": "Update password",
+    "resetDone": "Your password has been updated. Redirecting to log in…",
+    "resetNoToken": "Invalid or missing reset link.",
+    "passwordMismatch": "Passwords do not match."
   },
   "Profile": {
     "title": "Profile",

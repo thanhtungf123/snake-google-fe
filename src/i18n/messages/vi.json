@@ -65,7 +65,20 @@
     "haveAccount": "Đã có tài khoản? Đăng nhập",
     "guest": "Khách",
     "genericError": "Có lỗi xảy ra. Vui lòng thử lại.",
-    "admin": "Quản trị"
+    "admin": "Quản trị",
+    "forgotPassword": "Quên mật khẩu?",
+    "forgotTitle": "Đặt lại mật khẩu",
+    "forgotHint": "Nhập email tài khoản, chúng tôi sẽ gửi link đặt lại mật khẩu.",
+    "forgotSubmit": "Gửi link đặt lại",
+    "forgotSent": "Nếu email tồn tại, link đặt lại đã được gửi. Vui lòng kiểm tra hộp thư.",
+    "backToLogin": "Về trang đăng nhập",
+    "resetTitle": "Đặt mật khẩu mới",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "resetSubmit": "Cập nhật mật khẩu",
+    "resetDone": "Đã cập nhật mật khẩu. Đang chuyển tới trang đăng nhập…",
+    "resetNoToken": "Link đặt lại không hợp lệ hoặc thiếu.",
+    "passwordMismatch": "Mật khẩu xác nhận không khớp."
   },
   "Profile": {
     "title": "Hồ sơ",

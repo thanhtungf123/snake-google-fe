@@ -33,6 +33,14 @@ export const routing = defineRouting({
       en: '/register',
       vi: '/dang-ky',
     },
+    '/forgot-password': {
+      en: '/forgot-password',
+      vi: '/quen-mat-khau',
+    },
+    '/reset-password': {
+      en: '/reset-password',
+      vi: '/dat-lai-mat-khau',
+    },
     '/profile': {
       en: '/profile',
       vi: '/ho-so',
