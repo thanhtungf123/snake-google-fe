@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
+import RichTextEditor from './RichTextEditor';
 
 interface Row {
   id: string;
@@ -262,12 +263,12 @@ export default function AdminPages() {
         <Labeled label="H1 (tiêu đề hiển thị)">
           <input className={field} value={form.h1} onChange={(e) => set('h1', e.target.value)} />
         </Labeled>
-        <Labeled label="Nội dung (HTML được phép: p, br, h2–h4, ul, ol, li, a, strong, em, b, i, u, blockquote, code, pre, span — thẻ/script khác bị loại bỏ khi lưu)">
-          <textarea
-            className={`${field} font-mono`}
-            rows={8}
+        <Labeled label="Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách…)">
+          <RichTextEditor
             value={form.bodyHtml}
-            onChange={(e) => set('bodyHtml', e.target.value)}
+            resetKey={editingId ?? 'new'}
+            onChange={(html) => set('bodyHtml', html)}
+            placeholder="Nhập nội dung tại đây…"
           />
         </Labeled>
 
