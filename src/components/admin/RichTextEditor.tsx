@@ -59,7 +59,6 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
     <div className="rounded border border-black/15">
       <div className="flex flex-wrap items-center gap-1 border-b border-black/10 bg-black/[0.03] p-1.5">
         <select
-          onMouseDown={keep}
           onChange={onBlock}
           defaultValue=""
           className="rounded border border-black/10 px-2 py-1 text-sm"

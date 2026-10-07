@@ -196,14 +196,18 @@ export default function AdminContent() {
         <Labeled label={pageKey === 'home' ? 'Tiêu đề khối SEO (H2)' : 'H1'}>
           <input className={field} value={form.h1} onChange={(e) => set('h1', e.target.value)} />
         </Labeled>
-        <Labeled label="Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách… — để trống sẽ dùng text mặc định từ i18n)">
+        <div className="text-sm">
+          <span className="mb-1 block opacity-60">
+            Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách… — để trống sẽ
+            dùng text mặc định từ i18n)
+          </span>
           <RichTextEditor
             value={form.bodyHtml}
             resetKey={`${pageKey}-${locale}`}
             onChange={(html) => set('bodyHtml', html)}
             placeholder="Nhập nội dung tại đây…"
           />
-        </Labeled>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Labeled label="OG Title (để trống = dùng SEO Title)">
             <input className={field} value={form.ogTitle} onChange={(e) => set('ogTitle', e.target.value)} />

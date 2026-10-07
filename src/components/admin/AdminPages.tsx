@@ -263,14 +263,17 @@ export default function AdminPages() {
         <Labeled label="H1 (tiêu đề hiển thị)">
           <input className={field} value={form.h1} onChange={(e) => set('h1', e.target.value)} />
         </Labeled>
-        <Labeled label="Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách…)">
+        <div className="text-sm">
+          <span className="mb-1 block opacity-60">
+            Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách…)
+          </span>
           <RichTextEditor
             value={form.bodyHtml}
             resetKey={editingId ?? 'new'}
             onChange={(html) => set('bodyHtml', html)}
             placeholder="Nhập nội dung tại đây…"
           />
-        </Labeled>
+        </div>
 
         <div className="flex flex-wrap gap-5 text-sm">
           <label className="flex items-center gap-2">
