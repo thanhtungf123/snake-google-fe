@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
 import { AUTH_EVENT } from './AuthNav';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 interface Account {
   nickname: string;
@@ -86,7 +87,16 @@ export default function AccountClient() {
     }
   }
 
-  if (state === 'loading') return <p className="opacity-60">…</p>;
+  if (state === 'loading')
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-5 w-40" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-9 w-32" />
+      </div>
+    );
 
   if (state === 'unauth') {
     return (

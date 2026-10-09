@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 interface Item {
   code: string;
@@ -50,7 +51,17 @@ export default function AchievementsClient() {
       .catch(() => setState('unauth'));
   }, []);
 
-  if (state === 'loading') return <p className="opacity-60">…</p>;
+  if (state === 'loading')
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-4 w-48" />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-28" />
+          ))}
+        </div>
+      </div>
+    );
 
   if (state === 'unauth' || !data) {
     return (

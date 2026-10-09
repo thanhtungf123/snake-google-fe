@@ -103,7 +103,8 @@
     "viewHistory": "View history",
     "viewAchievements": "Achievements",
     "viewChallenges": "Challenges",
-    "editAccount": "Edit profile & settings"
+    "editAccount": "Edit profile & settings",
+    "viewRewards": "My rewards"
   },
   "Account": {
     "title": "Account Settings",
@@ -173,7 +174,39 @@
       "achievementUnlockedBody": "{desc}",
       "challengeCompleted": "🎯 Challenge completed: {name}",
       "rewardGranted": "🎁 You placed #{rank} in {month}!",
-      "rewardGrantedBody": "Congratulations — you reached the top of the monthly leaderboard."
+      "rewardGrantedBody": "Congratulations — you reached the top of the monthly leaderboard.",
+      "rewardPaid": "💸 Reward paid for {month}",
+      "rewardPaidBody": "Your prize for placing #{rank} has been sent. Thank you for playing!"
+    },
+    "claimReward": "Claim reward"
+  },
+  "MyRewards": {
+    "title": "My Rewards",
+    "loginRequired": "Please log in to view your rewards.",
+    "goLogin": "Log in",
+    "empty": "You have no rewards yet. Finish at the top of a monthly season to win!",
+    "intro": "You won a monthly prize! Enter your payout details below so an admin can transfer your reward manually.",
+    "cardTitle": "Season {month}",
+    "score": "Best: {score}",
+    "pendingHint": "Enter your bank/e-wallet details to receive your prize.",
+    "submittedHint": "Your details were submitted. You can still edit them until the prize is paid.",
+    "fullName": "Full name",
+    "bankName": "Bank / e-wallet",
+    "accountNumber": "Account number",
+    "phone": "Phone (optional)",
+    "note": "Note (optional)",
+    "required": "Please fill in full name, bank and account number.",
+    "submit": "Submit details",
+    "update": "Update details",
+    "saved": "Saved. An admin will process your payout.",
+    "paidAt": "Paid on {date}",
+    "paidNote": "Note: {note}",
+    "cancelledNote": "This reward claim was cancelled. Contact an admin if you think this is a mistake.",
+    "status": {
+      "pending_info": "Awaiting your details",
+      "info_submitted": "Details submitted",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
     }
   },
   "Achievements": {
@@ -183,17 +216,50 @@
     "loginRequired": "Please log in to view your achievements.",
     "goLogin": "Log in",
     "defs": {
-      "first_game": { "name": "First Game", "desc": "Play your first game" },
-      "score_10": { "name": "Getting Started", "desc": "Score 10 in one game" },
-      "score_25": { "name": "Snake Charmer", "desc": "Score 25 in one game" },
-      "score_50": { "name": "Half Century", "desc": "Score 50 in one game" },
-      "score_100": { "name": "Centurion", "desc": "Score 100 in one game" },
-      "games_10": { "name": "Regular", "desc": "Play 10 games" },
-      "games_50": { "name": "Dedicated", "desc": "Play 50 games" },
-      "games_100": { "name": "Veteran", "desc": "Play 100 games" },
-      "total_500": { "name": "Collector", "desc": "Accumulate 500 total points" },
-      "total_2000": { "name": "Hoarder", "desc": "Accumulate 2000 total points" },
-      "survivor": { "name": "Survivor", "desc": "Survive 2 minutes in one game" }
+      "first_game": {
+        "name": "First Game",
+        "desc": "Play your first game"
+      },
+      "score_10": {
+        "name": "Getting Started",
+        "desc": "Score 10 in one game"
+      },
+      "score_25": {
+        "name": "Snake Charmer",
+        "desc": "Score 25 in one game"
+      },
+      "score_50": {
+        "name": "Half Century",
+        "desc": "Score 50 in one game"
+      },
+      "score_100": {
+        "name": "Centurion",
+        "desc": "Score 100 in one game"
+      },
+      "games_10": {
+        "name": "Regular",
+        "desc": "Play 10 games"
+      },
+      "games_50": {
+        "name": "Dedicated",
+        "desc": "Play 50 games"
+      },
+      "games_100": {
+        "name": "Veteran",
+        "desc": "Play 100 games"
+      },
+      "total_500": {
+        "name": "Collector",
+        "desc": "Accumulate 500 total points"
+      },
+      "total_2000": {
+        "name": "Hoarder",
+        "desc": "Accumulate 2000 total points"
+      },
+      "survivor": {
+        "name": "Survivor",
+        "desc": "Survive 2 minutes in one game"
+      }
     }
   },
   "Challenges": {
@@ -204,12 +270,24 @@
     "loginRequired": "Please log in to view your challenges.",
     "goLogin": "Log in",
     "defs": {
-      "daily_play_3": { "name": "Play 3 games" },
-      "daily_score_30": { "name": "Score 30 in a game" },
-      "daily_points_50": { "name": "Earn 50 points" },
-      "weekly_play_20": { "name": "Play 20 games" },
-      "weekly_score_80": { "name": "Score 80 in a game" },
-      "weekly_points_300": { "name": "Earn 300 points" }
+      "daily_play_3": {
+        "name": "Play 3 games"
+      },
+      "daily_score_30": {
+        "name": "Score 30 in a game"
+      },
+      "daily_points_50": {
+        "name": "Earn 50 points"
+      },
+      "weekly_play_20": {
+        "name": "Play 20 games"
+      },
+      "weekly_score_80": {
+        "name": "Score 80 in a game"
+      },
+      "weekly_points_300": {
+        "name": "Earn 300 points"
+      }
     }
   },
   "Footer": {

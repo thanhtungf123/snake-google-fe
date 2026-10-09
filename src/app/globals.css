@@ -11,6 +11,49 @@ body {
   @apply bg-white font-sans text-gray-900 antialiased;
 }
 
+/* --- Loading skeleton + chuyển cảnh mượt (cảm giác web mượt mà) --- */
+@keyframes gs-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  @apply rounded bg-black/10;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 25%,
+    rgba(0, 0, 0, 0.12) 37%,
+    rgba(0, 0, 0, 0.06) 63%
+  );
+  background-size: 200% 100%;
+  animation: gs-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes gs-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-fade-in {
+  animation: gs-fade-in 0.25s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+  .animate-fade-in {
+    animation: none;
+  }
+}
+
 /* Nội dung HTML do admin soạn (SeoContent.bodyHtml) */
 .content-html {
   line-height: 1.7;

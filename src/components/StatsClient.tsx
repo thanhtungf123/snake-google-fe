@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
+import { StatTilesSkeleton, TableSkeleton } from '@/components/ui/Skeleton';
 
 interface Bucket {
   from: number | string;
@@ -68,7 +69,13 @@ export default function StatsClient() {
       .catch(() => setState('unauth'));
   }, []);
 
-  if (state === 'loading') return <p className="opacity-60">…</p>;
+  if (state === 'loading')
+    return (
+      <div className="space-y-8">
+        <StatTilesSkeleton count={6} />
+        <TableSkeleton rows={4} />
+      </div>
+    );
 
   if (state === 'unauth' || !stats) {
     return (
@@ -89,7 +96,7 @@ export default function StatsClient() {
   const trendMax = Math.max(1, ...stats.trend.map((p) => p.score));
 
   return (
-    <div className="space-y-8">
+    <div className="animate-fade-in space-y-8">
       <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-3">
         <Stat label={t('totalGames')} value={stats.totalGames} />
         <Stat label={t('best')} value={stats.best} />

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
+import { Skeleton, ListSkeleton } from '@/components/ui/Skeleton';
 
 interface Challenge {
   code: string;
@@ -37,7 +38,19 @@ export default function ChallengesClient() {
       .catch(() => setState('unauth'));
   }, []);
 
-  if (state === 'loading') return <p className="opacity-60">…</p>;
+  if (state === 'loading')
+    return (
+      <div className="space-y-8">
+        <div className="space-y-3">
+          <Skeleton className="h-6 w-28" />
+          <ListSkeleton rows={3} />
+        </div>
+        <div className="space-y-3">
+          <Skeleton className="h-6 w-28" />
+          <ListSkeleton rows={3} />
+        </div>
+      </div>
+    );
 
   if (state === 'unauth' || !data) {
     return (

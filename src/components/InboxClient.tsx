@@ -6,6 +6,7 @@ import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
 import { NOTIF_EVENT } from '@/lib/notifications';
 import { renderNotif, type NotifLike } from '@/lib/notifRender';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 
 interface Notif extends NotifLike {
   id: string;
@@ -61,7 +62,7 @@ export default function InboxClient() {
 
   const render = (n: Notif) => renderNotif(t, n);
 
-  if (state === 'loading') return <p className="opacity-60">…</p>;
+  if (state === 'loading') return <ListSkeleton rows={5} />;
 
   if (state === 'unauth') {
     return (
@@ -114,6 +115,14 @@ export default function InboxClient() {
                   )}
                 </div>
                 {body && <p className="mt-0.5 text-sm opacity-80">{body}</p>}
+                {n.type === 'reward' && (
+                  <Link
+                    href="/my-rewards"
+                    className="mt-1 inline-block text-sm font-medium text-snake hover:underline"
+                  >
+                    {t('Inbox.claimReward')} →
+                  </Link>
+                )}
                 {n.createdAt && (
                   <p className="mt-1 text-xs opacity-50">
                     {new Date(n.createdAt).toLocaleString()}
