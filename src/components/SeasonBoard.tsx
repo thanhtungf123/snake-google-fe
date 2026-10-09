@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
+import { TableSkeleton } from '@/components/ui/Skeleton';
 
 interface SeasonMeta {
   monthKey: string;
@@ -126,8 +127,10 @@ export default function SeasonBoard() {
         </p>
       )}
 
-      {!board || board.rows.length === 0 ? (
-        <p className="opacity-70">{loading ? '…' : t('seasonEmpty')}</p>
+      {!board || (board.rows.length === 0 && loading) ? (
+        <TableSkeleton rows={6} />
+      ) : board.rows.length === 0 ? (
+        <p className="opacity-70">{t('seasonEmpty')}</p>
       ) : (
         <>
           <table className="w-full border-collapse text-left">

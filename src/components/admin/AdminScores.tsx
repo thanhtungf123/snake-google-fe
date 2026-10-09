@@ -14,8 +14,19 @@ interface Row {
   durationMs: number;
   status: 'valid' | 'flagged' | 'rejected';
   rejectedReason: string | null;
+  flags: string[];
+  ipHash: string | null;
   playedAt: string | null;
 }
+
+// Nhãn tiếng Việt cho các cờ anti-cheat (khớp ScoreFlag ở backend).
+const FLAG_LABEL: Record<string, string> = {
+  impossible: 'Bất khả thi',
+  too_fast: 'Quá nhanh',
+  too_short: 'Quá ngắn',
+  pb_spike: 'Nhảy vọt',
+  global_outlier: 'Vượt mặt bằng',
+};
 
 type Filter = 'all' | 'valid' | 'flagged' | 'rejected';
 const FILTERS: Filter[] = ['all', 'flagged', 'valid', 'rejected'];
@@ -152,7 +163,20 @@ export default function AdminScores() {
                 <td className="py-2 pr-3 font-semibold tabular-nums">{s.score}</td>
                 <td className="py-2 pr-3 tabular-nums opacity-70">{Math.round(s.durationMs / 1000)}s</td>
                 <td className={`py-2 pr-3 ${statusColor(s.status)}`} title={s.rejectedReason ?? ''}>
-                  {FILTER_LABEL[s.status]}
+                  <div>{FILTER_LABEL[s.status]}</div>
+                  {s.flags.length > 0 && (
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {s.flags.map((f) => (
+                        <span
+                          key={f}
+                          className="rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-800"
+                          title={s.rejectedReason ?? ''}
+                        >
+                          {FLAG_LABEL[f] ?? f}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </td>
                 <td className="py-2 pr-3 opacity-60">
                   {s.playedAt ? new Date(s.playedAt).toLocaleString('vi-VN') : '—'}

@@ -7,6 +7,7 @@ import { apiFetch } from '@/lib/api';
 import { NOTIF_EVENT } from '@/lib/notifications';
 import { renderNotif, type NotifLike } from '@/lib/notifRender';
 import { AUTH_EVENT } from './AuthNav';
+import Spinner from '@/components/ui/Spinner';
 
 const POLL_MS = 60_000;
 
@@ -117,7 +118,9 @@ export default function NotificationBell() {
 
           <div className="max-h-96 overflow-y-auto">
             {loading ? (
-              <p className="px-3 py-6 text-center text-sm opacity-60">…</p>
+              <div className="flex justify-center py-6 text-snake">
+                <Spinner className="h-5 w-5" />
+              </div>
             ) : rows.length === 0 ? (
               <p className="px-3 py-6 text-center text-sm opacity-60">{t('Inbox.empty')}</p>
             ) : (

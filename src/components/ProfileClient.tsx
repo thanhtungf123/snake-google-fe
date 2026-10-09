@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
+import { Skeleton, StatTilesSkeleton } from '@/components/ui/Skeleton';
 
 interface RecentGame {
   score: number;
@@ -41,7 +42,18 @@ export default function ProfileClient() {
   }, []);
 
   if (state === 'loading') {
-    return <p className="opacity-60">…</p>;
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-16 w-16 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-3 w-28" />
+          </div>
+        </div>
+        <StatTilesSkeleton count={3} />
+      </div>
+    );
   }
 
   if (state === 'unauth' || !profile) {
@@ -113,6 +125,12 @@ export default function ProfileClient() {
           className="rounded bg-black/5 px-4 py-2 text-sm font-medium hover:bg-black/10"
         >
           {t('viewChallenges')} →
+        </Link>
+        <Link
+          href="/my-rewards"
+          className="rounded bg-black/5 px-4 py-2 text-sm font-medium hover:bg-black/10"
+        >
+          {t('viewRewards')} →
         </Link>
         <Link
           href="/account"

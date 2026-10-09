@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
+import PageLoader from '@/components/ui/PageLoader';
 
 interface Me {
   nickname: string;
@@ -14,6 +15,7 @@ const TABS = [
   { href: '/admin/users/', label: 'Người dùng' },
   { href: '/admin/scores/', label: 'Điểm' },
   { href: '/admin/seasons/', label: 'Mùa giải' },
+  { href: '/admin/rewards/', label: 'Nhận thưởng' },
   { href: '/admin/content/', label: 'Nội dung' },
   { href: '/admin/pages/', label: 'Trang tùy chỉnh' },
   { href: '/admin/settings/', label: 'Cấu hình' },
@@ -33,7 +35,11 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   }, []);
 
   if (state === 'loading') {
-    return <div className="mx-auto max-w-5xl px-4 py-10 opacity-60">Đang tải…</div>;
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-10">
+        <PageLoader minHeight="min-h-[40vh]" />
+      </div>
+    );
   }
 
   if (state === 'forbidden') {

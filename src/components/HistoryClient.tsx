@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
+import { TableSkeleton } from '@/components/ui/Skeleton';
 
 interface Game {
   id: string;
@@ -62,7 +63,17 @@ export default function HistoryClient() {
     d ? new Date(d).toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US') : '—';
   const fmtDur = (ms: number) => `${Math.round(ms / 1000)}s`;
 
-  if (state === 'loading') return <p className="opacity-60">…</p>;
+  if (state === 'loading')
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          {FILTERS.map((f) => (
+            <div key={f} className="skeleton h-7 w-16 rounded-full" aria-hidden="true" />
+          ))}
+        </div>
+        <TableSkeleton rows={8} />
+      </div>
+    );
 
   if (state === 'unauth') {
     return (

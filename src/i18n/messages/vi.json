@@ -103,7 +103,8 @@
     "viewHistory": "Xem lịch sử",
     "viewAchievements": "Thành tích",
     "viewChallenges": "Thử thách",
-    "editAccount": "Sửa hồ sơ & cài đặt"
+    "editAccount": "Sửa hồ sơ & cài đặt",
+    "viewRewards": "Phần thưởng của tôi"
   },
   "Account": {
     "title": "Cài đặt tài khoản",
@@ -173,7 +174,39 @@
       "achievementUnlockedBody": "{desc}",
       "challengeCompleted": "🎯 Hoàn thành thử thách: {name}",
       "rewardGranted": "🎁 Bạn đạt hạng #{rank} tháng {month}!",
-      "rewardGrantedBody": "Chúc mừng — bạn đã lọt top bảng xếp hạng tháng."
+      "rewardGrantedBody": "Chúc mừng — bạn đã lọt top bảng xếp hạng tháng.",
+      "rewardPaid": "💸 Đã trả thưởng {month}",
+      "rewardPaidBody": "Phần thưởng cho hạng #{rank} của bạn đã được chuyển. Cảm ơn bạn đã tham gia!"
+    },
+    "claimReward": "Nhận thưởng"
+  },
+  "MyRewards": {
+    "title": "Phần thưởng của tôi",
+    "loginRequired": "Vui lòng đăng nhập để xem phần thưởng.",
+    "goLogin": "Đăng nhập",
+    "empty": "Bạn chưa có phần thưởng nào. Hãy lọt Top mùa giải trong tháng để nhận thưởng nhé!",
+    "intro": "Bạn đã trúng thưởng mùa giải! Điền thông tin nhận tiền bên dưới để admin chuyển khoản cho bạn.",
+    "cardTitle": "Mùa giải {month}",
+    "score": "Điểm cao nhất: {score}",
+    "pendingHint": "Nhập thông tin ngân hàng/ví để nhận thưởng.",
+    "submittedHint": "Bạn đã gửi thông tin. Vẫn có thể sửa cho đến khi được trả thưởng.",
+    "fullName": "Họ và tên",
+    "bankName": "Ngân hàng / Ví điện tử",
+    "accountNumber": "Số tài khoản",
+    "phone": "Số điện thoại (không bắt buộc)",
+    "note": "Ghi chú (không bắt buộc)",
+    "required": "Vui lòng nhập họ tên, ngân hàng và số tài khoản.",
+    "submit": "Gửi thông tin",
+    "update": "Cập nhật thông tin",
+    "saved": "Đã lưu. Admin sẽ xử lý chuyển khoản cho bạn.",
+    "paidAt": "Đã trả vào {date}",
+    "paidNote": "Ghi chú: {note}",
+    "cancelledNote": "Phiếu nhận thưởng này đã bị huỷ. Liên hệ admin nếu bạn nghĩ đây là nhầm lẫn.",
+    "status": {
+      "pending_info": "Chờ bạn nhập thông tin",
+      "info_submitted": "Đã gửi thông tin",
+      "paid": "Đã trả",
+      "cancelled": "Đã huỷ"
     }
   },
   "Achievements": {
@@ -183,17 +216,50 @@
     "loginRequired": "Vui lòng đăng nhập để xem thành tích.",
     "goLogin": "Đăng nhập",
     "defs": {
-      "first_game": { "name": "Ván đầu tiên", "desc": "Chơi ván đầu tiên" },
-      "score_10": { "name": "Khởi động", "desc": "Đạt 10 điểm trong một ván" },
-      "score_25": { "name": "Thuần rắn", "desc": "Đạt 25 điểm trong một ván" },
-      "score_50": { "name": "Nửa trăm", "desc": "Đạt 50 điểm trong một ván" },
-      "score_100": { "name": "Trăm điểm", "desc": "Đạt 100 điểm trong một ván" },
-      "games_10": { "name": "Quen tay", "desc": "Chơi 10 ván" },
-      "games_50": { "name": "Chuyên cần", "desc": "Chơi 50 ván" },
-      "games_100": { "name": "Kỳ cựu", "desc": "Chơi 100 ván" },
-      "total_500": { "name": "Nhà sưu tầm", "desc": "Tích lũy 500 điểm" },
-      "total_2000": { "name": "Tích trữ", "desc": "Tích lũy 2000 điểm" },
-      "survivor": { "name": "Trụ vững", "desc": "Sống sót 2 phút trong một ván" }
+      "first_game": {
+        "name": "Ván đầu tiên",
+        "desc": "Chơi ván đầu tiên"
+      },
+      "score_10": {
+        "name": "Khởi động",
+        "desc": "Đạt 10 điểm trong một ván"
+      },
+      "score_25": {
+        "name": "Thuần rắn",
+        "desc": "Đạt 25 điểm trong một ván"
+      },
+      "score_50": {
+        "name": "Nửa trăm",
+        "desc": "Đạt 50 điểm trong một ván"
+      },
+      "score_100": {
+        "name": "Trăm điểm",
+        "desc": "Đạt 100 điểm trong một ván"
+      },
+      "games_10": {
+        "name": "Quen tay",
+        "desc": "Chơi 10 ván"
+      },
+      "games_50": {
+        "name": "Chuyên cần",
+        "desc": "Chơi 50 ván"
+      },
+      "games_100": {
+        "name": "Kỳ cựu",
+        "desc": "Chơi 100 ván"
+      },
+      "total_500": {
+        "name": "Nhà sưu tầm",
+        "desc": "Tích lũy 500 điểm"
+      },
+      "total_2000": {
+        "name": "Tích trữ",
+        "desc": "Tích lũy 2000 điểm"
+      },
+      "survivor": {
+        "name": "Trụ vững",
+        "desc": "Sống sót 2 phút trong một ván"
+      }
     }
   },
   "Challenges": {
@@ -204,12 +270,24 @@
     "loginRequired": "Vui lòng đăng nhập để xem thử thách.",
     "goLogin": "Đăng nhập",
     "defs": {
-      "daily_play_3": { "name": "Chơi 3 ván" },
-      "daily_score_30": { "name": "Đạt 30 điểm một ván" },
-      "daily_points_50": { "name": "Kiếm 50 điểm" },
-      "weekly_play_20": { "name": "Chơi 20 ván" },
-      "weekly_score_80": { "name": "Đạt 80 điểm một ván" },
-      "weekly_points_300": { "name": "Kiếm 300 điểm" }
+      "daily_play_3": {
+        "name": "Chơi 3 ván"
+      },
+      "daily_score_30": {
+        "name": "Đạt 30 điểm một ván"
+      },
+      "daily_points_50": {
+        "name": "Kiếm 50 điểm"
+      },
+      "weekly_play_20": {
+        "name": "Chơi 20 ván"
+      },
+      "weekly_score_80": {
+        "name": "Đạt 80 điểm một ván"
+      },
+      "weekly_points_300": {
+        "name": "Kiếm 300 điểm"
+      }
     }
   },
   "Footer": {

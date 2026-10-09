@@ -61,6 +61,10 @@ export const routing = defineRouting({
       en: '/inbox',
       vi: '/hop-thu',
     },
+    '/my-rewards': {
+      en: '/my-rewards',
+      vi: '/phan-thuong-cua-toi',
+    },
     '/achievements': {
       en: '/achievements',
       vi: '/thanh-tich',
