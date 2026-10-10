@@ -5,12 +5,13 @@ import type { Locale } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
 import { SITE_URL } from '@/lib/seo/metadata';
 import JsonLd from '@/components/JsonLd';
+import LockLocale from '@/components/LockLocale';
 import { getCustomPage, type CustomPageData } from '@/lib/customPages';
 
-// URL tuyệt đối (kèm trailing slash) của 1 trang tùy chỉnh.
+// URL tuyệt đối (kèm trailing slash) của 1 trang tùy chỉnh — ở gốc, KHÔNG còn /p/.
 function pageUrl(locale: Locale, slug: string): string {
   const prefix = locale === routing.defaultLocale ? '' : `/${locale}`;
-  return `${SITE_URL}${prefix}/p/${slug}/`;
+  return `${SITE_URL}${prefix}/${slug}/`;
 }
 
 export async function generateMetadata({
@@ -78,8 +79,12 @@ export default async function CustomPageView({
 
   const nav = await getTranslations({ locale, namespace: 'Nav' });
 
+  // Trang chỉ có 1 ngôn ngữ (không có bản dịch khác đã publish) → ẩn nút chuyển ngôn ngữ EN/VI.
+  const singleLocale = Object.keys(page.alternates).length <= 1;
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
+      {singleLocale && <LockLocale locale={locale} />}
       <JsonLd data={breadcrumb(locale, page, nav('play'))} />
       <h1 className="mb-4 text-3xl font-bold">{page.h1}</h1>
       {page.bodyHtml ? (

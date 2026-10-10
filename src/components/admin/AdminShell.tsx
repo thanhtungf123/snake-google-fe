@@ -16,8 +16,7 @@ const TABS = [
   { href: '/admin/scores/', label: 'Điểm' },
   { href: '/admin/seasons/', label: 'Mùa giải' },
   { href: '/admin/rewards/', label: 'Nhận thưởng' },
-  { href: '/admin/content/', label: 'Nội dung' },
-  { href: '/admin/pages/', label: 'Trang tùy chỉnh' },
+  { href: '/admin/pages/', label: 'Trang' },
   { href: '/admin/settings/', label: 'Cấu hình' },
 ];
 

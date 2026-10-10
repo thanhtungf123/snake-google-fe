@@ -3,9 +3,7 @@
     "play": "Chơi",
     "leaderboard": "Bảng xếp hạng",
     "mods": "Mod",
-    "howToPlay": "Cách chơi",
     "rewards": "Phần thưởng",
-    "about": "Giới thiệu",
     "login": "Đăng nhập",
     "register": "Đăng ký",
     "admin": "Quản trị",
@@ -57,17 +55,9 @@
     "notRanked": "Chế độ giải trí — điểm không được xếp hạng.",
     "openFull": "Mở toàn màn hình"
   },
-  "HowToPlay": {
-    "h1": "Cách chơi",
-    "body": "Dùng phím mũi tên (hoặc WASD) để điều khiển rắn. Trên điện thoại, vuốt theo hướng muốn đi. Ăn táo để dài ra và ghi điểm. Trò chơi kết thúc khi bạn đâm vào tường hoặc vào thân mình."
-  },
   "Rewards": {
     "h1": "Phần thưởng",
     "body": "Phần thưởng và sự kiện theo mùa sẽ sớm ra mắt."
-  },
-  "About": {
-    "h1": "Giới thiệu",
-    "body": "Game rắn săn mồi nhanh, miễn phí, chạy trên trình duyệt, có bảng xếp hạng và chế độ mod cổ điển."
   },
   "Auth": {
     "loginTitle": "Đăng nhập",
@@ -322,6 +312,12 @@
     "yourBest": "Kỷ lục của bạn: {best}",
     "viewLeaderboard": "Xem bảng xếp hạng",
     "verifying": "Điểm của bạn đang được xác minh trước khi được tính.",
-    "notCounted": "Điểm này không được ghi nhận."
+    "notCounted": "Điểm này không được ghi nhận.",
+    "later": "Để sau",
+    "close": "Đóng",
+    "savedTitle": "Đã lưu điểm!",
+    "savedBody": "Điểm {score} đã được lưu vào tài khoản của bạn.",
+    "savedVerifying": "Điểm {score} đã được lưu và đang chờ xác minh.",
+    "savedToast": "Đã lưu điểm {score} thành công!"
   }
 }

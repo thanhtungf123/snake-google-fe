@@ -32,6 +32,26 @@ export async function getCustomPage(
   }
 }
 
+export interface NavPage {
+  slug: string;
+  label: string;
+}
+
+// Danh sách trang đã publish của 1 ngôn ngữ để hiển thị trên header. Rỗng nếu lỗi.
+export async function getNavPages(locale: Locale): Promise<NavPage[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/pages/menu/${locale}`, {
+      next: { revalidate: 60, tags: ['pages'] },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.rows ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export interface SitemapPageRow {
   key: string;
   locale: Locale;

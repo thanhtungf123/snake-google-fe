@@ -9,9 +9,7 @@ const BASE = SITE_URL;
 const INDEXABLE: Pathnames[] = [
   '/',
   '/leaderboard',
-  '/how-to-play',
   '/rewards',
-  '/about',
 ];
 
 function withSlash(p: string): string {
@@ -21,7 +19,7 @@ function withSlash(p: string): string {
 
 function customPageUrl(locale: Locale, slug: string): string {
   const prefix = locale === routing.defaultLocale ? '' : `/${locale}`;
-  return `${BASE}${prefix}/p/${slug}/`;
+  return `${BASE}${prefix}/${slug}/`;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

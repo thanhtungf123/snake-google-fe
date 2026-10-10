@@ -1,14 +1,27 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { useParams } from 'next/navigation';
+import { LOCALE_LOCK_EVENT } from './LockLocale';
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
   const params = useParams();
+
+  // Trang 1 ngôn ngữ (custom page chỉ có EN hoặc chỉ có VI) sẽ khoá ngôn ngữ → ẩn nút chuyển.
+  const [locked, setLocked] = useState(false);
+  useEffect(() => {
+    const sync = () => setLocked(!!window.__localeLock);
+    sync();
+    window.addEventListener(LOCALE_LOCK_EVENT, sync);
+    return () => window.removeEventListener(LOCALE_LOCK_EVENT, sync);
+  }, [pathname]);
+
+  if (locked) return null;
 
   const switchTo = (next: 'en' | 'vi') => {
     if (next === locale) return;

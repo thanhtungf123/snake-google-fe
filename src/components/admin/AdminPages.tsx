@@ -18,12 +18,14 @@ interface Row {
   updatedAt: string | null;
 }
 
-const LOCALES = ['en', 'vi'] as const;
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 type Form = {
   key: string;
-  locale: 'en' | 'vi';
+  // Lựa chọn ngôn ngữ khi TẠO MỚI (ô tick). Khi sửa, dùng `editLocale` thay cho 2 cờ này.
+  localeEn: boolean;
+  localeVi: boolean;
+  editLocale: 'en' | 'vi';
   slug: string;
   title: string;
   metaDescription: string;
@@ -36,7 +38,9 @@ type Form = {
 
 const EMPTY: Form = {
   key: '',
-  locale: 'en',
+  localeEn: true,
+  localeVi: false,
+  editLocale: 'en',
   slug: '',
   title: '',
   metaDescription: '',
@@ -46,6 +50,11 @@ const EMPTY: Form = {
   robotsFollow: true,
   isPublished: false,
 };
+
+function urlFor(locale: 'en' | 'vi', slug: string): string {
+  const prefix = locale === 'en' ? '' : '/vi';
+  return slug ? `${SITE_URL}${prefix}/${slug}/` : '—';
+}
 
 export default function AdminPages() {
   const [rows, setRows] = useState<Row[]>([]);
@@ -75,7 +84,9 @@ export default function AdminPages() {
     setEditingId(r.id);
     setForm({
       key: r.key,
-      locale: r.locale,
+      localeEn: r.locale === 'en',
+      localeVi: r.locale === 'vi',
+      editLocale: r.locale,
       slug: r.slug,
       title: r.title,
       metaDescription: r.metaDescription ?? '',
@@ -91,30 +102,51 @@ export default function AdminPages() {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
     setErr(null);
     setMsg(null);
+
+    const common = {
+      slug: form.slug,
+      title: form.title,
+      metaDescription: form.metaDescription,
+      h1: form.h1,
+      bodyHtml: form.bodyHtml,
+      robots: { index: form.robotsIndex, follow: form.robotsFollow },
+      isPublished: form.isPublished,
+    };
+
+    if (!editingId) {
+      const locales = [
+        ...(form.localeEn ? ['en'] : []),
+        ...(form.localeVi ? ['vi'] : []),
+      ] as ('en' | 'vi')[];
+      if (locales.length === 0) {
+        setErr('Chọn ít nhất một ngôn ngữ (EN hoặc VI).');
+        return;
+      }
+    }
+
+    setBusy(true);
     try {
-      const common = {
-        slug: form.slug,
-        title: form.title,
-        metaDescription: form.metaDescription,
-        h1: form.h1,
-        bodyHtml: form.bodyHtml,
-        robots: { index: form.robotsIndex, follow: form.robotsFollow },
-        isPublished: form.isPublished,
-      };
       if (editingId) {
         await adminSend(`/api/admin/pages/${editingId}`, 'PUT', common);
         setMsg('Đã cập nhật trang.');
       } else {
+        const locales = [
+          ...(form.localeEn ? ['en'] : []),
+          ...(form.localeVi ? ['vi'] : []),
+        ] as ('en' | 'vi')[];
         const res = await adminSend<{ id: string }>('/api/admin/pages', 'POST', {
           ...common,
           key: form.key,
-          locale: form.locale,
+          locales,
         });
         setEditingId(res.id);
-        setMsg('Đã tạo trang mới.');
+        setMsg(
+          form.localeEn && form.localeVi
+            ? 'Đã tạo trang EN. Bản VI được tạo dạng nháp với nội dung TRỐNG — mở ra nhập tiếng Việt rồi publish.'
+            : 'Đã tạo trang mới.'
+        );
       }
       await loadAll();
     } catch (e2) {
@@ -141,17 +173,78 @@ export default function AdminPages() {
     }
   }
 
+  // Trong lúc sửa: tạo nhanh bản dịch còn thiếu (EN↔VI) cho cùng key — bản mới là nháp, nội dung trống.
+  async function addMissingLocale(other: 'en' | 'vi') {
+    setBusy(true);
+    setErr(null);
+    setMsg(null);
+    try {
+      const res = await adminSend<{ id: string }>('/api/admin/pages', 'POST', {
+        key: form.key,
+        locales: [other],
+        slug: form.slug,
+        title: form.title,
+        metaDescription: '',
+        h1: form.h1,
+        bodyHtml: '',
+        robots: { index: form.robotsIndex, follow: form.robotsFollow },
+        isPublished: false,
+      });
+      const fresh = await adminGet<{ rows: Row[] }>('/api/admin/pages');
+      setRows(fresh.rows);
+      const created = fresh.rows.find((r) => r.id === res.id);
+      if (created) startEdit(created);
+      setMsg(
+        `Đã tạo bản ${other.toUpperCase()} (nháp, nội dung trống). Nhập nội dung tiếng ${
+          other === 'vi' ? 'Việt' : 'Anh'
+        } rồi publish.`
+      );
+    } catch (e2) {
+      setErr((e2 as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
   const field = 'w-full rounded border border-black/15 px-3 py-2 text-sm';
-  const prefix = form.locale === 'en' ? '' : '/vi';
-  const publicUrl = form.slug ? `${SITE_URL}${prefix}/p/${form.slug}/` : '—';
+
+  // Ngôn ngữ còn thiếu của trang đang sửa (để nút "tạo bản dịch còn thiếu").
+  const otherLocale: 'en' | 'vi' = form.editLocale === 'en' ? 'vi' : 'en';
+  const otherExists = editingId
+    ? rows.some((r) => r.key === form.key && r.locale === otherLocale)
+    : false;
+
+  // Ngôn ngữ viết nội dung: EN nếu có chọn EN, ngược lại VI (khi tạo mới); khi sửa là ngôn ngữ của bản ghi.
+  const contentLang = editingId
+    ? form.editLocale
+    : form.localeEn
+      ? 'en'
+      : form.localeVi
+        ? 'vi'
+        : null;
+  const contentLangLabel =
+    contentLang === 'en' ? 'Tiếng Anh' : contentLang === 'vi' ? 'Tiếng Việt' : '—';
+
+  // Gộp các bản dịch cùng `key` thành 1 dòng (EN trước VI) để list gọn hơn.
+  const groups = Array.from(
+    rows.reduce((m, r) => {
+      const list = m.get(r.key) ?? [];
+      list.push(r);
+      m.set(r.key, list);
+      return m;
+    }, new Map<string, Row[]>())
+  ).map(([key, list]) => ({
+    key,
+    list: [...list].sort((a, b) => a.locale.localeCompare(b.locale)),
+  }));
 
   return (
     <div className="space-y-6">
       {/* Danh sách trang */}
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Trang tùy chỉnh ({rows.length})</h2>
+          <h2 className="text-lg font-semibold">Trang tùy chỉnh ({groups.length})</h2>
           <button
             onClick={startNew}
             className="rounded bg-snake px-4 py-1.5 text-sm font-semibold text-white"
@@ -159,7 +252,7 @@ export default function AdminPages() {
             + Tạo trang mới
           </button>
         </div>
-        {rows.length === 0 ? (
+        {groups.length === 0 ? (
           <p className="opacity-60">Chưa có trang nào.</p>
         ) : (
           <div className="overflow-x-auto">
@@ -167,61 +260,77 @@ export default function AdminPages() {
               <thead>
                 <tr className="border-b border-black/10 text-left opacity-60">
                   <th className="py-2 pr-3">Key</th>
-                  <th className="py-2 pr-3">Lang</th>
-                  <th className="py-2 pr-3">Slug</th>
                   <th className="py-2 pr-3">Tiêu đề</th>
-                  <th className="py-2 pr-3">Trạng thái</th>
-                  <th className="py-2 pr-3"></th>
+                  <th className="py-2 pr-3">Bản dịch</th>
+                  <th className="py-2 pr-3">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id} className="border-b border-black/5">
-                    <td className="py-2 pr-3 font-mono text-xs">{r.key}</td>
-                    <td className="py-2 pr-3 uppercase">{r.locale}</td>
-                    <td className="py-2 pr-3 font-mono text-xs">/p/{r.slug}</td>
-                    <td className="py-2 pr-3">{r.title}</td>
-                    <td className="py-2 pr-3">
-                      {r.isPublished ? (
-                        <span className="text-green-700">Published</span>
-                      ) : (
-                        <span className="opacity-50">Nháp</span>
-                      )}
-                    </td>
-                    <td className="py-2 pr-3">
-                      {r.isPublished && (
-                        <a
-                          href={`${SITE_URL}${r.locale === 'en' ? '' : '/vi'}/p/${r.slug}/`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mr-3 text-snake underline"
-                        >
-                          Xem
-                        </a>
-                      )}
-                      <button onClick={() => startEdit(r)} className="mr-3 text-snake underline">
-                        Sửa
-                      </button>
-                      <button onClick={() => remove(r)} className="text-red-600 underline">
-                        Xoá
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {groups.map((g) => {
+                  const primary = g.list.find((r) => r.locale === 'en') ?? g.list[0];
+                  return (
+                    <tr key={g.key} className="border-b border-black/5 align-top">
+                      <td className="py-2 pr-3 font-mono text-xs">{g.key}</td>
+                      <td className="py-2 pr-3">{primary.title}</td>
+                      <td className="py-2 pr-3">
+                        <div className="flex flex-col gap-1">
+                          {g.list.map((r) => (
+                            <div key={r.id} className="flex items-center gap-2">
+                              <span className="rounded bg-black/10 px-1.5 py-0.5 text-[11px] font-semibold uppercase">
+                                {r.locale}
+                              </span>
+                              <span className="font-mono text-xs opacity-70">
+                                {r.locale === 'en' ? '' : '/vi'}/{r.slug}
+                              </span>
+                              {r.isPublished ? (
+                                <span className="text-xs text-green-700">Published</span>
+                              ) : (
+                                <span className="text-xs opacity-50">Nháp</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="py-2 pr-3">
+                        <div className="flex flex-col gap-1">
+                          {g.list.map((r) => (
+                            <div key={r.id} className="flex items-center gap-3 text-xs">
+                              <span className="w-5 uppercase opacity-50">{r.locale}</span>
+                              {r.isPublished && (
+                                <a
+                                  href={urlFor(r.locale, r.slug)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-snake underline"
+                                >
+                                  Xem
+                                </a>
+                              )}
+                              <button onClick={() => startEdit(r)} className="text-snake underline">
+                                Sửa
+                              </button>
+                              <button onClick={() => remove(r)} className="text-red-600 underline">
+                                Xoá
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
 
-      {err && <p className="text-red-600">{err}</p>}
+      {err && <p className="whitespace-pre-line text-red-600">{err}</p>}
       {msg && <p className="text-green-700">{msg}</p>}
 
       {/* Form tạo/sửa */}
       <form onSubmit={save} className="space-y-4 border-t border-black/10 pt-5">
-        <h3 className="text-base font-semibold">
-          {editingId ? 'Sửa trang' : 'Tạo trang mới'}
-        </h3>
+        <h3 className="text-base font-semibold">{editingId ? 'Sửa trang' : 'Tạo trang mới'}</h3>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Labeled label="Key (nhóm các bản dịch EN/VI, vd: promo-2026)">
@@ -233,23 +342,62 @@ export default function AdminPages() {
               placeholder="promo-2026"
             />
           </Labeled>
-          <Labeled label="Ngôn ngữ">
-            <select
-              className={`${field} disabled:opacity-60`}
-              value={form.locale}
-              onChange={(e) => set('locale', e.target.value as 'en' | 'vi')}
-              disabled={!!editingId}
-            >
-              {LOCALES.map((l) => (
-                <option key={l} value={l}>
-                  {l.toUpperCase()}
-                </option>
-              ))}
-            </select>
-          </Labeled>
+
+          {editingId ? (
+            <div className="text-sm">
+              <span className="mb-1 block opacity-60">Ngôn ngữ</span>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <span className="rounded bg-black/10 px-2 py-1 text-xs font-semibold uppercase">
+                  {form.editLocale}
+                </span>
+                {otherExists ? (
+                  <span className="text-xs opacity-60">Đã có bản {otherLocale.toUpperCase()}</span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => addMissingLocale(otherLocale)}
+                    disabled={busy}
+                    className="rounded border border-snake px-3 py-1 text-xs font-medium text-snake hover:bg-snake hover:text-white disabled:opacity-50"
+                  >
+                    + Tạo bản {otherLocale.toUpperCase()} còn thiếu
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm">
+              <span className="mb-1 block opacity-60">Ngôn ngữ (chọn một hoặc cả hai)</span>
+              <div className="flex gap-5 pt-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={form.localeEn}
+                    onChange={(e) => set('localeEn', e.target.checked)}
+                  />
+                  EN (Tiếng Anh)
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={form.localeVi}
+                    onChange={(e) => set('localeVi', e.target.checked)}
+                  />
+                  VI (Tiếng Việt)
+                </label>
+              </div>
+            </div>
+          )}
         </div>
 
-        <Labeled label="Slug (chữ thường, số, gạch ngang)">
+        {!editingId && (
+          <p className="-mt-2 rounded bg-black/[0.03] px-3 py-2 text-xs opacity-70">
+            {form.localeEn && form.localeVi
+              ? 'Đã chọn cả hai: nhập nội dung bằng Tiếng Anh. Hệ thống tạo thêm bản VI dạng nháp (copy nội dung EN) để bạn tự dịch rồi publish.'
+              : `Nhập nội dung bằng ${contentLangLabel}. Trang chỉ có 1 ngôn ngữ nên nút chuyển EN/VI sẽ ẩn khi người xem mở trang.`}
+          </p>
+        )}
+
+        <Labeled label="Slug (chữ thường, số, gạch ngang — không chứa /p/)">
           <input
             className={`${field} font-mono`}
             value={form.slug}
@@ -257,7 +405,16 @@ export default function AdminPages() {
             placeholder="gioi-thieu-su-kien"
           />
         </Labeled>
-        <p className="-mt-2 text-xs opacity-60">URL công khai: {publicUrl}</p>
+        <div className="-mt-2 space-y-0.5 text-xs opacity-60">
+          {editingId ? (
+            <p>URL công khai: {urlFor(form.editLocale, form.slug)}</p>
+          ) : (
+            <>
+              {form.localeEn && <p>URL (EN): {urlFor('en', form.slug)}</p>}
+              {form.localeVi && <p>URL (VI): {urlFor('vi', form.slug)}</p>}
+            </>
+          )}
+        </div>
 
         <Labeled label="Tiêu đề (thẻ title / SEO)">
           <input className={field} value={form.title} onChange={(e) => set('title', e.target.value)} />
@@ -275,7 +432,7 @@ export default function AdminPages() {
         </Labeled>
         <div className="text-sm">
           <span className="mb-1 block opacity-60">
-            Nội dung (dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách…)
+            Nội dung ({contentLangLabel}) — dùng thanh công cụ để tạo tiêu đề, in đậm/nghiêng, danh sách…
           </span>
           <RichTextEditor
             value={form.bodyHtml}

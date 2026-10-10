@@ -176,7 +176,7 @@ export default function AdminSettings() {
         {/* Liên kết footer */}
         <div className="text-sm">
           <span className="mb-1 block opacity-60">
-            Liên kết footer (tiêu đề + URL). Link nội bộ bắt đầu bằng “/” (vd /vi/p/gioi-thieu/),
+            Liên kết footer (tiêu đề + URL). Link nội bộ bắt đầu bằng “/” (vd /vi/gioi-thieu/),
             link ngoài mở tab mới.
           </span>
           <div className="space-y-2">
@@ -192,7 +192,7 @@ export default function AdminSettings() {
                   className={`${field} flex-[2]`}
                   value={l.url}
                   onChange={(e) => updateLink(i, 'url', e.target.value)}
-                  placeholder="https://… hoặc /vi/p/slug/"
+                  placeholder="https://… hoặc /vi/slug/"
                 />
                 <button
                   type="button"

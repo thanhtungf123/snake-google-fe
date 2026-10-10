@@ -19,17 +19,9 @@ export const routing = defineRouting({
       en: '/leaderboard',
       vi: '/bang-xep-hang',
     },
-    '/how-to-play': {
-      en: '/how-to-play',
-      vi: '/cach-choi',
-    },
     '/rewards': {
       en: '/rewards',
       vi: '/phan-thuong',
-    },
-    '/about': {
-      en: '/about',
-      vi: '/gioi-thieu',
     },
     '/login': {
       en: '/login',

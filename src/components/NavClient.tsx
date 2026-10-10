@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import NextLink from 'next/link';
 import { Link, useRouter } from '@/i18n/routing';
 import { apiFetch } from '@/lib/api';
 import { AUTH_EVENT } from './AuthNav';
@@ -19,12 +20,14 @@ interface BrandSettings {
   logoUrl?: string;
 }
 
-// Các trang điều hướng công khai (trái) + menu cá nhân (trong dropdown tài khoản).
-const NAV_LINKS = [
-  { href: '/leaderboard', key: 'leaderboard' },
-  { href: '/how-to-play', key: 'howToPlay' },
-  { href: '/about', key: 'about' },
-] as const;
+export interface NavPage {
+  slug: string;
+  label: string;
+}
+
+// Các trang điều hướng công khai cố định (trái). Các trang tùy chỉnh đã publish được
+// thêm động từ prop `customPages`.
+const NAV_LINKS = [{ href: '/leaderboard', key: 'leaderboard' }] as const;
 
 const ACCOUNT_LINKS = [
   { href: '/profile', key: 'profile' },
@@ -36,10 +39,20 @@ const ACCOUNT_LINKS = [
   { href: '/account', key: 'accountSettings' },
 ] as const;
 
-export default function NavClient({ settings }: { settings?: BrandSettings }) {
+export default function NavClient({
+  settings,
+  customPages = [],
+}: {
+  settings?: BrandSettings;
+  customPages?: NavPage[];
+}) {
   const t = useTranslations('Nav');
+  const locale = useLocale();
   const router = useRouter();
   const title = settings?.siteTitle?.trim() || 'Snake';
+
+  // URL trang tùy chỉnh ở gốc (không /p/), kèm prefix /vi cho tiếng Việt + trailing slash.
+  const pageHref = (slug: string) => `${locale === 'en' ? '' : '/vi'}/${slug}/`;
 
   const [user, setUser] = useState<Me | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -161,6 +174,11 @@ export default function NavClient({ settings }: { settings?: BrandSettings }) {
               {t(l.key)}
             </Link>
           ))}
+          {customPages.map((p) => (
+            <NextLink key={p.slug} href={pageHref(p.slug)} className="hover:underline">
+              {p.label}
+            </NextLink>
+          ))}
         </div>
 
         {/* Desktop: khu tài khoản */}
@@ -235,6 +253,16 @@ export default function NavClient({ settings }: { settings?: BrandSettings }) {
                   >
                     {t(l.key)}
                   </Link>
+                ))}
+                {customPages.map((p) => (
+                  <NextLink
+                    key={p.slug}
+                    href={pageHref(p.slug)}
+                    onClick={closeAll}
+                    className="rounded px-3 py-2 text-sm hover:bg-black/5"
+                  >
+                    {p.label}
+                  </NextLink>
                 ))}
 
                 <div className="my-1 h-px bg-black/10" />

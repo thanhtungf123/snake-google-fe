@@ -1,7 +1,7 @@
 import { API_URL } from './api';
 import type { Locale } from '@/i18n/routing';
 
-export type PageKey = 'home' | 'how-to-play' | 'rewards' | 'about';
+export type PageKey = 'home' | 'rewards';
 
 export interface PageContent {
   pageKey: PageKey;

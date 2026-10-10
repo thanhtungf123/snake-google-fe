@@ -64,19 +64,23 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
     }
   }, []);
 
-  // Nạp nội dung ban đầu / khi đổi bản ghi đang sửa (không phụ thuộc value để khỏi nhảy con trỏ).
+  // Nạp nội dung ban đầu / khi đổi bản ghi đang sửa / khi value đổi do nạp lại từ server.
+  // Bỏ qua khi con trỏ đang ở trong editor (đang gõ) để không nhảy con trỏ. Nhờ phụ thuộc
+  // cả `value`, khi chuyển trang nội dung sẽ đồng bộ lại đúng dù form cập nhật trễ 1 render.
   useEffect(() => {
-    if (ref.current) {
-      ref.current.innerHTML = value || '';
-      try {
-        document.execCommand('defaultParagraphSeparator', false, 'p');
-      } catch {
-        /* ignore */
-      }
+    const el = ref.current;
+    if (!el) return;
+    if (document.activeElement === el) return;
+    const next = value || '';
+    if (el.innerHTML !== next) el.innerHTML = next;
+    try {
+      document.execCommand('defaultParagraphSeparator', false, 'p');
+    } catch {
+      /* ignore */
     }
     setFmt(EMPTY_FMT);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetKey]);
+  }, [resetKey, value]);
 
   // Theo dõi thay đổi vùng chọn để cập nhật trạng thái nút.
   useEffect(() => {

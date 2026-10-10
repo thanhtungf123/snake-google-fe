@@ -1,24 +1,6 @@
-import type { Metadata } from 'next';
-import { setRequestLocale } from 'next-intl/server';
-import type { Locale } from '@/i18n/routing';
-import AdminShell from '@/components/admin/AdminShell';
-import AdminContent from '@/components/admin/AdminContent';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Admin · Nội dung',
-  robots: { index: false, follow: false },
-};
-
-export default async function AdminContentPage({
-  params,
-}: {
-  params: Promise<{ locale: Locale }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  return (
-    <AdminShell>
-      <AdminContent />
-    </AdminShell>
-  );
+// Tab "Nội dung" đã gộp vào "Trang" (/admin/pages). Giữ route này để chuyển hướng link cũ.
+export default function AdminContentRedirect() {
+  redirect('/admin/pages/');
 }

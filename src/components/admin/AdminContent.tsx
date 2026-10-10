@@ -22,20 +22,16 @@ interface Row {
   isPublished: boolean;
 }
 
-type PageKey = 'home' | 'how-to-play' | 'rewards' | 'about';
-const PAGE_KEYS: PageKey[] = ['home', 'how-to-play', 'rewards', 'about'];
+type PageKey = 'home' | 'rewards';
+const PAGE_KEYS: PageKey[] = ['home', 'rewards'];
 const PAGE_LABEL: Record<PageKey, string> = {
   home: 'Trang chủ (khối SEO)',
-  'how-to-play': 'Cách chơi',
   rewards: 'Phần thưởng',
-  about: 'Giới thiệu',
 };
 const LOCALES = ['en', 'vi'] as const;
 const DEFAULT_SLUG: Record<PageKey, { en: string; vi: string }> = {
   home: { en: '/', vi: '/' },
-  'how-to-play': { en: '/how-to-play', vi: '/cach-choi' },
   rewards: { en: '/rewards', vi: '/phan-thuong' },
-  about: { en: '/about', vi: '/gioi-thieu' },
 };
 
 type Form = {
@@ -185,7 +181,7 @@ export default function AdminContent() {
         </label>
       </div>
 
-      {err && <p className="text-red-600">{err}</p>}
+      {err && <p className="whitespace-pre-line text-red-600">{err}</p>}
       {msg && <p className="text-green-700">{msg}</p>}
 
       <form onSubmit={save} className="space-y-4">

@@ -7,7 +7,9 @@ import type { Metadata } from 'next';
 import { routing, type Locale } from '@/i18n/routing';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
+import ScoreSavedToast from '@/components/ScoreSavedToast';
 import { getSiteSettings } from '@/lib/settings';
+import { getNavPages } from '@/lib/customPages';
 import '../globals.css';
 
 const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
@@ -37,6 +39,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   const messages = await getMessages();
   const settings = await getSiteSettings();
+  const navPages = await getNavPages(locale as Locale);
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -52,9 +55,13 @@ export default async function LocaleLayout({
         )}
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-screen flex-col">
-            <Nav settings={{ siteTitle: settings.siteTitle, logoUrl: settings.logoUrl }} />
+            <Nav
+              settings={{ siteTitle: settings.siteTitle, logoUrl: settings.logoUrl }}
+              customPages={navPages}
+            />
             <main className="flex-1">{children}</main>
             <Footer text={settings.footerText} links={settings.footerLinks} />
+            <ScoreSavedToast />
           </div>
         </NextIntlClientProvider>
       </body>

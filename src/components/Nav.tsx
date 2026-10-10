@@ -1,4 +1,4 @@
-import NavClient from './NavClient';
+import NavClient, { type NavPage } from './NavClient';
 
 interface BrandSettings {
   siteTitle?: string;
@@ -7,6 +7,12 @@ interface BrandSettings {
 
 // Header: thương hiệu + điều hướng. Toàn bộ tương tác (dropdown tài khoản, menu
 // mobile, trạng thái đăng nhập) nằm trong NavClient (client component).
-export default function Nav({ settings }: { settings?: BrandSettings }) {
-  return <NavClient settings={settings} />;
+export default function Nav({
+  settings,
+  customPages,
+}: {
+  settings?: BrandSettings;
+  customPages?: NavPage[];
+}) {
+  return <NavClient settings={settings} customPages={customPages} />;
 }

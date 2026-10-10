@@ -3,9 +3,7 @@
     "play": "Play",
     "leaderboard": "Leaderboard",
     "mods": "Mods",
-    "howToPlay": "How to Play",
     "rewards": "Rewards",
-    "about": "About",
     "login": "Log in",
     "register": "Sign up",
     "admin": "Admin",
@@ -57,17 +55,9 @@
     "notRanked": "Fun mode — scores are not ranked.",
     "openFull": "Open full screen"
   },
-  "HowToPlay": {
-    "h1": "How to Play",
-    "body": "Use the arrow keys (or WASD) to steer the snake. On mobile, swipe in the direction you want to go. Eat apples to grow and score points. The game ends if you hit a wall or your own body."
-  },
   "Rewards": {
     "h1": "Rewards",
     "body": "Rewards and seasonal events are coming soon."
-  },
-  "About": {
-    "h1": "About",
-    "body": "A fast, free snake game built for the browser, with leaderboards and a classic mods mode."
   },
   "Auth": {
     "loginTitle": "Log in",
@@ -322,6 +312,12 @@
     "yourBest": "Your best: {best}",
     "viewLeaderboard": "View leaderboard",
     "verifying": "Your score is being verified before it counts.",
-    "notCounted": "This score was not counted."
+    "notCounted": "This score was not counted.",
+    "later": "Maybe later",
+    "close": "Close",
+    "savedTitle": "Score saved!",
+    "savedBody": "Your score of {score} has been saved to your account.",
+    "savedVerifying": "Your score of {score} was saved and is being verified.",
+    "savedToast": "Score {score} saved successfully!"
   }
 }

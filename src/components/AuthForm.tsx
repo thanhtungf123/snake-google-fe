@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
 import { AUTH_EVENT } from './AuthNav';
 import { apiFetch } from '@/lib/api';
+import { queueSavedToastFromPending } from '@/lib/pendingScore';
 
 export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
   const t = useTranslations('Auth');
@@ -33,6 +34,9 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
         setError(data.error || t('genericError'));
         return;
       }
+      // Nếu khách vừa chơi có điểm chờ: backend đã gắn điểm vào tài khoản khi đăng nhập/đăng ký
+      // → xếp hàng popup "đã lưu điểm thành công" để hiện sau khi về trang chủ.
+      queueSavedToastFromPending();
       window.dispatchEvent(new Event(AUTH_EVENT));
       router.push('/');
       router.refresh();
