@@ -25,7 +25,7 @@ const EMPTY: SiteSettings = {
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const res = await fetch(`${API_URL}/api/settings`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 60, tags: ['settings'] },
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return EMPTY;

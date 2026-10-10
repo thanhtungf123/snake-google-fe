@@ -21,7 +21,7 @@ export async function getCustomPage(
 ): Promise<CustomPageData | null> {
   try {
     const res = await fetch(`${API_URL}/api/pages/${locale}/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 60, tags: ['pages'] },
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return null;
@@ -43,7 +43,7 @@ export interface SitemapPageRow {
 export async function getCustomPagesForSitemap(): Promise<SitemapPageRow[]> {
   try {
     const res = await fetch(`${API_URL}/api/pages/sitemap`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 300, tags: ['pages'] },
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return [];

@@ -105,7 +105,7 @@ export default function AdminSettings() {
         footerLinks: form.footerLinks.filter((l) => l.label.trim() && l.url.trim()),
       };
       await adminSend('/api/admin/settings', 'PUT', payload);
-      setMsg('Đã lưu cấu hình. Tải lại trang để thấy thay đổi header/footer/favicon.');
+      setMsg('Đã lưu cấu hình. Thay đổi header/footer/favicon sẽ hiện ngay trên site (có thể cần mở lại trang).');
     } catch (e2) {
       setErr((e2 as Error).message);
     } finally {

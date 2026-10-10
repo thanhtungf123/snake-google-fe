@@ -43,7 +43,8 @@ export async function getPageContent(
     // ISR: trang SEO vẫn được cache/nhanh, nhưng tự cập nhật nội dung admin trong ~60s.
     // Timeout 5s: lúc build (Vercel) nếu backend chưa sẵn, fetch không treo → fallback i18n.
     const res = await fetch(`${API_URL}/api/content/${pageKey}/${locale}`, {
-      next: { revalidate: 60 },
+      // Tag 'content' để admin lưu xong revalidate ngay (xem app/revalidate/route.ts).
+      next: { revalidate: 60, tags: ['content'] },
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return null;
