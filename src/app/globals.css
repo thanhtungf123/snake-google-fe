@@ -76,3 +76,12 @@ body {
 .content-html a {
   @apply text-snake underline;
 }
+.content-html img {
+  @apply my-3 h-auto max-w-full rounded;
+}
+.content-html figure {
+  @apply my-3;
+}
+.content-html figcaption {
+  @apply mt-1 text-sm opacity-60;
+}

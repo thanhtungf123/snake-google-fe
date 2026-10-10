@@ -7,7 +7,18 @@
     "rewards": "Phần thưởng",
     "about": "Giới thiệu",
     "login": "Đăng nhập",
-    "admin": "Quản trị"
+    "register": "Đăng ký",
+    "admin": "Quản trị",
+    "menu": "Menu",
+    "account": "Tài khoản",
+    "profile": "Hồ sơ",
+    "stats": "Thống kê",
+    "history": "Lịch sử chơi",
+    "achievements": "Thành tích",
+    "challenges": "Thử thách",
+    "myRewards": "Phần thưởng của tôi",
+    "accountSettings": "Cài đặt tài khoản",
+    "logout": "Đăng xuất"
   },
   "Home": {
     "title": "Chơi Rắn Săn Mồi",
@@ -111,8 +122,14 @@
     "profileSection": "Hồ sơ",
     "nickname": "Biệt danh",
     "email": "Email",
-    "avatarUrl": "URL ảnh đại diện",
-    "avatarHint": "Dán link ảnh, hoặc để trống để dùng chữ cái đầu.",
+    "avatar": "Ảnh đại diện",
+    "avatarUrl": "Dán link ảnh (tuỳ chọn)",
+    "avatarUpload": "Tải ảnh lên",
+    "avatarRemove": "Xoá ảnh",
+    "avatarUploaded": "Đã tải ảnh lên.",
+    "uploading": "Đang tải…",
+    "uploadFailed": "Tải ảnh thất bại.",
+    "avatarHint": "Tải ảnh lên hoặc dán link. Để trống sẽ dùng chữ cái đầu tên.",
     "saveProfile": "Lưu thay đổi",
     "passwordSection": "Đổi mật khẩu",
     "currentPassword": "Mật khẩu hiện tại",
@@ -293,5 +310,18 @@
   "Footer": {
     "language": "Ngôn ngữ",
     "rights": "Game rắn săn mồi do fan làm. Không liên kết với Google."
+  },
+  "PostGame": {
+    "youScored": "Bạn vừa đạt {score} điểm!",
+    "youScoredZero": "Ván đã kết thúc.",
+    "guestInvite": "Đăng ký miễn phí để lưu kỷ lục và tranh thứ hạng với những người chơi khác.",
+    "registerSave": "Đăng ký để lưu điểm",
+    "login": "Đăng nhập",
+    "playAgain": "Chơi lại",
+    "newRecord": "Kỷ lục mới!",
+    "yourBest": "Kỷ lục của bạn: {best}",
+    "viewLeaderboard": "Xem bảng xếp hạng",
+    "verifying": "Điểm của bạn đang được xác minh trước khi được tính.",
+    "notCounted": "Điểm này không được ghi nhận."
   }
 }

@@ -19,6 +19,7 @@ export default function AccountClient() {
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [profileMsg, setProfileMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
 
@@ -62,6 +63,43 @@ export default function AccountClient() {
       setProfileMsg({ ok: false, text: (err as Error).message });
     } finally {
       setSavingProfile(false);
+    }
+  }
+
+  // Upload avatar lên Cloudinary: xin chữ ký ở backend rồi POST thẳng lên Cloudinary.
+  async function onPickAvatar(file: File | undefined) {
+    if (!file) return;
+    setProfileMsg(null);
+    setUploadingAvatar(true);
+    try {
+      const sr = await apiFetch('/api/account/upload/signature');
+      const sig: {
+        cloudName: string;
+        apiKey: string;
+        timestamp: number;
+        folder: string;
+        signature: string;
+        error?: string;
+      } = await sr.json();
+      if (!sr.ok) throw new Error(sig.error || t('uploadFailed'));
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('api_key', sig.apiKey);
+      fd.append('timestamp', String(sig.timestamp));
+      fd.append('folder', sig.folder);
+      fd.append('signature', sig.signature);
+      const r = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`, {
+        method: 'POST',
+        body: fd,
+      });
+      const d = await r.json();
+      if (!r.ok || !d.secure_url) throw new Error(d?.error?.message || t('uploadFailed'));
+      setAvatarUrl(d.secure_url as string);
+      setProfileMsg({ ok: true, text: t('avatarUploaded') });
+    } catch (err) {
+      setProfileMsg({ ok: false, text: (err as Error).message });
+    } finally {
+      setUploadingAvatar(false);
     }
   }
 
@@ -130,11 +168,53 @@ export default function AccountClient() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="block text-sm">
-          <span className="mb-1 block opacity-60">{t('avatarUrl')}</span>
-          <input className={field} value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} />
+        <div className="block text-sm">
+          <span className="mb-1 block opacity-60">{t('avatar')}</span>
+          <div className="flex items-center gap-3">
+            {/* Preview */}
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl}
+                alt=""
+                className="h-16 w-16 flex-none rounded-full border border-black/10 object-cover"
+              />
+            ) : (
+              <span className="flex h-16 w-16 flex-none items-center justify-center rounded-full border border-black/10 text-xl font-semibold opacity-40">
+                {(nickname || '?').charAt(0).toUpperCase()}
+              </span>
+            )}
+            <div className="min-w-0 flex-1 space-y-2">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-black/15 px-3 py-1.5 text-sm hover:bg-black/5">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploadingAvatar}
+                  onChange={(e) => onPickAvatar(e.target.files?.[0])}
+                />
+                {uploadingAvatar ? t('uploading') : t('avatarUpload')}
+              </label>
+              {avatarUrl && (
+                <button
+                  type="button"
+                  onClick={() => setAvatarUrl('')}
+                  className="ml-2 text-xs underline opacity-60 hover:opacity-100"
+                >
+                  {t('avatarRemove')}
+                </button>
+              )}
+              {/* URL thủ công (vẫn giữ cho ai muốn dán link) */}
+              <input
+                className={field}
+                value={avatarUrl}
+                placeholder={t('avatarUrl')}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+              />
+            </div>
+          </div>
           <span className="mt-1 block text-xs opacity-50">{t('avatarHint')}</span>
-        </label>
+        </div>
         {profileMsg && <p className={msgClass(profileMsg.ok)}>{profileMsg.text}</p>}
         <button
           disabled={savingProfile}

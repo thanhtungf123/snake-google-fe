@@ -1,13 +1,25 @@
 import { API_URL } from './api';
 
+export interface FooterLink {
+  label: string;
+  url: string;
+}
+
 export interface SiteSettings {
   siteTitle: string;
   logoUrl: string;
   faviconUrl: string;
   footerText: string;
+  footerLinks: FooterLink[];
 }
 
-const EMPTY: SiteSettings = { siteTitle: '', logoUrl: '', faviconUrl: '', footerText: '' };
+const EMPTY: SiteSettings = {
+  siteTitle: '',
+  logoUrl: '',
+  faviconUrl: '',
+  footerText: '',
+  footerLinks: [],
+};
 
 // Đọc cấu hình site từ backend. Timeout 5s + fallback rỗng để không treo lúc build.
 export async function getSiteSettings(): Promise<SiteSettings> {

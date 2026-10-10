@@ -10,12 +10,24 @@ import Spinner from '@/components/ui/Spinner';
 export default function RankedGameEmbed() {
   const [ready, setReady] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  // Đổi key để remount iframe → chơi lại từ đầu (dùng khi bấm "Chơi lại" ở khung kết thúc).
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     try {
       localStorage.setItem('snakeChosenMod', 'none');
     } catch {}
     setReady(true);
+  }, []);
+
+  // Nghe sự kiện "chơi lại" từ PostGamePanel để tải lại game.
+  useEffect(() => {
+    function onReplay() {
+      setLoaded(false);
+      setReloadKey((k) => k + 1);
+    }
+    window.addEventListener('gs:replay', onReplay);
+    return () => window.removeEventListener('gs:replay', onReplay);
   }, []);
 
   // Ẩn nút/indicator mod bên trong game (cùng origin nên chèn CSS được).
@@ -46,6 +58,7 @@ export default function RankedGameEmbed() {
     <div className="relative mx-auto h-[70vh] min-h-[480px] w-full max-w-3xl overflow-hidden rounded-lg border border-black/10 bg-board-light">
       {ready && (
         <iframe
+          key={reloadKey}
           src="/legacy-mods/v/current/index.html"
           title="Snake"
           onLoad={onIframeLoad}

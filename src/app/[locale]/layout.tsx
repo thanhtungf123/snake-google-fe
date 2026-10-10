@@ -54,7 +54,7 @@ export default async function LocaleLayout({
           <div className="flex min-h-screen flex-col">
             <Nav settings={{ siteTitle: settings.siteTitle, logoUrl: settings.logoUrl }} />
             <main className="flex-1">{children}</main>
-            <Footer text={settings.footerText} />
+            <Footer text={settings.footerText} links={settings.footerLinks} />
           </div>
         </NextIntlClientProvider>
       </body>

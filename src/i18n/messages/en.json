@@ -7,7 +7,18 @@
     "rewards": "Rewards",
     "about": "About",
     "login": "Log in",
-    "admin": "Admin"
+    "register": "Sign up",
+    "admin": "Admin",
+    "menu": "Menu",
+    "account": "Account",
+    "profile": "Profile",
+    "stats": "Stats",
+    "history": "Game history",
+    "achievements": "Achievements",
+    "challenges": "Challenges",
+    "myRewards": "My rewards",
+    "accountSettings": "Account settings",
+    "logout": "Log out"
   },
   "Home": {
     "title": "Play Snake",
@@ -111,8 +122,14 @@
     "profileSection": "Profile",
     "nickname": "Nickname",
     "email": "Email",
-    "avatarUrl": "Avatar image URL",
-    "avatarHint": "Paste a link to an image, or leave empty to use your initial.",
+    "avatar": "Avatar",
+    "avatarUrl": "Paste image URL (optional)",
+    "avatarUpload": "Upload image",
+    "avatarRemove": "Remove",
+    "avatarUploaded": "Image uploaded.",
+    "uploading": "Uploading…",
+    "uploadFailed": "Upload failed.",
+    "avatarHint": "Upload an image or paste a link. Leave empty to use your initial.",
     "saveProfile": "Save changes",
     "passwordSection": "Change password",
     "currentPassword": "Current password",
@@ -293,5 +310,18 @@
   "Footer": {
     "language": "Language",
     "rights": "A fan-made snake game. Not affiliated with Google."
+  },
+  "PostGame": {
+    "youScored": "You scored {score}!",
+    "youScoredZero": "Game over.",
+    "guestInvite": "Sign up free to save your record and compete on the leaderboard.",
+    "registerSave": "Sign up to save score",
+    "login": "Log in",
+    "playAgain": "Play again",
+    "newRecord": "New record!",
+    "yourBest": "Your best: {best}",
+    "viewLeaderboard": "View leaderboard",
+    "verifying": "Your score is being verified before it counts.",
+    "notCounted": "This score was not counted."
   }
 }

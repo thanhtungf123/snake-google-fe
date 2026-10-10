@@ -20,6 +20,8 @@
     if (started) return;
     started = true;
     sessionId = null;
+    // Báo trang cha để ẩn khung mời đăng ký khi người chơi bắt đầu ván mới.
+    try { window.parent.postMessage({ type: 'gs:game-started' }, '*'); } catch (e) {}
     fetch(API + '/api/game/start', { method: 'POST', credentials: 'include' })
       .then(function (r) { return r.json(); })
       .then(function (d) { sessionId = d.sessionId; log('started', sessionId); })

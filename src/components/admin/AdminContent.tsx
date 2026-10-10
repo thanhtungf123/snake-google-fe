@@ -11,6 +11,8 @@ interface Row {
   seoTitle: string;
   metaDescription: string;
   h1: string;
+  heroH1: string;
+  heroIntro: string;
   bodyHtml: string;
   canonicalOverride: string;
   ogTitle: string;
@@ -41,6 +43,8 @@ type Form = {
   seoTitle: string;
   metaDescription: string;
   h1: string;
+  heroH1: string;
+  heroIntro: string;
   bodyHtml: string;
   canonicalOverride: string;
   ogTitle: string;
@@ -56,6 +60,8 @@ const EMPTY: Form = {
   seoTitle: '',
   metaDescription: '',
   h1: '',
+  heroH1: '',
+  heroIntro: '',
   bodyHtml: '',
   canonicalOverride: '',
   ogTitle: '',
@@ -94,6 +100,8 @@ export default function AdminContent() {
         seoTitle: existing.seoTitle,
         metaDescription: existing.metaDescription,
         h1: existing.h1,
+        heroH1: existing.heroH1 ?? '',
+        heroIntro: existing.heroIntro ?? '',
         bodyHtml: existing.bodyHtml,
         canonicalOverride: existing.canonicalOverride ?? '',
         ogTitle: existing.ogTitle ?? '',
@@ -121,6 +129,8 @@ export default function AdminContent() {
         seoTitle: form.seoTitle,
         metaDescription: form.metaDescription,
         h1: form.h1,
+        heroH1: form.heroH1,
+        heroIntro: form.heroIntro,
         bodyHtml: form.bodyHtml,
         canonicalOverride: form.canonicalOverride || undefined,
         ogTitle: form.ogTitle || undefined,
@@ -193,7 +203,28 @@ export default function AdminContent() {
             onChange={(e) => set('metaDescription', e.target.value)}
           />
         </Labeled>
-        <Labeled label={pageKey === 'home' ? 'Tiêu đề khối SEO (H2)' : 'H1'}>
+        {pageKey === 'home' && (
+          <>
+            <Labeled label="Tiêu đề lớn trang chủ (H1 — để trống = mặc định)">
+              <input
+                className={field}
+                value={form.heroH1}
+                onChange={(e) => set('heroH1', e.target.value)}
+                placeholder="VD: Chơi Rắn Săn Mồi Online"
+              />
+            </Labeled>
+            <Labeled label="Mô tả dưới tiêu đề (để trống = mặc định)">
+              <textarea
+                className={field}
+                rows={2}
+                value={form.heroIntro}
+                onChange={(e) => set('heroIntro', e.target.value)}
+                placeholder="VD: Game rắn săn mồi cổ điển, chơi ngay trên trình duyệt…"
+              />
+            </Labeled>
+          </>
+        )}
+        <Labeled label={pageKey === 'home' ? 'Tiêu đề khối SEO phía dưới (H2)' : 'H1'}>
           <input className={field} value={form.h1} onChange={(e) => set('h1', e.target.value)} />
         </Labeled>
         <div className="text-sm">

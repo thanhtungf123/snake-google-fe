@@ -9,6 +9,8 @@ export interface PageContent {
   seoTitle: string;
   metaDescription: string;
   h1: string;
+  heroH1: string;
+  heroIntro: string;
   bodyHtml: string;
   canonicalOverride: string | null;
   robots: { index: boolean; follow: boolean };

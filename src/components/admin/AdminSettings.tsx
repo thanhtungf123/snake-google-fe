@@ -3,11 +3,16 @@
 import { useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
 
+interface FooterLink {
+  label: string;
+  url: string;
+}
 interface Settings {
   siteTitle: string;
   logoUrl: string;
   faviconUrl: string;
   footerText: string;
+  footerLinks: FooterLink[];
 }
 interface Signature {
   cloudName: string;
@@ -17,7 +22,13 @@ interface Signature {
   signature: string;
 }
 
-const EMPTY: Settings = { siteTitle: '', logoUrl: '', faviconUrl: '', footerText: '' };
+const EMPTY: Settings = {
+  siteTitle: '',
+  logoUrl: '',
+  faviconUrl: '',
+  footerText: '',
+  footerLinks: [],
+};
 
 export default function AdminSettings() {
   const [form, setForm] = useState<Settings>(EMPTY);
@@ -30,7 +41,7 @@ export default function AdminSettings() {
   useEffect(() => {
     adminGet<{ settings: Settings; cloudinaryEnabled: boolean }>('/api/admin/settings')
       .then((d) => {
-        setForm(d.settings);
+        setForm({ ...EMPTY, ...d.settings, footerLinks: d.settings.footerLinks ?? [] });
         setCloudinaryEnabled(d.cloudinaryEnabled);
       })
       .catch((e) => setErr(e.message));
@@ -38,6 +49,17 @@ export default function AdminSettings() {
 
   const set = <K extends keyof Settings>(k: K, v: Settings[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  // --- Liên kết footer ---
+  const addLink = () =>
+    setForm((f) => ({ ...f, footerLinks: [...f.footerLinks, { label: '', url: '' }] }));
+  const updateLink = (i: number, key: keyof FooterLink, v: string) =>
+    setForm((f) => ({
+      ...f,
+      footerLinks: f.footerLinks.map((l, idx) => (idx === i ? { ...l, [key]: v } : l)),
+    }));
+  const removeLink = (i: number) =>
+    setForm((f) => ({ ...f, footerLinks: f.footerLinks.filter((_, idx) => idx !== i) }));
 
   async function uploadToCloudinary(file: File): Promise<string> {
     const sig = await adminGet<Signature>('/api/admin/upload/signature?folder=site');
@@ -77,7 +99,12 @@ export default function AdminSettings() {
     setErr(null);
     setMsg(null);
     try {
-      await adminSend('/api/admin/settings', 'PUT', form);
+      // Bỏ các dòng link trống trước khi gửi (backend yêu cầu label + URL hợp lệ).
+      const payload = {
+        ...form,
+        footerLinks: form.footerLinks.filter((l) => l.label.trim() && l.url.trim()),
+      };
+      await adminSend('/api/admin/settings', 'PUT', payload);
       setMsg('Đã lưu cấu hình. Tải lại trang để thấy thay đổi header/footer/favicon.');
     } catch (e2) {
       setErr((e2 as Error).message);
@@ -145,6 +172,47 @@ export default function AdminSettings() {
             placeholder="A fan-made snake game…"
           />
         </label>
+
+        {/* Liên kết footer */}
+        <div className="text-sm">
+          <span className="mb-1 block opacity-60">
+            Liên kết footer (tiêu đề + URL). Link nội bộ bắt đầu bằng “/” (vd /vi/p/gioi-thieu/),
+            link ngoài mở tab mới.
+          </span>
+          <div className="space-y-2">
+            {form.footerLinks.map((l, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  className={`${field} flex-1`}
+                  value={l.label}
+                  onChange={(e) => updateLink(i, 'label', e.target.value)}
+                  placeholder="Nhãn (vd: Giới thiệu)"
+                />
+                <input
+                  className={`${field} flex-[2]`}
+                  value={l.url}
+                  onChange={(e) => updateLink(i, 'url', e.target.value)}
+                  placeholder="https://… hoặc /vi/p/slug/"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeLink(i)}
+                  className="flex-none rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50"
+                  title="Xoá link"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={addLink}
+            className="mt-2 rounded border border-black/15 px-3 py-1.5 text-sm hover:bg-black/5"
+          >
+            + Thêm liên kết
+          </button>
+        </div>
 
         <button
           disabled={busy || uploading !== null}
