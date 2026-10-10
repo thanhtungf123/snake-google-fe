@@ -12,7 +12,24 @@ export default function LanguageSwitcher() {
 
   const switchTo = (next: 'en' | 'vi') => {
     if (next === locale) return;
-    // Giữ nguyên trang hiện tại, chỉ đổi ngôn ngữ (dẫn sang URL tương đương).
+
+    // Nếu trang hiện tại có thẻ alternate link (ví dụ custom page /p/[slug] có slug khác nhau giữa EN và VI)
+    if (typeof document !== 'undefined') {
+      const alt = document.querySelector<HTMLLinkElement>(
+        `link[rel="alternate"][hreflang="${next}"]`
+      );
+      if (alt?.href) {
+        try {
+          const u = new URL(alt.href);
+          window.location.href = u.pathname + u.search + u.hash;
+          return;
+        } catch {
+          // fallback bên dưới
+        }
+      }
+    }
+
+    // Giữ nguyên trang hiện tại, chỉ đổi ngôn ngữ (dẫn sang URL tương đương theo pathnames).
     router.replace(
       // @ts-expect-error pathname động
       { pathname, params },

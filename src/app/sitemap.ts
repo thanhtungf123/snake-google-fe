@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next';
 import { getPathname, routing, type Pathnames, type Locale } from '@/i18n/routing';
 import { getCustomPagesForSitemap } from '@/lib/customPages';
+import { SITE_URL } from '@/lib/seo/metadata';
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const BASE = SITE_URL;
 
 // Chỉ các trang public được index (không gồm login/register/profile...)
 const INDEXABLE: Pathnames[] = [
@@ -31,12 +32,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of routing.locales) {
       languages[locale] = BASE + withSlash(getPathname({ href: path, locale }));
     }
-    // URL EN làm bản chính, kèm alternates hreflang.
-    entries.push({
-      url: BASE + withSlash(getPathname({ href: path, locale: 'en' })),
-      lastModified: new Date(),
-      alternates: { languages },
-    });
+    languages['x-default'] = BASE + withSlash(getPathname({ href: path, locale: routing.defaultLocale }));
+
+    // Cả URL EN và VI đều được đưa vào sitemap XML theo Mục III Kế hoạch v3
+    for (const locale of routing.locales) {
+      entries.push({
+        url: BASE + withSlash(getPathname({ href: path, locale })),
+        lastModified: new Date(),
+        alternates: { languages },
+      });
+    }
   }
 
   // Các trang tùy chỉnh đã publish — gom theo key để dựng hreflang.
@@ -50,18 +55,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const list of byKey.values()) {
     const languages: Record<string, string> = {};
     for (const it of list) languages[it.locale] = customPageUrl(it.locale, it.slug);
-    // Ưu tiên bản EN làm URL chính, nếu không có thì lấy bản đầu tiên.
-    const main = list.find((it) => it.locale === routing.defaultLocale) ?? list[0];
+    const defaultPage = list.find((it) => it.locale === routing.defaultLocale);
+    if (defaultPage) {
+      languages['x-default'] = customPageUrl(routing.defaultLocale, defaultPage.slug);
+    }
     const lastModified = list
       .map((it) => it.updatedAt)
       .filter(Boolean)
       .sort()
       .pop();
-    entries.push({
-      url: customPageUrl(main.locale, main.slug),
-      lastModified: lastModified ? new Date(lastModified) : new Date(),
-      alternates: { languages },
-    });
+
+    for (const it of list) {
+      entries.push({
+        url: customPageUrl(it.locale, it.slug),
+        lastModified: it.updatedAt ? new Date(it.updatedAt) : lastModified ? new Date(lastModified) : new Date(),
+        alternates: { languages },
+      });
+    }
   }
 
   return entries;

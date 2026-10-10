@@ -6,6 +6,12 @@ export const routing = defineRouting({
   defaultLocale: 'en',
   // EN không có prefix; VI nằm dưới /vi/
   localePrefix: 'as-needed',
+  // Tắt tự động phát hiện ngôn ngữ qua Accept-Language và cookie:
+  // Đảm bảo URL nào trả về đúng mã HTML/ngôn ngữ đó (Section III Kế hoạch v3):
+  // - https://gogglesnake.com/ luôn luôn là English (html lang="en", canonical https://gogglesnake.com/)
+  // - https://gogglesnake.com/vi/ luôn luôn là Vietnamese (html lang="vi", canonical https://gogglesnake.com/vi/)
+  localeDetection: false,
+  localeCookie: false,
   // Slug khác nhau theo ngôn ngữ (đúng bảng URL trong kế hoạch v3)
   pathnames: {
     '/': '/',
