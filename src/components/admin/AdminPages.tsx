@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
 import RichTextEditor from './RichTextEditor';
+import ConfirmModal from './ConfirmModal';
 
 interface Row {
   id: string;
@@ -63,6 +64,7 @@ export default function AdminPages() {
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<Row | null>(null);
 
   async function loadAll() {
     const d = await adminGet<{ rows: Row[] }>('/api/admin/pages');
@@ -156,8 +158,7 @@ export default function AdminPages() {
     }
   }
 
-  async function remove(r: Row) {
-    if (!confirm(`Xoá trang "${r.title}" (${r.locale}/${r.slug})? Không thể hoàn tác.`)) return;
+  async function doRemove(r: Row) {
     setBusy(true);
     setErr(null);
     setMsg(null);
@@ -170,6 +171,7 @@ export default function AdminPages() {
       setErr((e2 as Error).message);
     } finally {
       setBusy(false);
+      setConfirmDelete(null);
     }
   }
 
@@ -309,7 +311,10 @@ export default function AdminPages() {
                               <button onClick={() => startEdit(r)} className="text-snake underline">
                                 Sửa
                               </button>
-                              <button onClick={() => remove(r)} className="text-red-600 underline">
+                              <button
+                                onClick={() => setConfirmDelete(r)}
+                                className="text-red-600 underline"
+                              >
                                 Xoá
                               </button>
                             </div>
@@ -487,6 +492,20 @@ export default function AdminPages() {
           )}
         </div>
       </form>
+
+      <ConfirmModal
+        open={!!confirmDelete}
+        title="Xoá trang"
+        message={
+          confirmDelete
+            ? `Xoá "${confirmDelete.title}" (${confirmDelete.locale}/${confirmDelete.slug})? Không thể hoàn tác.`
+            : ''
+        }
+        confirmText="Xoá"
+        danger
+        onConfirm={() => confirmDelete && doRemove(confirmDelete)}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   );
 }

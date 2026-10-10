@@ -38,8 +38,12 @@ const EMPTY_FMT: Fmt = {
 export default function RichTextEditor({ value, resetKey, onChange, placeholder }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const savedRange = useRef<Range | null>(null);
   const [fmt, setFmt] = useState<Fmt>(EMPTY_FMT);
   const [uploadingImg, setUploadingImg] = useState(false);
+  // Popup nhập URL (link/ảnh) thay cho window.prompt; thông báo lỗi thay cho window.alert.
+  const [urlPrompt, setUrlPrompt] = useState<{ kind: 'link' | 'image'; value: string } | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   // Đọc định dạng tại vùng chọn hiện tại (chỉ khi con trỏ nằm trong editor).
   const updateFmt = useCallback(() => {
@@ -103,9 +107,41 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
     exec('formatBlock', e.target.value);
   }
 
+  // Lưu/khôi phục vùng chọn trong editor để chèn link/ảnh đúng chỗ sau khi mở popup.
+  function saveRange() {
+    const sel = window.getSelection();
+    savedRange.current =
+      sel && sel.rangeCount > 0 && ref.current?.contains(sel.anchorNode)
+        ? sel.getRangeAt(0).cloneRange()
+        : null;
+  }
+  function restoreRange() {
+    const el = ref.current;
+    if (!el) return;
+    el.focus();
+    const sel = window.getSelection();
+    if (sel && savedRange.current) {
+      sel.removeAllRanges();
+      sel.addRange(savedRange.current);
+    }
+  }
+
   function addLink() {
-    const url = window.prompt('Nhập URL liên kết:', 'https://');
-    if (url) exec('createLink', url);
+    saveRange();
+    setUrlPrompt({ kind: 'link', value: 'https://' });
+  }
+
+  // Áp dụng URL từ popup: khôi phục vùng chọn rồi chèn link/ảnh.
+  function applyUrlPrompt() {
+    if (!urlPrompt) return;
+    const url = urlPrompt.value.trim();
+    const { kind } = urlPrompt;
+    setUrlPrompt(null);
+    if (!/^https?:\/\//i.test(url)) return;
+    restoreRange();
+    document.execCommand(kind === 'link' ? 'createLink' : 'insertImage', false, url);
+    emit();
+    updateFmt();
   }
 
   // Chèn ảnh: upload file lên Cloudinary (chữ ký admin) rồi chèn <img> tại con trỏ.
@@ -137,7 +173,7 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
       document.execCommand('insertImage', false, d.secure_url as string);
       emit();
     } catch (e) {
-      window.alert((e as Error).message);
+      setNotice((e as Error).message);
     } finally {
       setUploadingImg(false);
       if (fileRef.current) fileRef.current.value = '';
@@ -145,12 +181,8 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
   }
 
   function addImageByUrl() {
-    const url = window.prompt('Dán URL ảnh:', 'https://');
-    if (url && /^https?:\/\//i.test(url)) {
-      ref.current?.focus();
-      document.execCommand('insertImage', false, url);
-      emit();
-    }
+    saveRange();
+    setUrlPrompt({ kind: 'image', value: 'https://' });
   }
 
   // Giữ vùng chọn khi bấm nút (ngăn mất focus khỏi editor).
@@ -168,6 +200,7 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
     `${btn} ${on ? 'bg-snake text-white border-snake' : 'hover:bg-black/10'}`;
 
   return (
+    <>
     <div className="rounded border border-black/15">
       <div className="flex flex-wrap items-center gap-1 border-b border-black/10 bg-black/[0.03] p-1.5">
         <select
@@ -251,6 +284,19 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
         data-placeholder={placeholder ?? ''}
         className="rte-area min-h-[12rem] max-w-none px-3 py-2 text-sm outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-black/15 [&_blockquote]:pl-3 [&_blockquote]:opacity-80 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:text-lg [&_h3]:font-semibold [&_h4]:font-semibold [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6 [&_a]:text-snake [&_a]:underline [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded"
       />
+      {notice && (
+        <div className="flex items-start gap-2 border-t border-red-600/20 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <span className="flex-1">{notice}</span>
+          <button
+            type="button"
+            onClick={() => setNotice(null)}
+            className="opacity-60 hover:opacity-100"
+            aria-label="Đóng"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <style jsx>{`
         .rte-area:empty:before {
           content: attr(data-placeholder);
@@ -258,5 +304,52 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
         }
       `}</style>
     </div>
+
+    {urlPrompt && (
+      <div
+        className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4"
+        onClick={() => setUrlPrompt(null)}
+      >
+        <div
+          className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h3 className="text-base font-semibold">
+            {urlPrompt.kind === 'link' ? 'Chèn liên kết' : 'Chèn ảnh từ URL'}
+          </h3>
+          <input
+            autoFocus
+            type="url"
+            value={urlPrompt.value}
+            onChange={(e) => setUrlPrompt((p) => (p ? { ...p, value: e.target.value } : p))}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                applyUrlPrompt();
+              }
+            }}
+            placeholder="https://…"
+            className="mt-3 w-full rounded border border-black/15 px-3 py-2 text-sm outline-none focus:border-snake"
+          />
+          <div className="mt-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setUrlPrompt(null)}
+              className="rounded bg-black/5 px-4 py-2 text-sm hover:bg-black/10"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              onClick={applyUrlPrompt}
+              className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Chèn
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

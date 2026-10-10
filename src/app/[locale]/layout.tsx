@@ -37,9 +37,12 @@ export default async function LocaleLayout({
     notFound();
   }
   setRequestLocale(locale);
-  const messages = await getMessages();
-  const settings = await getSiteSettings();
-  const navPages = await getNavPages(locale as Locale);
+  // Chạy song song (trước đây tuần tự) để giảm TTFB khi render trang.
+  const [messages, settings, navPages] = await Promise.all([
+    getMessages(),
+    getSiteSettings(),
+    getNavPages(locale as Locale),
+  ]);
 
   return (
     <html lang={locale} suppressHydrationWarning>
