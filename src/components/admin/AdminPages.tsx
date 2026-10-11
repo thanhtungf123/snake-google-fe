@@ -10,12 +10,15 @@ interface Row {
   key: string;
   locale: 'en' | 'vi';
   slug: string;
+  order: number;
   title: string;
+  navLabel: string;
   metaDescription: string;
   h1: string;
   bodyHtml: string;
   robots: { index: boolean; follow: boolean };
   isPublished: boolean;
+  showInMenu: boolean;
   updatedAt: string | null;
 }
 
@@ -29,12 +32,14 @@ type Form = {
   editLocale: 'en' | 'vi';
   slug: string;
   title: string;
+  navLabel: string;
   metaDescription: string;
   h1: string;
   bodyHtml: string;
   robotsIndex: boolean;
   robotsFollow: boolean;
   isPublished: boolean;
+  showInMenu: boolean;
 };
 
 const EMPTY: Form = {
@@ -44,12 +49,14 @@ const EMPTY: Form = {
   editLocale: 'en',
   slug: '',
   title: '',
+  navLabel: '',
   metaDescription: '',
   h1: '',
   bodyHtml: '',
   robotsIndex: true,
   robotsFollow: true,
   isPublished: false,
+  showInMenu: true,
 };
 
 function urlFor(locale: 'en' | 'vi', slug: string): string {
@@ -91,12 +98,14 @@ export default function AdminPages() {
       editLocale: r.locale,
       slug: r.slug,
       title: r.title,
+      navLabel: r.navLabel ?? '',
       metaDescription: r.metaDescription ?? '',
       h1: r.h1,
       bodyHtml: r.bodyHtml ?? '',
       robotsIndex: r.robots?.index ?? true,
       robotsFollow: r.robots?.follow ?? true,
       isPublished: r.isPublished,
+      showInMenu: r.showInMenu ?? true,
     });
     setMsg(null);
     setErr(null);
@@ -110,11 +119,13 @@ export default function AdminPages() {
     const common = {
       slug: form.slug,
       title: form.title,
+      navLabel: form.navLabel,
       metaDescription: form.metaDescription,
       h1: form.h1,
       bodyHtml: form.bodyHtml,
       robots: { index: form.robotsIndex, follow: form.robotsFollow },
       isPublished: form.isPublished,
+      showInMenu: form.showInMenu,
     };
 
     if (!editingId) {
@@ -186,11 +197,13 @@ export default function AdminPages() {
         locales: [other],
         slug: form.slug,
         title: form.title,
+        navLabel: '',
         metaDescription: '',
         h1: form.h1,
         bodyHtml: '',
         robots: { index: form.robotsIndex, follow: form.robotsFollow },
         isPublished: false,
+        showInMenu: true,
       });
       const fresh = await adminGet<{ rows: Row[] }>('/api/admin/pages');
       setRows(fresh.rows);
@@ -201,6 +214,21 @@ export default function AdminPages() {
           other === 'vi' ? 'Việt' : 'Anh'
         } rồi publish.`
       );
+    } catch (e2) {
+      setErr((e2 as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Bật/tắt nhanh hiển thị trên header cho 1 bản dịch.
+  async function toggleMenu(r: Row) {
+    setBusy(true);
+    setErr(null);
+    setMsg(null);
+    try {
+      await adminSend(`/api/admin/pages/${r.id}/menu`, 'PUT', { showInMenu: !r.showInMenu });
+      await loadAll();
     } catch (e2) {
       setErr((e2 as Error).message);
     } finally {
@@ -236,10 +264,32 @@ export default function AdminPages() {
       m.set(r.key, list);
       return m;
     }, new Map<string, Row[]>())
-  ).map(([key, list]) => ({
-    key,
-    list: [...list].sort((a, b) => a.locale.localeCompare(b.locale)),
-  }));
+  )
+    .map(([key, list]) => ({
+      key,
+      order: list[0]?.order ?? 0,
+      list: [...list].sort((a, b) => a.locale.localeCompare(b.locale)),
+    }))
+    .sort((a, b) => a.order - b.order);
+
+  // Đổi thứ tự hiển thị trên header: hoán vị nhóm hiện tại với nhóm kề (cả EN+VI cùng key di chuyển).
+  async function moveGroup(index: number, dir: -1 | 1) {
+    const next = index + dir;
+    if (next < 0 || next >= groups.length) return;
+    const keys = groups.map((g) => g.key);
+    [keys[index], keys[next]] = [keys[next], keys[index]];
+    setBusy(true);
+    setErr(null);
+    setMsg(null);
+    try {
+      await adminSend('/api/admin/pages/reorder', 'PUT', { keys });
+      await loadAll();
+    } catch (e2) {
+      setErr((e2 as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -257,10 +307,15 @@ export default function AdminPages() {
         {groups.length === 0 ? (
           <p className="opacity-60">Chưa có trang nào.</p>
         ) : (
+          <>
+          <p className="mb-2 text-xs opacity-60">
+            Dùng ▲▼ để sắp xếp thứ tự hiển thị trên header (áp dụng cho cả bản EN và VI cùng key).
+          </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-black/10 text-left opacity-60">
+                  <th className="py-2 pr-3">Thứ tự</th>
                   <th className="py-2 pr-3">Key</th>
                   <th className="py-2 pr-3">Tiêu đề</th>
                   <th className="py-2 pr-3">Bản dịch</th>
@@ -268,10 +323,35 @@ export default function AdminPages() {
                 </tr>
               </thead>
               <tbody>
-                {groups.map((g) => {
+                {groups.map((g, gi) => {
                   const primary = g.list.find((r) => r.locale === 'en') ?? g.list[0];
                   return (
                     <tr key={g.key} className="border-b border-black/5 align-top">
+                      <td className="py-2 pr-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex flex-col leading-none">
+                            <button
+                              type="button"
+                              onClick={() => moveGroup(gi, -1)}
+                              disabled={busy || gi === 0}
+                              title="Lên"
+                              className="px-1 text-xs opacity-60 hover:opacity-100 disabled:opacity-20"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveGroup(gi, 1)}
+                              disabled={busy || gi === groups.length - 1}
+                              title="Xuống"
+                              className="px-1 text-xs opacity-60 hover:opacity-100 disabled:opacity-20"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                          <span className="text-xs opacity-50">{gi + 1}</span>
+                        </div>
+                      </td>
                       <td className="py-2 pr-3 font-mono text-xs">{g.key}</td>
                       <td className="py-2 pr-3">{primary.title}</td>
                       <td className="py-2 pr-3">
@@ -288,6 +368,11 @@ export default function AdminPages() {
                                 <span className="text-xs text-green-700">Published</span>
                               ) : (
                                 <span className="text-xs opacity-50">Nháp</span>
+                              )}
+                              {!r.showInMenu && (
+                                <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] text-amber-700">
+                                  ẩn menu
+                                </span>
                               )}
                             </div>
                           ))}
@@ -312,6 +397,18 @@ export default function AdminPages() {
                                 Sửa
                               </button>
                               <button
+                                onClick={() => toggleMenu(r)}
+                                disabled={busy}
+                                className="underline disabled:opacity-50"
+                                title={
+                                  r.showInMenu
+                                    ? 'Ẩn trang này khỏi header'
+                                    : 'Hiện trang này lên header'
+                                }
+                              >
+                                {r.showInMenu ? 'Ẩn menu' : 'Hiện menu'}
+                              </button>
+                              <button
                                 onClick={() => setConfirmDelete(r)}
                                 className="text-red-600 underline"
                               >
@@ -327,6 +424,7 @@ export default function AdminPages() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 
@@ -424,6 +522,15 @@ export default function AdminPages() {
         <Labeled label="Tiêu đề (thẻ title / SEO)">
           <input className={field} value={form.title} onChange={(e) => set('title', e.target.value)} />
         </Labeled>
+        <Labeled label="Nhãn hiển thị trên header (ngắn gọn, vd: About — để trống sẽ dùng H1)">
+          <input
+            className={field}
+            value={form.navLabel}
+            onChange={(e) => set('navLabel', e.target.value)}
+            maxLength={30}
+            placeholder="About"
+          />
+        </Labeled>
         <Labeled label="Meta Description">
           <textarea
             className={field}
@@ -471,6 +578,14 @@ export default function AdminPages() {
               onChange={(e) => set('isPublished', e.target.checked)}
             />
             Hiển thị công khai (publish)
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.showInMenu}
+              onChange={(e) => set('showInMenu', e.target.checked)}
+            />
+            Hiện link trên header (menu)
           </label>
         </div>
 

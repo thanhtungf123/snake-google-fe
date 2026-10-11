@@ -58,9 +58,18 @@ export default function NavClient({
   const [loaded, setLoaded] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pagesOpen, setPagesOpen] = useState(false);
 
   const accountRef = useRef<HTMLDivElement | null>(null);
   const mobileRef = useRef<HTMLDivElement | null>(null);
+  const pagesRef = useRef<HTMLDivElement | null>(null);
+
+  // Giữ header gọn: tối đa 5 link trang hiện trực tiếp; nhiều hơn thì dồn phần dư vào dropdown "Thêm".
+  const INLINE_MAX = 5;
+  const inlinePages =
+    customPages.length > INLINE_MAX ? customPages.slice(0, INLINE_MAX - 1) : customPages;
+  const overflowPages =
+    customPages.length > INLINE_MAX ? customPages.slice(INLINE_MAX - 1) : [];
 
   const load = useCallback(() => {
     apiFetch('/api/auth/me')
@@ -82,11 +91,13 @@ export default function NavClient({
       const tgt = e.target as Node;
       if (accountRef.current && !accountRef.current.contains(tgt)) setAccountOpen(false);
       if (mobileRef.current && !mobileRef.current.contains(tgt)) setMobileOpen(false);
+      if (pagesRef.current && !pagesRef.current.contains(tgt)) setPagesOpen(false);
     }
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setAccountOpen(false);
         setMobileOpen(false);
+        setPagesOpen(false);
       }
     }
     document.addEventListener('mousedown', onDown);
@@ -112,6 +123,7 @@ export default function NavClient({
   const closeAll = () => {
     setAccountOpen(false);
     setMobileOpen(false);
+    setPagesOpen(false);
   };
 
   const brand = (
@@ -174,11 +186,48 @@ export default function NavClient({
               {t(l.key)}
             </Link>
           ))}
-          {customPages.map((p) => (
-            <NextLink key={p.slug} href={pageHref(p.slug)} className="hover:underline">
+          {inlinePages.map((p) => (
+            <NextLink
+              key={p.slug}
+              href={pageHref(p.slug)}
+              className="max-w-[11rem] truncate whitespace-nowrap hover:underline"
+              title={p.label}
+            >
               {p.label}
             </NextLink>
           ))}
+
+          {overflowPages.length > 0 && (
+            <div className="relative" ref={pagesRef}>
+              <button
+                onClick={() => setPagesOpen((o) => !o)}
+                aria-haspopup="menu"
+                aria-expanded={pagesOpen}
+                className="flex items-center gap-1 hover:underline"
+              >
+                {t('more')}
+                <span className={`text-xs transition-transform ${pagesOpen ? 'rotate-180' : ''}`}>▾</span>
+              </button>
+              {pagesOpen && (
+                <div
+                  role="menu"
+                  className="absolute left-0 top-full z-50 mt-1 max-h-[70vh] w-56 overflow-auto rounded-lg border border-black/10 bg-white py-1 shadow-lg"
+                >
+                  {overflowPages.map((p) => (
+                    <NextLink
+                      key={p.slug}
+                      href={pageHref(p.slug)}
+                      onClick={() => setPagesOpen(false)}
+                      className="block truncate px-3 py-2 text-sm hover:bg-black/5"
+                      title={p.label}
+                    >
+                      {p.label}
+                    </NextLink>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Desktop: khu tài khoản */}
