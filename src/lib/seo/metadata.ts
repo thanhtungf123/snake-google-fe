@@ -12,24 +12,28 @@ function normalizeBase(raw: string | undefined): string {
 export const SITE_URL = normalizeBase(process.env.NEXT_PUBLIC_SITE_URL);
 const BASE = SITE_URL;
 
+// Các helper dưới đây chỉ dùng cho trang tĩnh (không tham số). Trang game động
+// (/games/[slug]) tự dựng metadata riêng nên loại khỏi kiểu này.
+export type StaticPathname = Exclude<Pathnames, '/games/[slug]'>;
+
 function withTrailingSlash(p: string): string {
   if (p === '/') return '/';
   return p.endsWith('/') ? p : `${p}/`;
 }
 
-function absolute(path: Pathnames, locale: Locale): string {
+function absolute(path: StaticPathname, locale: Locale): string {
   const p = getPathname({ href: path, locale });
   return BASE + withTrailingSlash(p);
 }
 
 // URL tuyệt đối (kèm trailing slash) của một trang theo ngôn ngữ — dùng cho JSON-LD.
-export function absoluteUrl(path: Pathnames, locale: Locale): string {
+export function absoluteUrl(path: StaticPathname, locale: Locale): string {
   return absolute(path, locale);
 }
 
 export function buildMetadata(opts: {
   locale: Locale;
-  path: Pathnames;
+  path: StaticPathname;
   title: string;
   description: string;
   index?: boolean;

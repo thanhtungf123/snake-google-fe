@@ -1,13 +1,18 @@
 import type { MetadataRoute } from 'next';
 import { getPathname, routing, type Pathnames, type Locale } from '@/i18n/routing';
 import { getCustomPagesForSitemap } from '@/lib/customPages';
+import { getGamesForSitemap } from '@/lib/games';
 import { SITE_URL } from '@/lib/seo/metadata';
 
 const BASE = SITE_URL;
 
+// Pathnames tĩnh (không có tham số động) — dùng cho danh sách trang cố định dưới đây.
+type StaticPath = Exclude<Pathnames, '/games/[slug]'>;
+
 // Chỉ các trang public được index (không gồm login/register/profile...)
-const INDEXABLE: Pathnames[] = [
+const INDEXABLE: StaticPath[] = [
   '/',
+  '/all-games',
   '/leaderboard',
   '/rewards',
 ];
@@ -20,6 +25,11 @@ function withSlash(p: string): string {
 function customPageUrl(locale: Locale, slug: string): string {
   const prefix = locale === routing.defaultLocale ? '' : `/${locale}`;
   return `${BASE}${prefix}/${slug}/`;
+}
+
+// URL tuyệt đối của 1 game theo ngôn ngữ (namespace /games/<slug>/).
+function gameUrl(locale: Locale, slug: string): string {
+  return BASE + withSlash(getPathname({ href: { pathname: '/games/[slug]', params: { slug } }, locale }));
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -66,6 +76,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const it of list) {
       entries.push({
         url: customPageUrl(it.locale, it.slug),
+        lastModified: it.updatedAt ? new Date(it.updatedAt) : lastModified ? new Date(lastModified) : new Date(),
+        alternates: { languages },
+      });
+    }
+  }
+
+  // Các game đã publish — gom theo key để dựng hreflang (namespace /games/<slug>/).
+  const gameRows = await getGamesForSitemap();
+  const gamesByKey = new Map<string, { locale: Locale; slug: string; updatedAt: string | null }[]>();
+  for (const r of gameRows) {
+    const list = gamesByKey.get(r.key) ?? [];
+    list.push({ locale: r.locale, slug: r.slug, updatedAt: r.updatedAt });
+    gamesByKey.set(r.key, list);
+  }
+  for (const list of gamesByKey.values()) {
+    const languages: Record<string, string> = {};
+    for (const it of list) languages[it.locale] = gameUrl(it.locale, it.slug);
+    const defaultGame = list.find((it) => it.locale === routing.defaultLocale);
+    if (defaultGame) languages['x-default'] = gameUrl(routing.defaultLocale, defaultGame.slug);
+    const lastModified = list
+      .map((it) => it.updatedAt)
+      .filter(Boolean)
+      .sort()
+      .pop();
+
+    for (const it of list) {
+      entries.push({
+        url: gameUrl(it.locale, it.slug),
         lastModified: it.updatedAt ? new Date(it.updatedAt) : lastModified ? new Date(lastModified) : new Date(),
         alternates: { languages },
       });

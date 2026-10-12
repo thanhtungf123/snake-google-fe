@@ -17,6 +17,7 @@ const TABS = [
   { href: '/admin/seasons/', label: 'Mùa giải' },
   { href: '/admin/rewards/', label: 'Nhận thưởng' },
   { href: '/admin/pages/', label: 'Trang' },
+  { href: '/admin/games/', label: 'Game' },
   { href: '/admin/settings/', label: 'Cấu hình' },
 ];
 

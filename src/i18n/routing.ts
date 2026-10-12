@@ -15,6 +15,16 @@ export const routing = defineRouting({
   // Slug khác nhau theo ngôn ngữ (đúng bảng URL trong kế hoạch v3)
   pathnames: {
     '/': '/',
+    // Trang tổng hợp game: slug khác theo ngôn ngữ (bảng URL kế hoạch).
+    '/all-games': {
+      en: '/all-games',
+      vi: '/tro-choi',
+    },
+    // Chi tiết game: giữ namespace /games/<slug>/ cho cả hai ngôn ngữ.
+    '/games/[slug]': {
+      en: '/games/[slug]',
+      vi: '/games/[slug]',
+    },
     '/leaderboard': {
       en: '/leaderboard',
       vi: '/bang-xep-hang',

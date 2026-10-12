@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 // Nằm ngoài /api (vì /api đã bị Nginx route sang backend) và ngoài middleware i18n.
 // Bảo mật tuỳ chọn: đặt REVALIDATE_SECRET giống nhau ở backend + frontend. Bỏ trống = không kiểm.
 const SECRET = process.env.REVALIDATE_SECRET || '';
-const ALLOWED = new Set(['content', 'settings', 'pages']);
+const ALLOWED = new Set(['content', 'settings', 'pages', 'games']);
 
 export async function POST(req: NextRequest) {
   let body: { tag?: string; secret?: string } = {};

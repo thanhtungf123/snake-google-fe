@@ -1,6 +1,7 @@
 {
   "Nav": {
     "play": "Play",
+    "allGames": "All Games",
     "leaderboard": "Leaderboard",
     "mods": "Mods",
     "rewards": "Rewards",
@@ -18,6 +19,15 @@
     "myRewards": "My rewards",
     "accountSettings": "Account settings",
     "logout": "Log out"
+  },
+  "Games": {
+    "title": "All our Snake Games",
+    "h1": "All our Snake Games",
+    "intro": "Here you will find all of our Snake games, all in one place. Just click an icon and you can start playing straight away.",
+    "empty": "No games have been published yet. Check back soon!",
+    "related": "Related games",
+    "noEmbed": "This game is not available right now.",
+    "backToAll": "← All games"
   },
   "Home": {
     "title": "Play Snake",

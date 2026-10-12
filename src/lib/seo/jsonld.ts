@@ -1,5 +1,5 @@
-import { SITE_URL, absoluteUrl } from './metadata';
-import type { Pathnames, Locale } from '@/i18n/routing';
+import { SITE_URL, absoluteUrl, type StaticPathname } from './metadata';
+import type { Locale } from '@/i18n/routing';
 
 // --- Các builder structured data (schema.org) ---
 
@@ -35,7 +35,7 @@ export function gameJsonLd(locale: Locale, name: string, description: string) {
 export function breadcrumbJsonLd(
   locale: Locale,
   homeLabel: string,
-  current: { label: string; path: Pathnames }
+  current: { label: string; path: StaticPathname }
 ) {
   return {
     '@context': 'https://schema.org',

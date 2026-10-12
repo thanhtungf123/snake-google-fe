@@ -1,6 +1,7 @@
 {
   "Nav": {
     "play": "Chơi",
+    "allGames": "Tất cả trò chơi",
     "leaderboard": "Bảng xếp hạng",
     "mods": "Mod",
     "rewards": "Phần thưởng",
@@ -18,6 +19,15 @@
     "myRewards": "Phần thưởng của tôi",
     "accountSettings": "Cài đặt tài khoản",
     "logout": "Đăng xuất"
+  },
+  "Games": {
+    "title": "Tổng hợp trò chơi Rắn",
+    "h1": "Tổng hợp trò chơi Rắn",
+    "intro": "Tất cả các trò chơi Rắn của chúng tôi được gom về một nơi. Chỉ cần bấm vào một trò chơi là bạn có thể chơi ngay.",
+    "empty": "Chưa có trò chơi nào được đăng. Hãy quay lại sau nhé!",
+    "related": "Trò chơi liên quan",
+    "noEmbed": "Trò chơi này hiện chưa sẵn sàng.",
+    "backToAll": "← Tất cả trò chơi"
   },
   "Home": {
     "title": "Chơi Rắn Săn Mồi",

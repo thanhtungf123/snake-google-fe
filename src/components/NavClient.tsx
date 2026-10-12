@@ -27,7 +27,10 @@ export interface NavPage {
 
 // Các trang điều hướng công khai cố định (trái). Các trang tùy chỉnh đã publish được
 // thêm động từ prop `customPages`.
-const NAV_LINKS = [{ href: '/leaderboard', key: 'leaderboard' }] as const;
+const NAV_LINKS = [
+  { href: '/all-games', key: 'allGames' },
+  { href: '/leaderboard', key: 'leaderboard' },
+] as const;
 
 const ACCOUNT_LINKS = [
   { href: '/profile', key: 'profile' },
