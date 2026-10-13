@@ -27,10 +27,7 @@ export interface NavPage {
 
 // Các trang điều hướng công khai cố định (trái). Các trang tùy chỉnh đã publish được
 // thêm động từ prop `customPages`.
-const NAV_LINKS = [
-  { href: '/all-games', key: 'allGames' },
-  { href: '/leaderboard', key: 'leaderboard' },
-] as const;
+const NAV_LINKS = [{ href: '/leaderboard', key: 'leaderboard' }] as const;
 
 const ACCOUNT_LINKS = [
   { href: '/profile', key: 'profile' },
@@ -231,6 +228,11 @@ export default function NavClient({
               )}
             </div>
           )}
+
+          {/* "Tất cả trò chơi" xếp sau các trang tùy chỉnh (vd Cách Chơi). */}
+          <Link href="/all-games" className="whitespace-nowrap hover:underline">
+            {t('allGames')}
+          </Link>
         </div>
 
         {/* Desktop: khu tài khoản */}
@@ -316,6 +318,14 @@ export default function NavClient({
                     {p.label}
                   </NextLink>
                 ))}
+                {/* "Tất cả trò chơi" xếp sau các trang tùy chỉnh. */}
+                <Link
+                  href="/all-games"
+                  onClick={closeAll}
+                  className="rounded px-3 py-2 text-sm hover:bg-black/5"
+                >
+                  {t('allGames')}
+                </Link>
 
                 <div className="my-1 h-px bg-black/10" />
 

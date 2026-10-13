@@ -91,7 +91,6 @@ export default async function GameDetailPage({
       <Link href="/all-games" className="mb-3 inline-block text-sm text-snake hover:underline">
         {t('backToAll')}
       </Link>
-      <h1 className="mb-4 text-3xl font-bold">{game.h1}</h1>
 
       {game.embedUrl ? (
         <GameEmbed
@@ -105,6 +104,9 @@ export default async function GameDetailPage({
           {t('noEmbed')}
         </p>
       )}
+
+      {/* H1 nằm DƯỚI khung game (theo yêu cầu bố cục). */}
+      <h1 className="mb-4 mt-6 text-3xl font-bold">{game.h1}</h1>
 
       {game.bodyHtml ? (
         <div
