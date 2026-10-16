@@ -20,6 +20,7 @@ interface Row {
   embedUrl: string;
   aspectW: number;
   aspectH: number;
+  requireLandscape: boolean;
   bodyHtml: string;
   relatedKeys: string[];
   robots: { index: boolean; follow: boolean };
@@ -51,6 +52,7 @@ type Form = {
   embedUrl: string;
   aspectW: number;
   aspectH: number;
+  requireLandscape: boolean;
   bodyHtml: string;
   relatedKeys: string[];
   robotsIndex: boolean;
@@ -72,6 +74,7 @@ const EMPTY: Form = {
   embedUrl: '',
   aspectW: 16,
   aspectH: 9,
+  requireLandscape: false,
   bodyHtml: '',
   relatedKeys: [],
   robotsIndex: true,
@@ -129,6 +132,7 @@ export default function AdminGames() {
       embedUrl: r.embedUrl ?? '',
       aspectW: r.aspectW ?? 16,
       aspectH: r.aspectH ?? 9,
+      requireLandscape: r.requireLandscape ?? false,
       bodyHtml: r.bodyHtml ?? '',
       relatedKeys: r.relatedKeys ?? [],
       robotsIndex: r.robots?.index ?? true,
@@ -155,6 +159,7 @@ export default function AdminGames() {
       embedUrl: form.embedUrl,
       aspectW: Number(form.aspectW) || 16,
       aspectH: Number(form.aspectH) || 9,
+      requireLandscape: form.requireLandscape,
       bodyHtml: form.bodyHtml,
       relatedKeys: form.relatedKeys,
       robots: { index: form.robotsIndex, follow: form.robotsFollow },
@@ -233,6 +238,7 @@ export default function AdminGames() {
         embedUrl: form.embedUrl,
         aspectW: Number(form.aspectW) || 16,
         aspectH: Number(form.aspectH) || 9,
+        requireLandscape: form.requireLandscape,
         bodyHtml: '',
         relatedKeys: form.relatedKeys,
         robots: { index: form.robotsIndex, follow: form.robotsFollow },
@@ -570,6 +576,21 @@ export default function AdminGames() {
             </Labeled>
           </div>
         </div>
+
+        <label className="flex items-start gap-2 rounded bg-black/[0.03] px-3 py-2 text-sm">
+          <input
+            type="checkbox"
+            className="mt-0.5"
+            checked={form.requireLandscape}
+            onChange={(e) => set('requireLandscape', e.target.checked)}
+          />
+          <span>
+            Game yêu cầu xoay ngang (landscape)
+            <span className="mt-0.5 block text-xs opacity-60">
+              Bật = trên điện thoại cầm dọc sẽ hiện thông báo nhắc người dùng xoay ngang màn hình mới chơi được. Để tắt nếu game chơi tốt ở màn dọc.
+            </span>
+          </span>
+        </label>
 
         <Labeled label="Tiêu đề (thẻ title / SEO)">
           <input className={field} value={form.title} onChange={(e) => set('title', e.target.value)} />

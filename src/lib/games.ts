@@ -33,6 +33,7 @@ export interface GameDetail {
   embedUrl: string;
   aspectW: number;
   aspectH: number;
+  requireLandscape: boolean;
   bodyHtml: string;
   robots: { index: boolean; follow: boolean };
   // { locale: slug } của các bản dịch đã publish (gồm cả game hiện tại).

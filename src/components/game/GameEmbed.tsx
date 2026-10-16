@@ -1,20 +1,29 @@
+import GameFrame, { type GameFrameLabels } from './GameFrame';
+
 // Khung nhúng game (iframe GamePix). URL đã được backend kiểm host (*.gamepix.com) khi lưu.
 // sandbox giới hạn quyền của iframe; allow mở các tính năng cần cho game (toàn màn hình, tay cầm…).
+// Bọc trong GameFrame để có nút fullscreen + overlay nhắc xoay ngang trên mobile (khi requireLandscape).
 export default function GameEmbed({
   embedUrl,
   title,
   aspectW = 16,
   aspectH = 9,
+  requireLandscape = false,
+  frameLabels,
 }: {
   embedUrl: string;
   title: string;
   aspectW?: number;
   aspectH?: number;
+  requireLandscape?: boolean;
+  frameLabels: GameFrameLabels;
 }) {
   if (!embedUrl) return null;
   return (
-    <div
-      className="w-full overflow-hidden rounded-lg border border-black/10 bg-black"
+    <GameFrame
+      labels={frameLabels}
+      requireLandscape={requireLandscape}
+      className="overflow-hidden rounded-lg border border-black/10 bg-black"
       style={{ aspectRatio: `${aspectW} / ${aspectH}` }}
     >
       <iframe
@@ -27,6 +36,6 @@ export default function GameEmbed({
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock allow-orientation-lock"
         referrerPolicy="no-referrer-when-downgrade"
       />
-    </div>
+    </GameFrame>
   );
 }

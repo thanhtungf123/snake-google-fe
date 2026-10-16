@@ -27,7 +27,11 @@
     "empty": "Chưa có trò chơi nào được đăng. Hãy quay lại sau nhé!",
     "related": "Trò chơi liên quan",
     "noEmbed": "Trò chơi này hiện chưa sẵn sàng.",
-    "backToAll": "← Tất cả trò chơi"
+    "backToAll": "← Tất cả trò chơi",
+    "fullscreen": "Toàn màn hình",
+    "exitFullscreen": "Thoát toàn màn hình",
+    "rotateTitle": "Hãy xoay ngang điện thoại",
+    "rotateHint": "Xoay ngang thiết bị để chơi trò chơi này."
   },
   "Home": {
     "title": "Chơi Rắn Săn Mồi",

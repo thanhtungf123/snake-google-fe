@@ -98,6 +98,13 @@ export default async function GameDetailPage({
           title={game.h1}
           aspectW={game.aspectW}
           aspectH={game.aspectH}
+          requireLandscape={game.requireLandscape}
+          frameLabels={{
+            fullscreen: t('fullscreen'),
+            exitFullscreen: t('exitFullscreen'),
+            rotateTitle: t('rotateTitle'),
+            rotateHint: t('rotateHint'),
+          }}
         />
       ) : (
         <p className="rounded border border-black/10 bg-black/[0.03] px-4 py-6 text-center opacity-60">

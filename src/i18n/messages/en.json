@@ -27,7 +27,11 @@
     "empty": "No games have been published yet. Check back soon!",
     "related": "Related games",
     "noEmbed": "This game is not available right now.",
-    "backToAll": "← All games"
+    "backToAll": "← All games",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "rotateTitle": "Rotate your phone",
+    "rotateHint": "Turn your device sideways (landscape) to play this game."
   },
   "Home": {
     "title": "Play Snake",

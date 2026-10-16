@@ -34,6 +34,7 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'Home' });
+  const tg = await getTranslations({ locale, namespace: 'Games' });
   const c = await getPageContent('home', locale);
 
   const title = c?.seoTitle || t('title');
@@ -47,7 +48,14 @@ export default async function HomePage({
         {c?.heroIntro || t('intro')}
       </p>
 
-      <RankedGameEmbed />
+      <RankedGameEmbed
+        frameLabels={{
+          fullscreen: tg('fullscreen'),
+          exitFullscreen: tg('exitFullscreen'),
+          rotateTitle: tg('rotateTitle'),
+          rotateHint: tg('rotateHint'),
+        }}
+      />
 
       <PostGamePanel />
 

@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { API_URL } from '@/lib/api';
 import Spinner from '@/components/ui/Spinner';
+import GameFrame, { type GameFrameLabels } from './GameFrame';
 
 // Nhúng game Google (bản vanilla) cho chế độ ranked.
 // Vì iframe cùng origin với trang cha, ta ép snakeChosenMod='none' trước khi game tải
 // để trang chủ luôn là bản không mod (khu /mods mới cho chọn mod).
-export default function RankedGameEmbed() {
+export default function RankedGameEmbed({ frameLabels }: { frameLabels: GameFrameLabels }) {
   const [ready, setReady] = useState(false);
   const [loaded, setLoaded] = useState(false);
   // Đổi key để remount iframe → chơi lại từ đầu (dùng khi bấm "Chơi lại" ở khung kết thúc).
@@ -55,7 +56,11 @@ export default function RankedGameEmbed() {
 
   return (
     // relative + chiều cao cố định: giữ chỗ chống layout shift, overlay spinner khi game đang tải.
-    <div className="relative mx-auto h-[70vh] min-h-[480px] w-full max-w-3xl overflow-hidden rounded-lg border border-black/10 bg-board-light">
+    // GameFrame thêm nút fullscreen (game chính chơi tốt ở màn dọc nên không ép xoay ngang).
+    <GameFrame
+      labels={frameLabels}
+      className="mx-auto h-[70vh] min-h-[480px] w-full max-w-3xl overflow-hidden rounded-lg border border-black/10 bg-board-light"
+    >
       {ready && (
         <iframe
           key={reloadKey}
@@ -70,6 +75,6 @@ export default function RankedGameEmbed() {
           <Spinner className="h-9 w-9" />
         </div>
       )}
-    </div>
+    </GameFrame>
   );
 }
