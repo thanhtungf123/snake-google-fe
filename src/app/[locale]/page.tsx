@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo/metadata';
 import type { Locale } from '@/i18n/routing';
 import RankedGameEmbed from '@/components/game/RankedGameEmbed';
-import PostGamePanel from '@/components/game/PostGamePanel';
 import HomeTopBoard from '@/components/HomeTopBoard';
 import JsonLd from '@/components/JsonLd';
 import { websiteJsonLd, gameJsonLd } from '@/lib/seo/jsonld';
@@ -56,8 +55,6 @@ export default async function HomePage({
           rotateHint: tg('rotateHint'),
         }}
       />
-
-      <PostGamePanel />
 
       <HomeTopBoard locale={locale} />
 

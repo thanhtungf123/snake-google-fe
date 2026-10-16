@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { API_URL } from '@/lib/api';
 import Spinner from '@/components/ui/Spinner';
 import GameFrame, { type GameFrameLabels } from './GameFrame';
+import PostGamePanel from './PostGamePanel';
 
 // Nhúng game Google (bản vanilla) cho chế độ ranked.
 // Vì iframe cùng origin với trang cha, ta ép snakeChosenMod='none' trước khi game tải
@@ -60,6 +61,7 @@ export default function RankedGameEmbed({ frameLabels }: { frameLabels: GameFram
     <GameFrame
       labels={frameLabels}
       className="mx-auto h-[70vh] min-h-[480px] w-full max-w-3xl overflow-hidden rounded-lg border border-black/10 bg-board-light"
+      overlay={<PostGamePanel />}
     >
       {ready && (
         <iframe

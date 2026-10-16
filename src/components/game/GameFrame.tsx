@@ -34,12 +34,16 @@ export default function GameFrame({
   requireLandscape = false,
   className = '',
   style,
+  overlay,
 }: {
   children: ReactNode;
   labels: GameFrameLabels;
   requireLandscape?: boolean;
   className?: string; // style khung khi KHÔNG fullscreen (viền, bo góc, tỉ lệ…)
   style?: CSSProperties; // vd aspectRatio
+  // Nội dung render BÊN TRONG khung (vd modal kết thúc ván) để hiện được cả khi fullscreen —
+  // phần tử fullscreen chỉ hiển thị chính nó + con của nó, nên modal phải nằm trong đây.
+  overlay?: ReactNode;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [nativeFs, setNativeFs] = useState(false); // fullscreen thật (Fullscreen API)
@@ -158,6 +162,8 @@ export default function GameFrame({
           <p className="max-w-xs text-sm opacity-80">{labels.rotateHint}</p>
         </div>
       )}
+
+      {overlay}
     </div>
   );
 }
