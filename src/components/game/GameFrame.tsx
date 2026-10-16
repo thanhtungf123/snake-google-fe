@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
 // Wrapper dùng chung cho MỌI khung game (iframe GamePix ở /games/[slug] và game chính ở trang chủ).
-// - Nút Fullscreen (toàn màn hình) — chạy trên Android & desktop; iOS Safari không hỗ trợ fullscreen
-//   cho <div>/<iframe> nên nút tự ẩn khi trình duyệt không cho (document.fullscreenEnabled = false).
+// - Nút Fullscreen LUÔN hiện và hoạt động trên mọi thiết bị:
+//     + Android/desktop: dùng Fullscreen API thật.
+//     + iOS Safari (chặn Fullscreen API cho <div>/<iframe>): tự fallback sang "fullscreen bằng CSS"
+//       (phủ kín màn hình bằng position:fixed) để nút vẫn dùng được.
 // - Overlay "xoay ngang điện thoại" khi game yêu cầu landscape mà máy đang dọc (chỉ trên thiết bị cảm ứng).
 //   Không tự xoay được trên iOS (Apple chặn screen.orientation.lock) nên chỉ NHẮC user tự xoay.
 export interface GameFrameLabels {
@@ -21,7 +23,6 @@ interface FsElement extends HTMLElement {
 interface FsDocument extends Document {
   webkitFullscreenElement?: Element | null;
   webkitExitFullscreen?: () => Promise<void> | void;
-  webkitFullscreenEnabled?: boolean;
 }
 interface OrientationLock extends ScreenOrientation {
   lock?: (orientation: 'landscape' | 'portrait' | string) => Promise<void>;
@@ -41,20 +42,16 @@ export default function GameFrame({
   style?: CSSProperties; // vd aspectRatio
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [isFs, setIsFs] = useState(false);
-  const [fsAllowed, setFsAllowed] = useState(false);
+  const [nativeFs, setNativeFs] = useState(false); // fullscreen thật (Fullscreen API)
+  const [cssFs, setCssFs] = useState(false); // fullscreen giả lập bằng CSS (iOS)
   const [showRotate, setShowRotate] = useState(false);
 
-  // Trình duyệt có cho fullscreen không? (iOS Safari: false → ẩn nút)
-  useEffect(() => {
-    const d = document as FsDocument;
-    setFsAllowed(Boolean(d.fullscreenEnabled || d.webkitFullscreenEnabled));
-  }, []);
+  const isFs = nativeFs || cssFs;
 
-  // Theo dõi trạng thái fullscreen (hỗ trợ cả webkit).
+  // Theo dõi trạng thái fullscreen thật (hỗ trợ cả webkit). Khi thoát (vd nhấn Esc) tự cập nhật.
   useEffect(() => {
     const d = document as FsDocument;
-    const onChange = () => setIsFs(Boolean(d.fullscreenElement || d.webkitFullscreenElement));
+    const onChange = () => setNativeFs(Boolean(d.fullscreenElement || d.webkitFullscreenElement));
     document.addEventListener('fullscreenchange', onChange);
     document.addEventListener('webkitfullscreenchange', onChange);
     return () => {
@@ -62,6 +59,16 @@ export default function GameFrame({
       document.removeEventListener('webkitfullscreenchange', onChange);
     };
   }, []);
+
+  // Khi fullscreen giả lập (CSS): khoá cuộn trang nền để không bị lòi nội dung khác.
+  useEffect(() => {
+    if (!cssFs) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [cssFs]);
 
   // Hiện overlay nhắc xoay: game yêu cầu landscape + thiết bị cảm ứng + đang để dọc.
   useEffect(() => {
@@ -78,60 +85,74 @@ export default function GameFrame({
     };
   }, [requireLandscape]);
 
-  const enterFullscreen = useCallback(async () => {
-    const el = wrapRef.current as FsElement | null;
-    if (!el) return;
+  const tryLockLandscape = useCallback(async () => {
+    if (!requireLandscape) return;
+    const o = (screen.orientation ?? undefined) as OrientationLock | undefined;
     try {
-      if (el.requestFullscreen) await el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+      await o?.lock?.('landscape');
     } catch {
-      return;
-    }
-    // Android: cố khoá ngang khi game yêu cầu landscape (iOS sẽ bỏ qua — không sao).
-    if (requireLandscape) {
-      const o = (screen.orientation ?? undefined) as OrientationLock | undefined;
-      try {
-        await o?.lock?.('landscape');
-      } catch {
-        /* iOS/desktop không hỗ trợ — bỏ qua */
-      }
+      /* iOS/desktop không hỗ trợ — bỏ qua */
     }
   }, [requireLandscape]);
 
+  const enterFullscreen = useCallback(async () => {
+    const el = wrapRef.current as FsElement | null;
+    if (!el) return;
+    // 1) Thử Fullscreen API thật (Android/desktop).
+    const req = el.requestFullscreen ?? el.webkitRequestFullscreen;
+    if (req) {
+      try {
+        await req.call(el);
+        await tryLockLandscape();
+        return;
+      } catch {
+        /* không được thì rơi xuống fallback CSS */
+      }
+    }
+    // 2) Fallback: fullscreen bằng CSS (iOS Safari…).
+    setCssFs(true);
+    await tryLockLandscape();
+  }, [tryLockLandscape]);
+
   const exitFullscreen = useCallback(async () => {
     const d = document as FsDocument;
-    try {
-      if (d.exitFullscreen) await d.exitFullscreen();
-      else if (d.webkitExitFullscreen) await d.webkitExitFullscreen();
-    } catch {
-      /* bỏ qua */
+    if (d.fullscreenElement || d.webkitFullscreenElement) {
+      try {
+        if (d.exitFullscreen) await d.exitFullscreen();
+        else if (d.webkitExitFullscreen) await d.webkitExitFullscreen();
+      } catch {
+        /* bỏ qua */
+      }
     }
+    setCssFs(false);
   }, []);
 
-  const toggleFullscreen = isFs ? exitFullscreen : enterFullscreen;
+  const toggleFullscreen = useCallback(() => {
+    if (isFs) void exitFullscreen();
+    else void enterFullscreen();
+  }, [isFs, enterFullscreen, exitFullscreen]);
+
+  // Lớp vỏ: bình thường theo className/style; khi fullscreen (thật hoặc CSS) phủ kín màn hình.
+  const wrapClass = isFs
+    ? 'fixed inset-0 z-[9999] flex h-full w-full items-center justify-center bg-black'
+    : `relative ${className}`;
 
   return (
-    <div
-      ref={wrapRef}
-      className={isFs ? 'relative flex h-full w-full items-center justify-center bg-black' : `relative ${className}`}
-      style={isFs ? undefined : style}
-    >
+    <div ref={wrapRef} className={wrapClass} style={isFs ? undefined : style}>
       {children}
 
-      {fsAllowed && (
-        <button
-          type="button"
-          onClick={toggleFullscreen}
-          aria-label={isFs ? labels.exitFullscreen : labels.fullscreen}
-          title={isFs ? labels.exitFullscreen : labels.fullscreen}
-          className="absolute right-2 top-2 z-20 flex h-9 w-9 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        >
-          {isFs ? <ExitIcon /> : <EnterIcon />}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={toggleFullscreen}
+        aria-label={isFs ? labels.exitFullscreen : labels.fullscreen}
+        title={isFs ? labels.exitFullscreen : labels.fullscreen}
+        className="absolute right-2 top-2 z-[10000] flex h-9 w-9 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+      >
+        {isFs ? <ExitIcon /> : <EnterIcon />}
+      </button>
 
       {showRotate && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 bg-black/90 px-6 text-center text-white">
+        <div className="absolute inset-0 z-[10001] flex flex-col items-center justify-center gap-3 bg-black/90 px-6 text-center text-white">
           <RotateIcon />
           <p className="text-lg font-semibold">{labels.rotateTitle}</p>
           <p className="max-w-xs text-sm opacity-80">{labels.rotateHint}</p>
