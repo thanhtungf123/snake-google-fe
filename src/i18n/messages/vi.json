@@ -319,6 +319,7 @@
   "PostGame": {
     "youScored": "Bạn vừa đạt {score} điểm!",
     "youScoredZero": "Ván đã kết thúc.",
+    "saving": "Đang lưu điểm…",
     "guestInvite": "Đăng ký miễn phí để lưu kỷ lục và tranh thứ hạng với những người chơi khác.",
     "registerSave": "Đăng ký để lưu điểm",
     "login": "Đăng nhập",

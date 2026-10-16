@@ -11,6 +11,8 @@ interface Saved {
   isGuest: boolean;
   isNewBest: boolean;
   personalBest: number;
+  // true = vừa game-over, đang chờ server xác nhận lưu điểm (hiện popup trước cho nhanh).
+  pending: boolean;
 }
 
 // Popup (modal) hiện giữa màn hình sau khi kết thúc ván:
@@ -30,6 +32,19 @@ export default function PostGamePanel() {
         setData(null);
         return;
       }
+      // Game vừa kết thúc: hiện popup NGAY ở trạng thái "đang lưu" (không chờ mạng).
+      if (d.type === 'gs:game-over') {
+        const score = d.payload?.score ?? 0;
+        setData({
+          status: 'valid',
+          score,
+          isGuest: false,
+          isNewBest: false,
+          personalBest: 0,
+          pending: true,
+        });
+        return;
+      }
       if (d.type === 'gs:score-saved' && d.payload) {
         const p = d.payload;
         const saved: Saved = {
@@ -38,7 +53,9 @@ export default function PostGamePanel() {
           isGuest: !!p.isGuest,
           isNewBest: !!p.isNewBest,
           personalBest: p.personalBest ?? 0,
+          pending: false,
         };
+        // Giữ popup nếu đang mở (từ gs:game-over), chỉ cập nhật nội dung thật.
         setData(saved);
         // Khách có điểm > 0: nhớ điểm để sau khi đăng nhập/đăng ký hiện popup "đã lưu".
         if (saved.isGuest && saved.score > 0 && saved.status !== 'rejected') {
@@ -103,7 +120,14 @@ export default function PostGamePanel() {
           <p className="mt-1 text-sm text-red-600">{t('notCounted')}</p>
         )}
 
-        {data.isGuest ? (
+        {data.pending ? (
+          <div className="mt-4 flex flex-col gap-2">
+            <p className="text-sm opacity-70">{t('saving')}</p>
+            <button onClick={replay} className={ghostBtn}>
+              {t('playAgain')}
+            </button>
+          </div>
+        ) : data.isGuest ? (
           <>
             {scored && <p className="mt-2 text-sm opacity-80">{t('guestInvite')}</p>}
             <div className="mt-4 flex flex-col gap-2">

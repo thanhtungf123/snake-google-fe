@@ -63,6 +63,9 @@
       if (typeof len !== 'number') return;
       var score = Math.max(0, len - SNAKE_START_LEN);
       log('game over, score =', score);
+      // Báo trang cha NGAY để hiện popup tức thì (không chờ mạng gửi điểm).
+      // Trạng thái "đã lưu / kỷ lục" sẽ được cập nhật sau qua 'gs:score-saved'.
+      try { window.parent.postMessage({ type: 'gs:game-over', payload: { score: score } }, '*'); } catch (e) {}
       submitScore(score);
     } catch (e) {
       log('death hook err', e);

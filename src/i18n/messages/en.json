@@ -319,6 +319,7 @@
   "PostGame": {
     "youScored": "You scored {score}!",
     "youScoredZero": "Game over.",
+    "saving": "Saving your score…",
     "guestInvite": "Sign up free to save your record and compete on the leaderboard.",
     "registerSave": "Sign up to save score",
     "login": "Log in",
