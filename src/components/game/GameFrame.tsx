@@ -150,13 +150,13 @@ export default function GameFrame({
         onClick={toggleFullscreen}
         aria-label={isFs ? labels.exitFullscreen : labels.fullscreen}
         title={isFs ? labels.exitFullscreen : labels.fullscreen}
-        className="absolute right-2 top-2 z-[10000] flex h-9 w-9 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+        className="absolute right-2 top-2 z-20 flex h-9 w-9 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
       >
         {isFs ? <ExitIcon /> : <EnterIcon />}
       </button>
 
       {showRotate && (
-        <div className="absolute inset-0 z-[10001] flex flex-col items-center justify-center gap-3 bg-black/90 px-6 text-center text-white">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 bg-black/90 px-6 text-center text-white">
           <RotateIcon />
           <p className="text-lg font-semibold">{labels.rotateTitle}</p>
           <p className="max-w-xs text-sm opacity-80">{labels.rotateHint}</p>

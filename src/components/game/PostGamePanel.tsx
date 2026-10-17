@@ -92,7 +92,7 @@ export default function PostGamePanel() {
 
   return (
     <div
-      className="fixed inset-0 z-[10050] flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4"
       role="dialog"
       aria-modal="true"
       onClick={close}
