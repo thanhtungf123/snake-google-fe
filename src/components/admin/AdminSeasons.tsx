@@ -14,6 +14,7 @@ import {
   Th,
   Td,
   TableEmpty,
+  TableSkeleton,
 } from './ui';
 
 interface SeasonRow {
@@ -44,6 +45,7 @@ interface Preview {
 export default function AdminSeasons() {
   const [rows, setRows] = useState<SeasonRow[]>([]);
   const [defaultTiers, setDefaultTiers] = useState(3);
+  const [loaded, setLoaded] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -59,6 +61,7 @@ export default function AdminSeasons() {
     );
     setRows(d.rows);
     setDefaultTiers(d.defaultRewardTiers);
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -135,6 +138,9 @@ export default function AdminSeasons() {
         </p>
       )}
 
+      {!loaded ? (
+        <TableSkeleton rows={6} cols={5} />
+      ) : (
       <Table minWidth={560}>
         <THead>
           <Tr hover={false}>
@@ -186,6 +192,7 @@ export default function AdminSeasons() {
           {rows.length === 0 && <TableEmpty colSpan={5}>Chưa có mùa giải.</TableEmpty>}
         </TBody>
       </Table>
+      )}
 
       {preview && (
         <Card>

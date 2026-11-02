@@ -15,6 +15,7 @@ import {
   Th,
   Td,
   TableEmpty,
+  TableSkeleton,
 } from './ui';
 
 type ClaimStatus = 'pending_info' | 'info_submitted' | 'paid' | 'cancelled';
@@ -66,6 +67,7 @@ export default function AdminRewards() {
   const [rows, setRows] = useState<ClaimRow[]>([]);
   const [statusFilter, setStatusFilter] = useState<'' | ClaimStatus>('');
   const [monthFilter, setMonthFilter] = useState('');
+  const [loaded, setLoaded] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -78,6 +80,7 @@ export default function AdminRewards() {
     if (/^\d{4}-\d{2}$/.test(monthFilter)) qs.set('monthKey', monthFilter);
     const d = await adminGet<{ rows: ClaimRow[] }>(`/api/admin/rewards?${qs.toString()}`);
     setRows(d.rows);
+    setLoaded(true);
   }, [statusFilter, monthFilter]);
 
   useEffect(() => {
@@ -158,6 +161,9 @@ export default function AdminRewards() {
         </p>
       )}
 
+      {!loaded ? (
+        <TableSkeleton rows={6} cols={6} />
+      ) : (
       <Table minWidth={760}>
         <THead>
           <Tr hover={false}>
@@ -243,6 +249,7 @@ export default function AdminRewards() {
           )}
         </TBody>
       </Table>
+      )}
 
       <ConfirmModal
         open={action?.kind === 'paid'}

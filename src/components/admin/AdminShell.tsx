@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState, type ReactNode, type ComponentType, type SVGProps } from 'react';
+import Link, { useLinkStatus } from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import PageLoader from '@/components/ui/PageLoader';
+import Spinner from '@/components/ui/Spinner';
 import {
   IconDashboard,
   IconUsers,
@@ -41,6 +43,39 @@ const TABS: { href: string; label: string; icon: IconType }[] = [
 ];
 
 type Theme = 'light' | 'dark';
+
+// Nội dung một mục sidebar. Dùng useLinkStatus (phải nằm TRONG <Link>) để biết
+// khi nào đang điều hướng tới mục này → sáng ngay + hiện spinner, cho cảm giác
+// bấm là có phản hồi tức thì (không chờ route load xong mới đổi highlight).
+function NavRow({
+  icon: Icon,
+  label,
+  active,
+  mini,
+}: {
+  icon: IconType;
+  label: string;
+  active: boolean;
+  mini: boolean;
+}) {
+  const { pending } = useLinkStatus();
+  const on = active || pending;
+  return (
+    <span
+      className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+        mini ? 'justify-center' : ''
+      } ${
+        on
+          ? 'bg-[var(--ad-sidebar-active)] text-white'
+          : 'text-[var(--ad-sidebar-text)] hover:bg-white/5 hover:text-white'
+      }`}
+    >
+      <Icon className="h-5 w-5 shrink-0" />
+      {!mini && <span className="truncate">{label}</span>}
+      {pending && <Spinner className={`h-4 w-4 ${mini ? 'absolute right-1 top-1' : 'ml-auto'}`} />}
+    </span>
+  );
+}
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -107,8 +142,12 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   }
 
   if (state === 'loading') {
+    // Overlay phủ toàn màn hình ngay từ đầu để không lộ header/menu của site công khai.
     return (
-      <div className="mx-auto max-w-5xl px-4 py-10">
+      <div
+        className="admin-root fixed inset-0 z-40 grid place-items-center"
+        data-admin-theme={theme}
+      >
         <PageLoader minHeight="min-h-[40vh]" />
       </div>
     );
@@ -116,12 +155,17 @@ export default function AdminShell({ children }: { children: ReactNode }) {
 
   if (state === 'forbidden') {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-10">
-        <h1 className="mb-2 text-2xl font-bold">Khu vực quản trị</h1>
-        <p className="opacity-80">Bạn không có quyền truy cập trang này.</p>
-        <a href="/" className="mt-4 inline-block text-snake underline">
-          ← Về trang chủ
-        </a>
+      <div
+        className="admin-root fixed inset-0 z-40 grid place-items-center p-6 text-center"
+        data-admin-theme={theme}
+      >
+        <div>
+          <h1 className="mb-2 text-2xl font-bold">Khu vực quản trị</h1>
+          <p className="text-[var(--ad-muted)]">Bạn không có quyền truy cập trang này.</p>
+          <a href="/" className="mt-4 inline-block text-[var(--ad-accent)] underline">
+            ← Về trang chủ
+          </a>
+        </div>
       </div>
     );
   }
@@ -129,6 +173,8 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   // Bỏ prefix locale (vd /vi) nếu có để so khớp tab.
   const normalized = pathname.replace(/^\/(en|vi)(?=\/|$)/, '') || '/';
   const current = normalized.endsWith('/') ? normalized : normalized + '/';
+  // Giữ nguyên tiền tố locale khi điều hướng (VI nằm dưới /vi, EN không prefix).
+  const localePrefix = pathname.startsWith('/vi') ? '/vi' : '';
   const activeTab =
     TABS.find((t) => (t.href === '/admin/' ? current === '/admin/' : current.startsWith(t.href))) ??
     TABS[0];
@@ -139,22 +185,16 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         t.href === '/admin/' ? current === '/admin/' : current.startsWith(t.href);
       const Icon = t.icon;
       return (
-        <a
+        <Link
           key={t.href}
-          href={t.href}
+          href={`${localePrefix}${t.href}`}
+          prefetch
           onClick={onNavigate}
           title={mini ? t.label : undefined}
-          className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-            mini ? 'justify-center' : ''
-          } ${
-            active
-              ? 'bg-[var(--ad-sidebar-active)] text-white'
-              : 'text-[var(--ad-sidebar-text)] hover:bg-white/5 hover:text-white'
-          }`}
+          className="block rounded-lg"
         >
-          <Icon className="h-5 w-5 shrink-0" />
-          {!mini && <span className="truncate">{t.label}</span>}
-        </a>
+          <NavRow icon={Icon} label={t.label} active={active} mini={mini} />
+        </Link>
       );
     });
 
@@ -280,7 +320,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
 
         {/* Nội dung chính (cuộn riêng) */}
         <main className="admin-scroll flex-1 overflow-y-auto p-4 sm:p-6">
-          <div className="mx-auto max-w-7xl">
+          <div key={current} className="animate-fade-in mx-auto max-w-7xl">
             <h1 className="mb-5 text-xl font-bold sm:text-2xl">{activeTab.label}</h1>
             {children}
           </div>

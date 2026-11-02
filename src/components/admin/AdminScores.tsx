@@ -16,6 +16,7 @@ import {
   Td,
   TableEmpty,
   Pager,
+  TableSkeleton,
 } from './ui';
 
 interface Row {
@@ -72,6 +73,7 @@ export default function AdminScores() {
   const [guestF, setGuestF] = useState<GuestFilter>('all');
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [modal, setModal] = useState<{ type: 'reject' | 'accept'; score: Row } | null>(null);
 
@@ -84,6 +86,7 @@ export default function AdminScores() {
     const d = await adminGet<{ rows: Row[]; total: number }>(`/api/admin/scores?${qs}`);
     setRows(d.rows);
     setTotal(d.total);
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -160,6 +163,9 @@ export default function AdminScores() {
 
       {err && <p className="text-[var(--ad-danger)]">{err}</p>}
 
+      {!loaded ? (
+        <TableSkeleton rows={8} cols={6} />
+      ) : (
       <Table>
         <THead>
           <Tr hover={false}>
@@ -232,6 +238,7 @@ export default function AdminScores() {
           {rows.length === 0 && <TableEmpty colSpan={6}>Không có điểm nào.</TableEmpty>}
         </TBody>
       </Table>
+      )}
 
       <Pager total={total} skip={skip} page={PAGE} onChange={setSkip} />
 

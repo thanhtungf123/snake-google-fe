@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n/routing';
-import AdminShell from '@/components/admin/AdminShell';
 import AdminUsers from '@/components/admin/AdminUsers';
 
 export const metadata: Metadata = {
@@ -17,8 +16,6 @@ export default async function AdminUsersPage({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <AdminShell>
-      <AdminUsers />
-    </AdminShell>
+    <AdminUsers />
   );
 }

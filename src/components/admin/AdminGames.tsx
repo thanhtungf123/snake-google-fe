@@ -99,6 +99,7 @@ export default function AdminGames() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Row | null>(null);
+  const [sub, setSub] = useState<'list' | 'form' | 'index'>('list');
 
   async function loadAll() {
     const d = await adminGet<{ rows: Row[] }>('/api/admin/games');
@@ -141,7 +142,16 @@ export default function AdminGames() {
     });
     setMsg(null);
     setErr(null);
-    if (typeof window !== 'undefined') window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+
+  // Mở form ở tab riêng.
+  function editInForm(r: Row) {
+    startEdit(r);
+    setSub('form');
+  }
+  function newInForm() {
+    startNew();
+    setSub('form');
   }
 
   async function save(e: React.FormEvent) {
@@ -261,7 +271,8 @@ export default function AdminGames() {
   }
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
-  const field = 'w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm';
+  const field =
+    'w-full rounded-lg border border-[var(--ad-border)] bg-[var(--ad-surface)] px-3 py-2 text-sm text-[var(--ad-text)] outline-none focus:border-[var(--ad-accent)]';
 
   const otherLocale: 'en' | 'vi' = form.editLocale === 'en' ? 'vi' : 'en';
   const otherExists = editingId ? rows.some((r) => r.key === form.key && r.locale === otherLocale) : false;
@@ -315,18 +326,40 @@ export default function AdminGames() {
     }));
   }
 
+  const subTabBtn = (key: 'list' | 'form' | 'index', label: string) => (
+    <button
+      type="button"
+      onClick={() => setSub(key)}
+      className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+        sub === key
+          ? 'bg-[var(--ad-accent)] text-[var(--ad-on-accent)]'
+          : 'border border-[var(--ad-border)] bg-[var(--ad-surface)] text-[var(--ad-muted)] hover:bg-[var(--ad-hover)]'
+      }`}
+    >
+      {label}
+    </button>
+  );
+
   return (
-    <div className="space-y-8">
-      {/* ======= Cấu hình trang tổng hợp ======= */}
-      <GamesIndexEditor />
+    <div className="space-y-5">
+      {/* Sub-tab điều hướng trong trang Game */}
+      <div className="flex flex-wrap gap-2">
+        {subTabBtn('list', `Danh sách game (${groups.length})`)}
+        {subTabBtn('form', editingId ? 'Sửa game' : 'Thêm game')}
+        {subTabBtn('index', 'Trang tổng hợp')}
+      </div>
+
+      {err && <p className="whitespace-pre-line text-[var(--ad-danger)]">{err}</p>}
+      {msg && <p className="text-[var(--ad-ok)]">{msg}</p>}
 
       {/* ======= Danh sách game ======= */}
-      <div className="border-t border-[var(--ad-border)] pt-6">
+      {sub === 'list' && (
+      <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Game ({groups.length})</h2>
+          <h2 className="text-lg font-semibold">Danh sách game ({groups.length})</h2>
           <button
-            onClick={startNew}
-            className="rounded bg-[var(--ad-accent)] px-4 py-1.5 text-sm font-semibold text-white"
+            onClick={newInForm}
+            className="rounded-lg bg-[var(--ad-accent)] px-4 py-1.5 text-sm font-semibold text-white"
           >
             + Thêm game mới
           </button>
@@ -395,7 +428,7 @@ export default function AdminGames() {
                                   <span className="text-xs opacity-50">Nháp</span>
                                 )}
                                 {!r.embedUrl && (
-                                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] text-amber-700">
+                                  <span className="rounded bg-[var(--ad-warn-weak)] px-1.5 py-0.5 text-[11px] text-[var(--ad-warn)]">
                                     chưa gắn iframe
                                   </span>
                                 )}
@@ -418,7 +451,7 @@ export default function AdminGames() {
                                     Xem
                                   </a>
                                 )}
-                                <button onClick={() => startEdit(r)} className="text-[var(--ad-accent)] underline">
+                                <button onClick={() => editInForm(r)} className="text-[var(--ad-accent)] underline">
                                   Sửa
                                 </button>
                                 <button
@@ -440,13 +473,21 @@ export default function AdminGames() {
           </>
         )}
       </div>
-
-      {err && <p className="whitespace-pre-line text-[var(--ad-danger)]">{err}</p>}
-      {msg && <p className="text-[var(--ad-ok)]">{msg}</p>}
+      )}
 
       {/* ======= Form tạo/sửa game ======= */}
-      <form onSubmit={save} className="space-y-4 border-t border-[var(--ad-border)] pt-5">
-        <h3 className="text-base font-semibold">{editingId ? 'Sửa game' : 'Thêm game mới'}</h3>
+      {sub === 'form' && (
+      <form onSubmit={save} className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold">{editingId ? 'Sửa game' : 'Thêm game mới'}</h3>
+          <button
+            type="button"
+            onClick={() => setSub('list')}
+            className="text-sm text-[var(--ad-accent)] underline"
+          >
+            ← Về danh sách
+          </button>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Labeled label="Key (nhóm các bản dịch EN/VI, vd: snake-3d)">
@@ -702,6 +743,10 @@ export default function AdminGames() {
           )}
         </div>
       </form>
+      )}
+
+      {/* ======= Trang tổng hợp (/all-games · /vi/tro-choi) ======= */}
+      {sub === 'index' && <GamesIndexEditor />}
 
       <ConfirmModal
         open={!!confirmDelete}
