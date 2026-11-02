@@ -237,7 +237,7 @@ export default function AdminPages() {
   }
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
-  const field = 'w-full rounded border border-black/15 px-3 py-2 text-sm';
+  const field = 'w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm';
 
   // Ngôn ngữ còn thiếu của trang đang sửa (để nút "tạo bản dịch còn thiếu").
   const otherLocale: 'en' | 'vi' = form.editLocale === 'en' ? 'vi' : 'en';
@@ -299,7 +299,7 @@ export default function AdminPages() {
           <h2 className="text-lg font-semibold">Trang tùy chỉnh ({groups.length})</h2>
           <button
             onClick={startNew}
-            className="rounded bg-snake px-4 py-1.5 text-sm font-semibold text-white"
+            className="rounded bg-[var(--ad-accent)] px-4 py-1.5 text-sm font-semibold text-white"
           >
             + Tạo trang mới
           </button>
@@ -314,7 +314,7 @@ export default function AdminPages() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-black/10 text-left opacity-60">
+                <tr className="border-b border-[var(--ad-border)] text-left opacity-60">
                   <th className="py-2 pr-3">Thứ tự</th>
                   <th className="py-2 pr-3">Key</th>
                   <th className="py-2 pr-3">Tiêu đề</th>
@@ -326,7 +326,7 @@ export default function AdminPages() {
                 {groups.map((g, gi) => {
                   const primary = g.list.find((r) => r.locale === 'en') ?? g.list[0];
                   return (
-                    <tr key={g.key} className="border-b border-black/5 align-top">
+                    <tr key={g.key} className="border-b border-[var(--ad-border)] align-top">
                       <td className="py-2 pr-3">
                         <div className="flex items-center gap-2">
                           <div className="flex flex-col leading-none">
@@ -358,14 +358,14 @@ export default function AdminPages() {
                         <div className="flex flex-col gap-1">
                           {g.list.map((r) => (
                             <div key={r.id} className="flex items-center gap-2">
-                              <span className="rounded bg-black/10 px-1.5 py-0.5 text-[11px] font-semibold uppercase">
+                              <span className="rounded bg-[var(--ad-hover)] px-1.5 py-0.5 text-[11px] font-semibold uppercase">
                                 {r.locale}
                               </span>
                               <span className="font-mono text-xs opacity-70">
                                 {r.locale === 'en' ? '' : '/vi'}/{r.slug}
                               </span>
                               {r.isPublished ? (
-                                <span className="text-xs text-green-700">Published</span>
+                                <span className="text-xs text-[var(--ad-ok)]">Published</span>
                               ) : (
                                 <span className="text-xs opacity-50">Nháp</span>
                               )}
@@ -388,12 +388,12 @@ export default function AdminPages() {
                                   href={urlFor(r.locale, r.slug)}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-snake underline"
+                                  className="text-[var(--ad-accent)] underline"
                                 >
                                   Xem
                                 </a>
                               )}
-                              <button onClick={() => startEdit(r)} className="text-snake underline">
+                              <button onClick={() => startEdit(r)} className="text-[var(--ad-accent)] underline">
                                 Sửa
                               </button>
                               <button
@@ -410,7 +410,7 @@ export default function AdminPages() {
                               </button>
                               <button
                                 onClick={() => setConfirmDelete(r)}
-                                className="text-red-600 underline"
+                                className="text-[var(--ad-danger)] underline"
                               >
                                 Xoá
                               </button>
@@ -428,11 +428,11 @@ export default function AdminPages() {
         )}
       </div>
 
-      {err && <p className="whitespace-pre-line text-red-600">{err}</p>}
-      {msg && <p className="text-green-700">{msg}</p>}
+      {err && <p className="whitespace-pre-line text-[var(--ad-danger)]">{err}</p>}
+      {msg && <p className="text-[var(--ad-ok)]">{msg}</p>}
 
       {/* Form tạo/sửa */}
-      <form onSubmit={save} className="space-y-4 border-t border-black/10 pt-5">
+      <form onSubmit={save} className="space-y-4 border-t border-[var(--ad-border)] pt-5">
         <h3 className="text-base font-semibold">{editingId ? 'Sửa trang' : 'Tạo trang mới'}</h3>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -450,7 +450,7 @@ export default function AdminPages() {
             <div className="text-sm">
               <span className="mb-1 block opacity-60">Ngôn ngữ</span>
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <span className="rounded bg-black/10 px-2 py-1 text-xs font-semibold uppercase">
+                <span className="rounded bg-[var(--ad-hover)] px-2 py-1 text-xs font-semibold uppercase">
                   {form.editLocale}
                 </span>
                 {otherExists ? (
@@ -460,7 +460,7 @@ export default function AdminPages() {
                     type="button"
                     onClick={() => addMissingLocale(otherLocale)}
                     disabled={busy}
-                    className="rounded border border-snake px-3 py-1 text-xs font-medium text-snake hover:bg-snake hover:text-white disabled:opacity-50"
+                    className="rounded border border-[var(--ad-accent)] px-3 py-1 text-xs font-medium text-[var(--ad-accent)] hover:bg-[var(--ad-accent)] hover:text-white disabled:opacity-50"
                   >
                     + Tạo bản {otherLocale.toUpperCase()} còn thiếu
                   </button>
@@ -493,7 +493,7 @@ export default function AdminPages() {
         </div>
 
         {!editingId && (
-          <p className="-mt-2 rounded bg-black/[0.03] px-3 py-2 text-xs opacity-70">
+          <p className="-mt-2 rounded bg-[var(--ad-surface-2)] px-3 py-2 text-xs opacity-70">
             {form.localeEn && form.localeVi
               ? 'Đã chọn cả hai: nhập nội dung bằng Tiếng Anh. Hệ thống tạo thêm bản VI dạng nháp (copy nội dung EN) để bạn tự dịch rồi publish.'
               : `Nhập nội dung bằng ${contentLangLabel}. Trang chỉ có 1 ngôn ngữ nên nút chuyển EN/VI sẽ ẩn khi người xem mở trang.`}
@@ -592,7 +592,7 @@ export default function AdminPages() {
         <div className="flex gap-3">
           <button
             disabled={busy}
-            className="rounded bg-snake px-5 py-2 font-semibold text-white disabled:opacity-50"
+            className="rounded bg-[var(--ad-accent)] px-5 py-2 font-semibold text-white disabled:opacity-50"
           >
             {busy ? 'Đang lưu…' : editingId ? 'Lưu thay đổi' : 'Tạo trang'}
           </button>
@@ -600,7 +600,7 @@ export default function AdminPages() {
             <button
               type="button"
               onClick={startNew}
-              className="rounded border border-black/15 px-5 py-2 text-sm"
+              className="rounded border border-[var(--ad-border)] px-5 py-2 text-sm"
             >
               Huỷ / tạo mới
             </button>

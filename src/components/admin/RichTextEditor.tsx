@@ -195,18 +195,18 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
       ? ''
       : '<p>';
 
-  const btn = 'rounded px-2 py-1 text-sm min-w-[2rem] border border-black/10';
+  const btn = 'rounded px-2 py-1 text-sm min-w-[2rem] border border-[var(--ad-border)]';
   const cls = (on: boolean) =>
-    `${btn} ${on ? 'bg-snake text-white border-snake' : 'hover:bg-black/10'}`;
+    `${btn} ${on ? 'bg-[var(--ad-accent)] text-white border-[var(--ad-accent)]' : 'hover:bg-[var(--ad-hover)]'}`;
 
   return (
     <>
-    <div className="rounded border border-black/15">
-      <div className="flex flex-wrap items-center gap-1 border-b border-black/10 bg-black/[0.03] p-1.5">
+    <div className="rounded border border-[var(--ad-border)]">
+      <div className="flex flex-wrap items-center gap-1 border-b border-[var(--ad-border)] bg-[var(--ad-surface-2)] p-1.5">
         <select
           value={blockVal}
           onChange={onBlock}
-          className="rounded border border-black/10 px-2 py-1 text-sm"
+          className="rounded border border-[var(--ad-border)] px-2 py-1 text-sm"
           title="Kiểu / cỡ chữ"
         >
           <option value="" disabled>
@@ -217,7 +217,7 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
           <option value="<h3>">Tiêu đề vừa (H3)</option>
           <option value="<h4>">Tiêu đề nhỏ (H4)</option>
         </select>
-        <span className="mx-1 h-5 w-px bg-black/10" />
+        <span className="mx-1 h-5 w-px bg-[var(--ad-hover)]" />
         <button type="button" onMouseDown={keep} onClick={() => exec('bold')} className={`${cls(fmt.bold)} font-bold`} title="Đậm">
           B
         </button>
@@ -230,7 +230,7 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
         <button type="button" onMouseDown={keep} onClick={() => exec('strikethrough')} className={`${cls(fmt.strike)} line-through`} title="Gạch ngang">
           S
         </button>
-        <span className="mx-1 h-5 w-px bg-black/10" />
+        <span className="mx-1 h-5 w-px bg-[var(--ad-hover)]" />
         <button type="button" onMouseDown={keep} onClick={() => exec('insertUnorderedList')} className={cls(fmt.ul)} title="Danh sách chấm">
           • ≡
         </button>
@@ -240,14 +240,14 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
         <button type="button" onMouseDown={keep} onClick={() => exec('formatBlock', '<blockquote>')} className={cls(fmt.quote)} title="Trích dẫn">
           ❝
         </button>
-        <span className="mx-1 h-5 w-px bg-black/10" />
+        <span className="mx-1 h-5 w-px bg-[var(--ad-hover)]" />
         <button type="button" onMouseDown={keep} onClick={addLink} className={cls(false)} title="Chèn liên kết">
           🔗
         </button>
         <button type="button" onMouseDown={keep} onClick={() => exec('unlink')} className={cls(false)} title="Bỏ liên kết">
           ⛓️‍💥
         </button>
-        <span className="mx-1 h-5 w-px bg-black/10" />
+        <span className="mx-1 h-5 w-px bg-[var(--ad-hover)]" />
         <button
           type="button"
           onMouseDown={keep}
@@ -268,7 +268,7 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
           className="hidden"
           onChange={(e) => onPickImage(e.target.files?.[0])}
         />
-        <span className="mx-1 h-5 w-px bg-black/10" />
+        <span className="mx-1 h-5 w-px bg-[var(--ad-hover)]" />
         <button type="button" onMouseDown={keep} onClick={() => exec('removeFormat')} className={cls(false)} title="Xoá định dạng">
           ⌫
         </button>
@@ -282,10 +282,10 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
         onMouseUp={updateFmt}
         onFocus={updateFmt}
         data-placeholder={placeholder ?? ''}
-        className="rte-area min-h-[12rem] max-w-none px-3 py-2 text-sm outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-black/15 [&_blockquote]:pl-3 [&_blockquote]:opacity-80 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:text-lg [&_h3]:font-semibold [&_h4]:font-semibold [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6 [&_a]:text-snake [&_a]:underline [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded"
+        className="rte-area min-h-[12rem] max-w-none px-3 py-2 text-sm outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--ad-border)] [&_blockquote]:pl-3 [&_blockquote]:opacity-80 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:text-lg [&_h3]:font-semibold [&_h4]:font-semibold [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6 [&_a]:text-[var(--ad-accent)] [&_a]:underline [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded"
       />
       {notice && (
-        <div className="flex items-start gap-2 border-t border-red-600/20 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="flex items-start gap-2 border-t border-[var(--ad-danger)] bg-[var(--ad-danger-weak)] px-3 py-2 text-sm text-[var(--ad-danger)]">
           <span className="flex-1">{notice}</span>
           <button
             type="button"
@@ -311,7 +311,7 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
         onClick={() => setUrlPrompt(null)}
       >
         <div
-          className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl"
+          className="w-full max-w-md rounded-xl bg-[var(--ad-surface)] p-5 shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           <h3 className="text-base font-semibold">
@@ -329,20 +329,20 @@ export default function RichTextEditor({ value, resetKey, onChange, placeholder 
               }
             }}
             placeholder="https://…"
-            className="mt-3 w-full rounded border border-black/15 px-3 py-2 text-sm outline-none focus:border-snake"
+            className="mt-3 w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm outline-none focus:border-[var(--ad-accent)]"
           />
           <div className="mt-4 flex justify-end gap-2">
             <button
               type="button"
               onClick={() => setUrlPrompt(null)}
-              className="rounded bg-black/5 px-4 py-2 text-sm hover:bg-black/10"
+              className="rounded bg-[var(--ad-surface-2)] px-4 py-2 text-sm hover:bg-[var(--ad-hover)]"
             >
               Hủy
             </button>
             <button
               type="button"
               onClick={applyUrlPrompt}
-              className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+              className="rounded bg-[var(--ad-accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
               Chèn
             </button>

@@ -146,7 +146,7 @@ export default function AdminContent() {
   }
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
-  const field = 'w-full rounded border border-black/15 px-3 py-2 text-sm';
+  const field = 'w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm';
 
   return (
     <div className="space-y-5">
@@ -156,7 +156,7 @@ export default function AdminContent() {
           <select
             value={pageKey}
             onChange={(e) => setPageKey(e.target.value as PageKey)}
-            className="rounded border border-black/15 px-3 py-2"
+            className="rounded border border-[var(--ad-border)] px-3 py-2"
           >
             {PAGE_KEYS.map((k) => (
               <option key={k} value={k}>
@@ -170,7 +170,7 @@ export default function AdminContent() {
           <select
             value={locale}
             onChange={(e) => setLocale(e.target.value as (typeof LOCALES)[number])}
-            className="rounded border border-black/15 px-3 py-2"
+            className="rounded border border-[var(--ad-border)] px-3 py-2"
           >
             {LOCALES.map((l) => (
               <option key={l} value={l}>
@@ -181,8 +181,8 @@ export default function AdminContent() {
         </label>
       </div>
 
-      {err && <p className="whitespace-pre-line text-red-600">{err}</p>}
-      {msg && <p className="text-green-700">{msg}</p>}
+      {err && <p className="whitespace-pre-line text-[var(--ad-danger)]">{err}</p>}
+      {msg && <p className="text-[var(--ad-ok)]">{msg}</p>}
 
       <form onSubmit={save} className="space-y-4">
         <Labeled label="Slug (chỉ để tham khảo/SEO)">
@@ -290,7 +290,7 @@ export default function AdminContent() {
 
         <button
           disabled={busy}
-          className="rounded bg-snake px-5 py-2 font-semibold text-white disabled:opacity-50"
+          className="rounded bg-[var(--ad-accent)] px-5 py-2 font-semibold text-white disabled:opacity-50"
         >
           {busy ? 'Đang lưu…' : 'Lưu'}
         </button>

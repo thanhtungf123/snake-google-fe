@@ -113,20 +113,20 @@ export default function AdminSettings() {
     }
   }
 
-  const field = 'w-full rounded border border-black/15 px-3 py-2 text-sm';
+  const field = 'w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm';
 
   return (
     <div className="max-w-xl space-y-5">
       <h2 className="text-xl font-semibold">Cấu hình site</h2>
 
       {!cloudinaryEnabled && (
-        <p className="rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+        <p className="rounded bg-[var(--ad-warn-weak)] px-3 py-2 text-sm text-[var(--ad-warn)]">
           ⚠ Chưa cấu hình Cloudinary (CLOUDINARY_* trong .env backend) — không upload ảnh được. Bạn
           vẫn có thể dán URL ảnh trực tiếp.
         </p>
       )}
-      {err && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{err}</p>}
-      {msg && <p className="rounded bg-green-50 px-3 py-2 text-sm text-green-700">{msg}</p>}
+      {err && <p className="rounded bg-[var(--ad-danger-weak)] px-3 py-2 text-sm text-[var(--ad-danger)]">{err}</p>}
+      {msg && <p className="rounded bg-[var(--ad-ok-weak)] px-3 py-2 text-sm text-[var(--ad-ok)]">{msg}</p>}
 
       <form onSubmit={save} className="space-y-5">
         <label className="block text-sm">
@@ -197,7 +197,7 @@ export default function AdminSettings() {
                 <button
                   type="button"
                   onClick={() => removeLink(i)}
-                  className="flex-none rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50"
+                  className="flex-none rounded border border-[var(--ad-danger)] px-2 py-1 text-xs text-[var(--ad-danger)] hover:bg-[var(--ad-danger-weak)]"
                   title="Xoá link"
                 >
                   ✕
@@ -208,7 +208,7 @@ export default function AdminSettings() {
           <button
             type="button"
             onClick={addLink}
-            className="mt-2 rounded border border-black/15 px-3 py-1.5 text-sm hover:bg-black/5"
+            className="mt-2 rounded border border-[var(--ad-border)] px-3 py-1.5 text-sm hover:bg-[var(--ad-surface-2)]"
           >
             + Thêm liên kết
           </button>
@@ -216,7 +216,7 @@ export default function AdminSettings() {
 
         <button
           disabled={busy || uploading !== null}
-          className="rounded bg-snake px-5 py-2 font-semibold text-white disabled:opacity-50"
+          className="rounded bg-[var(--ad-accent)] px-5 py-2 font-semibold text-white disabled:opacity-50"
         >
           {busy ? 'Đang lưu…' : 'Lưu'}
         </button>
@@ -255,7 +255,7 @@ function ImageField({
           <img
             src={url}
             alt={label}
-            className={`${small ? 'h-8 w-8' : 'h-12'} rounded border border-black/10 object-contain`}
+            className={`${small ? 'h-8 w-8' : 'h-12'} rounded border border-[var(--ad-border)] object-contain`}
           />
         ) : (
           <span className="opacity-40">(chưa có)</span>
@@ -269,7 +269,7 @@ function ImageField({
         />
         {uploading && <span className="text-xs opacity-60">Đang tải…</span>}
         {url && (
-          <button type="button" onClick={onClear} className="text-xs text-red-600 underline">
+          <button type="button" onClick={onClear} className="text-xs text-[var(--ad-danger)] underline">
             Xoá
           </button>
         )}

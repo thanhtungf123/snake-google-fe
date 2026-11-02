@@ -3,8 +3,22 @@
 import { useCallback, useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
 import ConfirmModal from './ConfirmModal';
+import {
+  Badge,
+  Button,
+  Input,
+  Select,
+  Table,
+  THead,
+  TBody,
+  Tr,
+  Th,
+  Td,
+  TableEmpty,
+} from './ui';
 
 type ClaimStatus = 'pending_info' | 'info_submitted' | 'paid' | 'cancelled';
+type Tone = 'neutral' | 'accent' | 'success' | 'warn' | 'danger';
 
 interface Payout {
   fullName?: string;
@@ -28,11 +42,11 @@ interface ClaimRow {
   createdAt: string | null;
 }
 
-const STATUS_META: Record<ClaimStatus, { label: string; cls: string }> = {
-  pending_info: { label: 'Chờ nhập STK', cls: 'bg-yellow-100 text-yellow-700' },
-  info_submitted: { label: 'Đã nhập STK', cls: 'bg-blue-100 text-blue-700' },
-  paid: { label: 'Đã trả', cls: 'bg-green-100 text-green-700' },
-  cancelled: { label: 'Đã huỷ', cls: 'bg-black/10 text-black/60' },
+const STATUS_META: Record<ClaimStatus, { label: string; tone: Tone }> = {
+  pending_info: { label: 'Chờ nhập STK', tone: 'warn' },
+  info_submitted: { label: 'Đã nhập STK', tone: 'accent' },
+  paid: { label: 'Đã trả', tone: 'success' },
+  cancelled: { label: 'Đã huỷ', tone: 'neutral' },
 };
 
 const STATUS_FILTERS: Array<{ value: ''; label: string } | { value: ClaimStatus; label: string }> = [
@@ -108,124 +122,127 @@ export default function AdminRewards() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Nhận thưởng</h2>
-      <p className="text-sm opacity-70">
+      <p className="text-sm text-[var(--ad-muted)]">
         Danh sách người thắng đã chốt. Người thắng tự điền số tài khoản; admin chuyển khoản tay rồi
         đánh dấu <b>Đã trả</b>. Thông tin tài khoản là dữ liệu nhạy cảm — chỉ admin xem.
       </p>
 
       <div className="flex flex-wrap gap-2">
-        <input
+        <Input
           value={monthFilter}
           onChange={(e) => setMonthFilter(e.target.value)}
           placeholder="Lọc tháng (YYYY-MM)"
-          className="rounded border border-black/15 px-3 py-1.5 text-sm outline-none focus:border-snake"
+          className="w-auto"
         />
-        <select
+        <Select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as '' | ClaimStatus)}
-          className="rounded border border-black/15 px-3 py-1.5 text-sm"
+          className="w-auto"
         >
           {STATUS_FILTERS.map((f) => (
             <option key={f.value} value={f.value}>
               {f.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
-      {err && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{err}</p>}
-      {msg && <p className="rounded bg-green-50 px-3 py-2 text-sm text-green-700">{msg}</p>}
+      {err && (
+        <p className="rounded-lg bg-[var(--ad-danger-weak)] px-3 py-2 text-sm text-[var(--ad-danger)]">
+          {err}
+        </p>
+      )}
+      {msg && (
+        <p className="rounded-lg bg-[var(--ad-ok-weak)] px-3 py-2 text-sm text-[var(--ad-ok)]">
+          {msg}
+        </p>
+      )}
 
-      <div className="overflow-x-auto rounded-lg border border-black/10">
-        <table className="w-full text-sm">
-          <thead className="bg-black/5 text-left">
-            <tr>
-              <th className="px-3 py-2">Tháng</th>
-              <th className="px-3 py-2 text-right">Hạng</th>
-              <th className="px-3 py-2">Người chơi</th>
-              <th className="px-3 py-2">Thông tin nhận thưởng</th>
-              <th className="px-3 py-2">Trạng thái</th>
-              <th className="px-3 py-2 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-black/5">
-            {rows.map((c) => (
-              <tr key={c.id} className="align-top">
-                <td className="px-3 py-2 font-medium">{c.monthKey}</td>
-                <td className="px-3 py-2 text-right tabular-nums">#{c.rank}</td>
-                <td className="px-3 py-2">
-                  <div className="font-medium">{c.nickname}</div>
-                  {c.email && <div className="text-xs opacity-60">{c.email}</div>}
-                </td>
-                <td className="px-3 py-2">
-                  {c.payout ? (
-                    <div className="space-y-0.5">
-                      <div>{c.payout.fullName}</div>
-                      <div className="opacity-70">
-                        {c.payout.bankName} ·{' '}
-                        <span className="tabular-nums">{c.payout.accountNumber}</span>
-                      </div>
-                      {c.payout.phone && <div className="text-xs opacity-60">{c.payout.phone}</div>}
-                      {c.payout.note && (
-                        <div className="text-xs italic opacity-60">“{c.payout.note}”</div>
-                      )}
+      <Table minWidth={760}>
+        <THead>
+          <Tr hover={false}>
+            <Th>Tháng</Th>
+            <Th className="text-right">Hạng</Th>
+            <Th>Người chơi</Th>
+            <Th>Thông tin nhận thưởng</Th>
+            <Th>Trạng thái</Th>
+            <Th className="text-right">Thao tác</Th>
+          </Tr>
+        </THead>
+        <TBody>
+          {rows.map((c) => (
+            <Tr key={c.id} className="align-top">
+              <Td className="font-medium">{c.monthKey}</Td>
+              <Td className="text-right tabular-nums">#{c.rank}</Td>
+              <Td>
+                <div className="font-medium">{c.nickname}</div>
+                {c.email && <div className="text-xs text-[var(--ad-muted)]">{c.email}</div>}
+              </Td>
+              <Td>
+                {c.payout ? (
+                  <div className="space-y-0.5">
+                    <div>{c.payout.fullName}</div>
+                    <div className="text-[var(--ad-muted)]">
+                      {c.payout.bankName} ·{' '}
+                      <span className="tabular-nums">{c.payout.accountNumber}</span>
                     </div>
-                  ) : (
-                    <span className="opacity-50">— chưa nhập —</span>
-                  )}
-                </td>
-                <td className="px-3 py-2">
-                  <span className={`rounded-full px-2 py-0.5 text-xs ${STATUS_META[c.status].cls}`}>
-                    {STATUS_META[c.status].label}
-                  </span>
-                  {c.status === 'paid' && (
-                    <div className="mt-1 text-xs opacity-60">{fmt(c.paidAt)}</div>
-                  )}
-                </td>
-                <td className="px-3 py-2 text-right">
-                  <div className="flex flex-col items-end gap-1">
-                    {(c.status === 'pending_info' || c.status === 'info_submitted') && (
-                      <>
-                        <button
-                          onClick={() => setAction({ kind: 'paid', row: c })}
-                          disabled={busy}
-                          className="rounded bg-snake px-2 py-1 text-xs font-medium text-white disabled:opacity-60"
-                        >
-                          Đánh dấu đã trả
-                        </button>
-                        <button
-                          onClick={() => setAction({ kind: 'cancelled', row: c })}
-                          disabled={busy}
-                          className="rounded bg-black/5 px-2 py-1 text-xs hover:bg-black/10"
-                        >
-                          Huỷ
-                        </button>
-                      </>
+                    {c.payout.phone && (
+                      <div className="text-xs text-[var(--ad-muted)]">{c.payout.phone}</div>
                     )}
-                    {(c.status === 'paid' || c.status === 'cancelled') && (
-                      <button
-                        onClick={() => setAction({ kind: 'reopen', row: c })}
-                        disabled={busy}
-                        className="rounded bg-black/5 px-2 py-1 text-xs hover:bg-black/10"
-                      >
-                        Mở lại
-                      </button>
+                    {c.payout.note && (
+                      <div className="text-xs italic text-[var(--ad-muted)]">“{c.payout.note}”</div>
                     )}
                   </div>
-                </td>
-              </tr>
-            ))}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-3 py-6 text-center opacity-60">
-                  Chưa có phiếu nhận thưởng nào.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                ) : (
+                  <span className="text-[var(--ad-muted)]">— chưa nhập —</span>
+                )}
+              </Td>
+              <Td>
+                <Badge tone={STATUS_META[c.status].tone}>{STATUS_META[c.status].label}</Badge>
+                {c.status === 'paid' && (
+                  <div className="mt-1 text-xs text-[var(--ad-muted)]">{fmt(c.paidAt)}</div>
+                )}
+              </Td>
+              <Td className="text-right">
+                <div className="flex flex-col items-end gap-1.5">
+                  {(c.status === 'pending_info' || c.status === 'info_submitted') && (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => setAction({ kind: 'paid', row: c })}
+                        disabled={busy}
+                      >
+                        Đánh dấu đã trả
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setAction({ kind: 'cancelled', row: c })}
+                        disabled={busy}
+                      >
+                        Huỷ
+                      </Button>
+                    </>
+                  )}
+                  {(c.status === 'paid' || c.status === 'cancelled') && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setAction({ kind: 'reopen', row: c })}
+                      disabled={busy}
+                    >
+                      Mở lại
+                    </Button>
+                  )}
+                </div>
+              </Td>
+            </Tr>
+          ))}
+          {rows.length === 0 && (
+            <TableEmpty colSpan={6}>Chưa có phiếu nhận thưởng nào.</TableEmpty>
+          )}
+        </TBody>
+      </Table>
 
       <ConfirmModal
         open={action?.kind === 'paid'}

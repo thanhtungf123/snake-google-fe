@@ -35,7 +35,7 @@ export default function ImageUploadField({
     }
   }
 
-  const field = 'w-full rounded border border-black/15 px-3 py-2 text-sm';
+  const field = 'w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm';
 
   return (
     <div className="text-sm">
@@ -46,7 +46,7 @@ export default function ImageUploadField({
           <img
             src={value}
             alt={label}
-            className="h-16 w-24 rounded border border-black/10 object-cover"
+            className="h-16 w-24 rounded border border-[var(--ad-border)] object-cover"
           />
         ) : (
           <span className="opacity-40">(chưa có ảnh)</span>
@@ -63,7 +63,7 @@ export default function ImageUploadField({
           <button
             type="button"
             onClick={() => onChange('')}
-            className="text-xs text-red-600 underline"
+            className="text-xs text-[var(--ad-danger)] underline"
           >
             Xoá
           </button>
@@ -76,7 +76,7 @@ export default function ImageUploadField({
         placeholder="hoặc dán URL ảnh…"
       />
       {hint && <p className="mt-1 text-xs opacity-50">{hint}</p>}
-      {err && <p className="mt-1 text-xs text-red-600">{err}</p>}
+      {err && <p className="mt-1 text-xs text-[var(--ad-danger)]">{err}</p>}
     </div>
   );
 }

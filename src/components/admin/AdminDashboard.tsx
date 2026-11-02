@@ -2,15 +2,33 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { adminGet } from '@/lib/adminApi';
+import {
+  Card,
+  CardHeader,
+  StatCard,
+  Select,
+  BarChart,
+  DonutChart,
+  type BarDatum,
+  IconUsers,
+  IconTrophy,
+  IconGamepad,
+  IconCalendar,
+} from './ui';
 
 interface Stats {
   users: number;
   guests: number;
   banned: number;
   scores: number;
+  valid: number;
   flagged: number;
   rejected: number;
   gamesToday: number;
+}
+interface SeriesPoint {
+  day: string; // YYYY-MM-DD
+  games: number;
 }
 interface AuditRow {
   id: string;
@@ -69,8 +87,27 @@ function describe(a: AuditRow): string {
   }
 }
 
+// Màu chấm timeline theo nhóm hành động.
+function auditDot(a: AuditRow): string {
+  if (a.action === 'user.ban' || a.action.endsWith('.delete')) return 'var(--ad-danger)';
+  if (a.action === 'score.status') {
+    if (a.meta?.to === 'rejected') return 'var(--ad-danger)';
+    if (a.meta?.to === 'flagged') return 'var(--ad-warn)';
+    return 'var(--ad-ok)';
+  }
+  if (a.action === 'season.close' || a.action === 'user.unban') return 'var(--ad-ok)';
+  return 'var(--ad-accent)';
+}
+
+// 'YYYY-MM-DD' -> { short: 'DD', label: 'DD/MM' }
+function fmtDay(day: string): { short: string; label: string } {
+  const [, mm, dd] = day.split('-');
+  return { short: dd, label: `${dd}/${mm}` };
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [series, setSeries] = useState<SeriesPoint[]>([]);
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [auditF, setAuditF] = useState<AuditFilter>('all');
   const [err, setErr] = useState<string | null>(null);
@@ -84,8 +121,11 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    adminGet<{ stats: Stats }>('/api/admin/stats')
-      .then((d) => setStats(d.stats))
+    adminGet<{ stats: Stats; series: SeriesPoint[] }>('/api/admin/stats')
+      .then((d) => {
+        setStats(d.stats);
+        setSeries(d.series ?? []);
+      })
       .catch((e) => setErr(e.message));
   }, []);
 
@@ -93,62 +133,127 @@ export default function AdminDashboard() {
     loadAudit(auditF);
   }, [auditF, loadAudit]);
 
-  if (err) return <p className="text-red-600">{err}</p>;
-  if (!stats) return <p className="opacity-60">Đang tải…</p>;
-
-  const cards: [string, number, string?][] = [
-    ['Người dùng', stats.users],
-    ['Khách (guest)', stats.guests],
-    ['Bị khoá', stats.banned, stats.banned > 0 ? 'text-red-600' : undefined],
-    ['Tổng số điểm', stats.scores],
-    ['Ván hôm nay', stats.gamesToday],
-    ['Điểm nghi ngờ', stats.flagged, stats.flagged > 0 ? 'text-yellow-600' : undefined],
-    ['Điểm bị loại', stats.rejected],
-  ];
-
-  return (
-    <div className="space-y-8">
+  if (err) return <p className="text-[var(--ad-danger)]">{err}</p>;
+  if (!stats) {
+    return (
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {cards.map(([label, value, color]) => (
-          <div key={label} className="rounded-lg bg-black/5 p-4 text-center">
-            <div className={`text-2xl font-bold tabular-nums ${color ?? ''}`}>{value}</div>
-            <div className="text-xs opacity-60">{label}</div>
-          </div>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="skeleton h-24 rounded-xl" />
         ))}
       </div>
+    );
+  }
 
-      <div>
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold">Nhật ký quản trị gần đây</h2>
-          <select
-            value={auditF}
-            onChange={(e) => setAuditF(e.target.value as AuditFilter)}
-            className="rounded border border-black/15 px-2 py-1 text-sm"
-          >
-            {(Object.keys(AUDIT_FILTER_LABEL) as AuditFilter[]).map((f) => (
-              <option key={f} value={f}>
-                {AUDIT_FILTER_LABEL[f]}
-              </option>
-            ))}
-          </select>
-        </div>
-        {audit.length === 0 ? (
-          <p className="opacity-60">Chưa có hoạt động nào.</p>
-        ) : (
-          <ul className="divide-y divide-black/10 text-sm">
-            {audit.map((a) => (
-              <li key={a.id} className="flex flex-wrap items-baseline gap-x-2 py-2">
-                <span className="font-medium">{a.actor}</span>
-                <span>{describe(a)}</span>
-                {a.reason && <span className="opacity-60">— {a.reason}</span>}
-                <span className="ml-auto whitespace-nowrap opacity-50">
-                  {a.at ? new Date(a.at).toLocaleString('vi-VN') : ''}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+  const bars: BarDatum[] = series.map((p) => {
+    const f = fmtDay(p.day);
+    return { short: f.short, label: f.label, value: p.games };
+  });
+  const totalGames14 = series.reduce((s, p) => s + p.games, 0);
+
+  return (
+    <div className="space-y-6">
+      {/* KPI */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+        <StatCard label="Người dùng" value={stats.users} tone="accent" icon={<IconUsers />} />
+        <StatCard label="Khách (guest)" value={stats.guests} icon={<IconUsers />} />
+        <StatCard
+          label="Bị khoá"
+          value={stats.banned}
+          tone={stats.banned > 0 ? 'danger' : 'neutral'}
+          icon={<IconUsers />}
+        />
+        <StatCard label="Ván hôm nay" value={stats.gamesToday} tone="success" icon={<IconGamepad />} />
+        <StatCard label="Tổng số điểm" value={stats.scores} icon={<IconTrophy />} />
+        <StatCard label="Điểm hợp lệ" value={stats.valid} tone="success" icon={<IconTrophy />} />
+        <StatCard
+          label="Điểm nghi ngờ"
+          value={stats.flagged}
+          tone={stats.flagged > 0 ? 'warn' : 'neutral'}
+          icon={<IconTrophy />}
+        />
+        <StatCard
+          label="Điểm bị loại"
+          value={stats.rejected}
+          tone={stats.rejected > 0 ? 'danger' : 'neutral'}
+          icon={<IconTrophy />}
+        />
       </div>
+
+      {/* Biểu đồ */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader
+            title="Ván chơi 14 ngày gần đây"
+            description={`Tổng ${totalGames14} ván trong 14 ngày`}
+            actions={<IconCalendar className="h-5 w-5 text-[var(--ad-muted)]" />}
+          />
+          <div className="mt-4">
+            {bars.length ? (
+              <BarChart data={bars} />
+            ) : (
+              <p className="py-10 text-center text-[var(--ad-muted)]">Chưa có dữ liệu.</p>
+            )}
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader title="Phân loại điểm" description="Theo trạng thái kiểm duyệt" />
+          <div className="mt-4">
+            <DonutChart
+              segments={[
+                { label: 'Hợp lệ', value: stats.valid, color: 'var(--ad-ok)' },
+                { label: 'Nghi ngờ', value: stats.flagged, color: 'var(--ad-warn)' },
+                { label: 'Bị loại', value: stats.rejected, color: 'var(--ad-danger)' },
+              ]}
+            />
+          </div>
+        </Card>
+      </div>
+
+      {/* Nhật ký */}
+      <Card>
+        <CardHeader
+          title="Nhật ký quản trị gần đây"
+          actions={
+            <Select
+              value={auditF}
+              onChange={(e) => setAuditF(e.target.value as AuditFilter)}
+              className="w-auto"
+            >
+              {(Object.keys(AUDIT_FILTER_LABEL) as AuditFilter[]).map((f) => (
+                <option key={f} value={f}>
+                  {AUDIT_FILTER_LABEL[f]}
+                </option>
+              ))}
+            </Select>
+          }
+        />
+        <div className="mt-4">
+          {audit.length === 0 ? (
+            <p className="py-6 text-center text-[var(--ad-muted)]">Chưa có hoạt động nào.</p>
+          ) : (
+            <ul className="space-y-0.5">
+              {audit.map((a) => (
+                <li
+                  key={a.id}
+                  className="flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-[var(--ad-hover)]"
+                >
+                  <span
+                    className="mt-1.5 inline-block h-2 w-2 shrink-0 self-start rounded-full"
+                    style={{ background: auditDot(a) }}
+                  />
+                  <span className="font-medium">{a.actor}</span>
+                  <span>{describe(a)}</span>
+                  {a.reason && <span className="text-[var(--ad-muted)]">— {a.reason}</span>}
+                  <span className="ml-auto whitespace-nowrap text-xs text-[var(--ad-muted)]">
+                    {a.at ? new Date(a.at).toLocaleString('vi-VN') : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </Card>
     </div>
   );
 }

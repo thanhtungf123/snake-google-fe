@@ -261,7 +261,7 @@ export default function AdminGames() {
   }
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
-  const field = 'w-full rounded border border-black/15 px-3 py-2 text-sm';
+  const field = 'w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm';
 
   const otherLocale: 'en' | 'vi' = form.editLocale === 'en' ? 'vi' : 'en';
   const otherExists = editingId ? rows.some((r) => r.key === form.key && r.locale === otherLocale) : false;
@@ -321,12 +321,12 @@ export default function AdminGames() {
       <GamesIndexEditor />
 
       {/* ======= Danh sách game ======= */}
-      <div className="border-t border-black/10 pt-6">
+      <div className="border-t border-[var(--ad-border)] pt-6">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Game ({groups.length})</h2>
           <button
             onClick={startNew}
-            className="rounded bg-snake px-4 py-1.5 text-sm font-semibold text-white"
+            className="rounded bg-[var(--ad-accent)] px-4 py-1.5 text-sm font-semibold text-white"
           >
             + Thêm game mới
           </button>
@@ -341,7 +341,7 @@ export default function AdminGames() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-black/10 text-left opacity-60">
+                  <tr className="border-b border-[var(--ad-border)] text-left opacity-60">
                     <th className="py-2 pr-3">Thứ tự</th>
                     <th className="py-2 pr-3">Key</th>
                     <th className="py-2 pr-3">Tên</th>
@@ -353,7 +353,7 @@ export default function AdminGames() {
                   {groups.map((g, gi) => {
                     const primary = g.list.find((r) => r.locale === 'en') ?? g.list[0];
                     return (
-                      <tr key={g.key} className="border-b border-black/5 align-top">
+                      <tr key={g.key} className="border-b border-[var(--ad-border)] align-top">
                         <td className="py-2 pr-3">
                           <div className="flex items-center gap-2">
                             <div className="flex flex-col leading-none">
@@ -383,14 +383,14 @@ export default function AdminGames() {
                           <div className="flex flex-col gap-1">
                             {g.list.map((r) => (
                               <div key={r.id} className="flex items-center gap-2">
-                                <span className="rounded bg-black/10 px-1.5 py-0.5 text-[11px] font-semibold uppercase">
+                                <span className="rounded bg-[var(--ad-hover)] px-1.5 py-0.5 text-[11px] font-semibold uppercase">
                                   {r.locale}
                                 </span>
                                 <span className="font-mono text-xs opacity-70">
                                   {r.locale === 'en' ? '' : '/vi'}/games/{r.slug}
                                 </span>
                                 {r.isPublished ? (
-                                  <span className="text-xs text-green-700">Published</span>
+                                  <span className="text-xs text-[var(--ad-ok)]">Published</span>
                                 ) : (
                                   <span className="text-xs opacity-50">Nháp</span>
                                 )}
@@ -413,17 +413,17 @@ export default function AdminGames() {
                                     href={gameUrl(r.locale, r.slug)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-snake underline"
+                                    className="text-[var(--ad-accent)] underline"
                                   >
                                     Xem
                                   </a>
                                 )}
-                                <button onClick={() => startEdit(r)} className="text-snake underline">
+                                <button onClick={() => startEdit(r)} className="text-[var(--ad-accent)] underline">
                                   Sửa
                                 </button>
                                 <button
                                   onClick={() => setConfirmDelete(r)}
-                                  className="text-red-600 underline"
+                                  className="text-[var(--ad-danger)] underline"
                                 >
                                   Xoá
                                 </button>
@@ -441,11 +441,11 @@ export default function AdminGames() {
         )}
       </div>
 
-      {err && <p className="whitespace-pre-line text-red-600">{err}</p>}
-      {msg && <p className="text-green-700">{msg}</p>}
+      {err && <p className="whitespace-pre-line text-[var(--ad-danger)]">{err}</p>}
+      {msg && <p className="text-[var(--ad-ok)]">{msg}</p>}
 
       {/* ======= Form tạo/sửa game ======= */}
-      <form onSubmit={save} className="space-y-4 border-t border-black/10 pt-5">
+      <form onSubmit={save} className="space-y-4 border-t border-[var(--ad-border)] pt-5">
         <h3 className="text-base font-semibold">{editingId ? 'Sửa game' : 'Thêm game mới'}</h3>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -463,7 +463,7 @@ export default function AdminGames() {
             <div className="text-sm">
               <span className="mb-1 block opacity-60">Ngôn ngữ</span>
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <span className="rounded bg-black/10 px-2 py-1 text-xs font-semibold uppercase">
+                <span className="rounded bg-[var(--ad-hover)] px-2 py-1 text-xs font-semibold uppercase">
                   {form.editLocale}
                 </span>
                 {otherExists ? (
@@ -473,7 +473,7 @@ export default function AdminGames() {
                     type="button"
                     onClick={() => addMissingLocale(otherLocale)}
                     disabled={busy}
-                    className="rounded border border-snake px-3 py-1 text-xs font-medium text-snake hover:bg-snake hover:text-white disabled:opacity-50"
+                    className="rounded border border-[var(--ad-accent)] px-3 py-1 text-xs font-medium text-[var(--ad-accent)] hover:bg-[var(--ad-accent)] hover:text-white disabled:opacity-50"
                   >
                     + Tạo bản {otherLocale.toUpperCase()} còn thiếu
                   </button>
@@ -506,7 +506,7 @@ export default function AdminGames() {
         </div>
 
         {!editingId && (
-          <p className="-mt-2 rounded bg-black/[0.03] px-3 py-2 text-xs opacity-70">
+          <p className="-mt-2 rounded bg-[var(--ad-surface-2)] px-3 py-2 text-xs opacity-70">
             Nhập nội dung bằng {contentLangLabel}.{' '}
             {form.localeEn && form.localeVi
               ? 'Hệ thống tạo thêm bản VI dạng nháp (phần văn bản trống, dùng chung ảnh/iframe) để bạn tự dịch rồi publish.'
@@ -577,7 +577,7 @@ export default function AdminGames() {
           </div>
         </div>
 
-        <label className="flex items-start gap-2 rounded bg-black/[0.03] px-3 py-2 text-sm">
+        <label className="flex items-start gap-2 rounded bg-[var(--ad-surface-2)] px-3 py-2 text-sm">
           <input
             type="checkbox"
             className="mt-0.5"
@@ -640,8 +640,8 @@ export default function AdminGames() {
                   key={k}
                   className={`cursor-pointer rounded border px-2 py-1 text-xs ${
                     form.relatedKeys.includes(k)
-                      ? 'border-snake bg-snake/10 text-snake'
-                      : 'border-black/15'
+                      ? 'border-[var(--ad-accent)] bg-[var(--ad-accent-weak)] text-[var(--ad-accent)]'
+                      : 'border-[var(--ad-border)]'
                   }`}
                 >
                   <input
@@ -687,7 +687,7 @@ export default function AdminGames() {
         <div className="flex gap-3">
           <button
             disabled={busy}
-            className="rounded bg-snake px-5 py-2 font-semibold text-white disabled:opacity-50"
+            className="rounded bg-[var(--ad-accent)] px-5 py-2 font-semibold text-white disabled:opacity-50"
           >
             {busy ? 'Đang lưu…' : editingId ? 'Lưu thay đổi' : 'Tạo game'}
           </button>
@@ -695,7 +695,7 @@ export default function AdminGames() {
             <button
               type="button"
               onClick={startNew}
-              className="rounded border border-black/15 px-5 py-2 text-sm"
+              className="rounded border border-[var(--ad-border)] px-5 py-2 text-sm"
             >
               Huỷ / tạo mới
             </button>
@@ -745,7 +745,7 @@ function GamesIndexEditor() {
 
   if (!data) return <p className="opacity-60">Đang tải cấu hình trang tổng hợp…</p>;
   const conf = data[tab];
-  const field = 'w-full rounded border border-black/15 px-3 py-2 text-sm';
+  const field = 'w-full rounded border border-[var(--ad-border)] px-3 py-2 text-sm';
 
   function upd(patch: Partial<IndexConf>) {
     setData((d) => (d ? { ...d, [tab]: { ...d[tab], ...patch } } : d));
@@ -772,7 +772,7 @@ function GamesIndexEditor() {
   }
 
   return (
-    <div className="rounded-lg border border-black/10 p-4">
+    <div className="rounded-lg border border-[var(--ad-border)] p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Trang tổng hợp game</h2>
         <div className="flex gap-1">
@@ -781,7 +781,7 @@ function GamesIndexEditor() {
               key={l}
               onClick={() => setTab(l)}
               className={`rounded px-3 py-1 text-xs font-semibold uppercase ${
-                tab === l ? 'bg-snake text-white' : 'bg-black/5'
+                tab === l ? 'bg-[var(--ad-accent)] text-white' : 'bg-[var(--ad-surface-2)]'
               }`}
             >
               {l}
@@ -833,12 +833,12 @@ function GamesIndexEditor() {
             Robots: follow
           </label>
         </div>
-        {err && <p className="whitespace-pre-line text-red-600">{err}</p>}
-        {msg && <p className="text-green-700">{msg}</p>}
+        {err && <p className="whitespace-pre-line text-[var(--ad-danger)]">{err}</p>}
+        {msg && <p className="text-[var(--ad-ok)]">{msg}</p>}
         <button
           onClick={saveIndex}
           disabled={busy}
-          className="rounded bg-snake px-5 py-2 text-sm font-semibold text-white disabled:opacity-50"
+          className="rounded bg-[var(--ad-accent)] px-5 py-2 text-sm font-semibold text-white disabled:opacity-50"
         >
           {busy ? 'Đang lưu…' : `Lưu cấu hình (${tab.toUpperCase()})`}
         </button>

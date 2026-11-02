@@ -3,6 +3,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
 import ConfirmModal from './ConfirmModal';
+import {
+  Badge,
+  Button,
+  Input,
+  Select,
+  Table,
+  THead,
+  TBody,
+  Tr,
+  Th,
+  Td,
+  TableEmpty,
+  Pager,
+  IconSearch,
+} from './ui';
 
 interface Row {
   id: string;
@@ -76,111 +91,108 @@ export default function AdminUsers() {
   return (
     <div className="space-y-4">
       <form onSubmit={search} className="flex flex-wrap gap-2">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Tìm theo nickname hoặc email…"
-          className="flex-1 rounded border border-black/15 px-3 py-2 text-sm"
-        />
-        <select
+        <div className="relative min-w-[200px] flex-1">
+          <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--ad-muted)]" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Tìm theo nickname hoặc email…"
+            className="pl-9"
+          />
+        </div>
+        <Select
           value={statusF}
           onChange={(e) => {
             setSkip(0);
             setStatusF(e.target.value as StatusFilter);
           }}
-          className="rounded border border-black/15 px-2 py-2 text-sm"
+          className="w-auto"
         >
           {(Object.keys(STATUS_LABEL) as StatusFilter[]).map((s) => (
             <option key={s} value={s}>
               {STATUS_LABEL[s]}
             </option>
           ))}
-        </select>
-        <select
+        </Select>
+        <Select
           value={roleF}
           onChange={(e) => {
             setSkip(0);
             setRoleF(e.target.value as RoleFilter);
           }}
-          className="rounded border border-black/15 px-2 py-2 text-sm"
+          className="w-auto"
         >
           {(Object.keys(ROLE_LABEL) as RoleFilter[]).map((r) => (
             <option key={r} value={r}>
               {ROLE_LABEL[r]}
             </option>
           ))}
-        </select>
-        <button className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white">Tìm</button>
+        </Select>
+        <Button type="submit">Tìm</Button>
       </form>
 
-      {err && <p className="text-red-600">{err}</p>}
+      {err && <p className="text-[var(--ad-danger)]">{err}</p>}
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-black/10 opacity-60">
-              <th className="py-2 pr-3">Nickname</th>
-              <th className="py-2 pr-3">Email</th>
-              <th className="py-2 pr-3">Best</th>
-              <th className="py-2 pr-3">Ván</th>
-              <th className="py-2 pr-3">Trạng thái</th>
-              <th className="py-2 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((u) => (
-              <tr key={u.id} className="border-b border-black/5">
-                <td className="py-2 pr-3 font-medium">
+      <Table>
+        <THead>
+          <Tr hover={false}>
+            <Th>Nickname</Th>
+            <Th>Email</Th>
+            <Th className="text-right">Best</Th>
+            <Th className="text-right">Ván</Th>
+            <Th>Trạng thái</Th>
+            <Th className="text-right">Thao tác</Th>
+          </Tr>
+        </THead>
+        <TBody>
+          {rows.map((u) => (
+            <Tr key={u.id}>
+              <Td className="font-medium">
+                <span className="inline-flex items-center gap-1.5">
                   {u.nickname}
-                  {u.role === 'admin' && (
-                    <span className="ml-1 rounded bg-snake/15 px-1.5 text-xs text-snake">admin</span>
-                  )}
-                </td>
-                <td className="py-2 pr-3 opacity-70">{u.email ?? '—'}</td>
-                <td className="py-2 pr-3 tabular-nums">{u.personalBest}</td>
-                <td className="py-2 pr-3 tabular-nums">{u.gamesPlayed}</td>
-                <td className="py-2 pr-3">
-                  {u.status === 'banned' ? (
-                    <span className="text-red-600" title={u.banReason ?? ''}>
-                      Bị khoá
-                    </span>
-                  ) : (
-                    <span className="text-green-600">Hoạt động</span>
-                  )}
-                </td>
-                <td className="py-2 text-right">
-                  {u.role === 'admin' ? (
-                    <span className="opacity-40">—</span>
-                  ) : u.status === 'banned' ? (
-                    <button
-                      disabled={busy}
-                      onClick={() => setModal({ type: 'unban', user: u })}
-                      className="rounded bg-black/5 px-3 py-1 hover:bg-black/10 disabled:opacity-50"
-                    >
-                      Mở khoá
-                    </button>
-                  ) : (
-                    <button
-                      disabled={busy}
-                      onClick={() => setModal({ type: 'ban', user: u })}
-                      className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:opacity-50"
-                    >
-                      Khoá
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={6} className="py-6 text-center opacity-60">
-                  Không có người dùng.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  {u.role === 'admin' && <Badge tone="accent">admin</Badge>}
+                </span>
+              </Td>
+              <Td className="text-[var(--ad-muted)]">{u.email ?? '—'}</Td>
+              <Td className="text-right tabular-nums">{u.personalBest}</Td>
+              <Td className="text-right tabular-nums">{u.gamesPlayed}</Td>
+              <Td>
+                {u.status === 'banned' ? (
+                  <Badge tone="danger" >
+                    <span title={u.banReason ?? ''}>Bị khoá</span>
+                  </Badge>
+                ) : (
+                  <Badge tone="success">Hoạt động</Badge>
+                )}
+              </Td>
+              <Td className="text-right">
+                {u.role === 'admin' ? (
+                  <span className="text-[var(--ad-muted)] opacity-60">—</span>
+                ) : u.status === 'banned' ? (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => setModal({ type: 'unban', user: u })}
+                  >
+                    Mở khoá
+                  </Button>
+                ) : (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => setModal({ type: 'ban', user: u })}
+                  >
+                    Khoá
+                  </Button>
+                )}
+              </Td>
+            </Tr>
+          ))}
+          {rows.length === 0 && <TableEmpty colSpan={6}>Không có người dùng.</TableEmpty>}
+        </TBody>
+      </Table>
 
       <Pager total={total} skip={skip} page={PAGE} onChange={setSkip} />
 
@@ -208,40 +220,5 @@ export default function AdminUsers() {
   );
 }
 
-export function Pager({
-  total,
-  skip,
-  page,
-  onChange,
-}: {
-  total: number;
-  skip: number;
-  page: number;
-  onChange: (skip: number) => void;
-}) {
-  const from = total === 0 ? 0 : skip + 1;
-  const to = Math.min(skip + page, total);
-  return (
-    <div className="flex items-center justify-between pt-2 text-sm opacity-70">
-      <span>
-        {from}–{to} / {total}
-      </span>
-      <div className="flex gap-2">
-        <button
-          disabled={skip === 0}
-          onClick={() => onChange(Math.max(0, skip - page))}
-          className="rounded bg-black/5 px-3 py-1 hover:bg-black/10 disabled:opacity-40"
-        >
-          ← Trước
-        </button>
-        <button
-          disabled={to >= total}
-          onClick={() => onChange(skip + page)}
-          className="rounded bg-black/5 px-3 py-1 hover:bg-black/10 disabled:opacity-40"
-        >
-          Sau →
-        </button>
-      </div>
-    </div>
-  );
-}
+// Giữ re-export để các file cũ import { Pager } from './AdminUsers' vẫn chạy.
+export { Pager } from './ui';

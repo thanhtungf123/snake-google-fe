@@ -2,8 +2,21 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
-import { Pager } from './AdminUsers';
 import ConfirmModal from './ConfirmModal';
+import {
+  Badge,
+  Button,
+  Input,
+  Select,
+  Table,
+  THead,
+  TBody,
+  Tr,
+  Th,
+  Td,
+  TableEmpty,
+  Pager,
+} from './ui';
 
 interface Row {
   id: string;
@@ -43,6 +56,13 @@ const GUEST_LABEL: Record<GuestFilter, string> = {
   only: 'Chỉ khách',
 };
 const PAGE = 25;
+
+// Tông Badge theo trạng thái điểm.
+const STATUS_TONE: Record<Row['status'], 'success' | 'warn' | 'danger'> = {
+  valid: 'success',
+  flagged: 'warn',
+  rejected: 'danger',
+};
 
 export default function AdminScores() {
   const [rows, setRows] = useState<Row[]>([]);
@@ -93,9 +113,6 @@ export default function AdminScores() {
     }
   }
 
-  const statusColor = (s: Row['status']) =>
-    s === 'valid' ? 'text-green-600' : s === 'flagged' ? 'text-yellow-600' : 'text-red-600';
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -106,115 +123,115 @@ export default function AdminScores() {
               setSkip(0);
               setFilter(f);
             }}
-            className={`rounded-full px-3 py-1 text-sm ${
-              f === filter ? 'bg-snake text-white' : 'bg-black/5 hover:bg-black/10'
+            className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+              f === filter
+                ? 'bg-[var(--ad-accent)] text-[var(--ad-on-accent)]'
+                : 'bg-[var(--ad-surface)] text-[var(--ad-muted)] border border-[var(--ad-border)] hover:bg-[var(--ad-hover)]'
             }`}
           >
             {FILTER_LABEL[f]}
           </button>
         ))}
-        <select
+        <Select
           value={guestF}
           onChange={(e) => {
             setSkip(0);
             setGuestF(e.target.value as GuestFilter);
           }}
-          className="ml-auto rounded border border-black/15 px-2 py-1.5 text-sm"
+          className="ml-auto w-auto"
         >
           {(Object.keys(GUEST_LABEL) as GuestFilter[]).map((g) => (
             <option key={g} value={g}>
               {GUEST_LABEL[g]}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <form onSubmit={search} className="flex gap-2">
-        <input
+        <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Tìm theo nickname người chơi…"
-          className="flex-1 rounded border border-black/15 px-3 py-2 text-sm"
+          className="flex-1"
         />
-        <button className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white">Tìm</button>
+        <Button type="submit">Tìm</Button>
       </form>
 
-      {err && <p className="text-red-600">{err}</p>}
+      {err && <p className="text-[var(--ad-danger)]">{err}</p>}
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-black/10 opacity-60">
-              <th className="py-2 pr-3">Người chơi</th>
-              <th className="py-2 pr-3">Điểm</th>
-              <th className="py-2 pr-3">Thời lượng</th>
-              <th className="py-2 pr-3">Trạng thái</th>
-              <th className="py-2 pr-3">Lúc</th>
-              <th className="py-2 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((s) => (
-              <tr key={s.id} className="border-b border-black/5">
-                <td className="py-2 pr-3">
-                  {s.nickname}
-                  {s.isGuest && <span className="ml-1 text-xs opacity-50">(khách)</span>}
-                </td>
-                <td className="py-2 pr-3 font-semibold tabular-nums">{s.score}</td>
-                <td className="py-2 pr-3 tabular-nums opacity-70">{Math.round(s.durationMs / 1000)}s</td>
-                <td className={`py-2 pr-3 ${statusColor(s.status)}`} title={s.rejectedReason ?? ''}>
-                  <div>{FILTER_LABEL[s.status]}</div>
-                  {s.flags.length > 0 && (
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {s.flags.map((f) => (
-                        <span
-                          key={f}
-                          className="rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-800"
-                          title={s.rejectedReason ?? ''}
-                        >
-                          {FLAG_LABEL[f] ?? f}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </td>
-                <td className="py-2 pr-3 opacity-60">
-                  {s.playedAt ? new Date(s.playedAt).toLocaleString('vi-VN') : '—'}
-                </td>
-                <td className="py-2 text-right">
-                  <div className="flex justify-end gap-1">
-                    {s.status !== 'valid' && (
-                      <button
-                        disabled={busy}
-                        onClick={() => setModal({ type: 'accept', score: s })}
-                        className="rounded bg-black/5 px-2 py-1 hover:bg-black/10 disabled:opacity-50"
+      <Table>
+        <THead>
+          <Tr hover={false}>
+            <Th>Người chơi</Th>
+            <Th className="text-right">Điểm</Th>
+            <Th className="text-right">Thời lượng</Th>
+            <Th>Trạng thái</Th>
+            <Th>Lúc</Th>
+            <Th className="text-right">Thao tác</Th>
+          </Tr>
+        </THead>
+        <TBody>
+          {rows.map((s) => (
+            <Tr key={s.id}>
+              <Td>
+                {s.nickname}
+                {s.isGuest && <span className="ml-1 text-xs text-[var(--ad-muted)]">(khách)</span>}
+              </Td>
+              <Td className="text-right font-semibold tabular-nums">{s.score}</Td>
+              <Td className="text-right tabular-nums text-[var(--ad-muted)]">
+                {Math.round(s.durationMs / 1000)}s
+              </Td>
+              <Td>
+                <Badge tone={STATUS_TONE[s.status]}>
+                  <span title={s.rejectedReason ?? ''}>{FILTER_LABEL[s.status]}</span>
+                </Badge>
+                {s.flags.length > 0 && (
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {s.flags.map((f) => (
+                      <span
+                        key={f}
+                        className="rounded bg-[var(--ad-warn-weak)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--ad-warn)]"
+                        title={s.rejectedReason ?? ''}
                       >
-                        Chấp nhận
-                      </button>
-                    )}
-                    {s.status !== 'rejected' && (
-                      <button
-                        disabled={busy}
-                        onClick={() => setModal({ type: 'reject', score: s })}
-                        className="rounded bg-red-600 px-2 py-1 text-white hover:bg-red-700 disabled:opacity-50"
-                      >
-                        Loại
-                      </button>
-                    )}
+                        {FLAG_LABEL[f] ?? f}
+                      </span>
+                    ))}
                   </div>
-                </td>
-              </tr>
-            ))}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={6} className="py-6 text-center opacity-60">
-                  Không có điểm nào.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                )}
+              </Td>
+              <Td className="whitespace-nowrap text-[var(--ad-muted)]">
+                {s.playedAt ? new Date(s.playedAt).toLocaleString('vi-VN') : '—'}
+              </Td>
+              <Td className="text-right">
+                <div className="flex justify-end gap-1.5">
+                  {s.status !== 'valid' && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      disabled={busy}
+                      onClick={() => setModal({ type: 'accept', score: s })}
+                    >
+                      Chấp nhận
+                    </Button>
+                  )}
+                  {s.status !== 'rejected' && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      disabled={busy}
+                      onClick={() => setModal({ type: 'reject', score: s })}
+                    >
+                      Loại
+                    </Button>
+                  )}
+                </div>
+              </Td>
+            </Tr>
+          ))}
+          {rows.length === 0 && <TableEmpty colSpan={6}>Không có điểm nào.</TableEmpty>}
+        </TBody>
+      </Table>
 
       <Pager total={total} skip={skip} page={PAGE} onChange={setSkip} />
 

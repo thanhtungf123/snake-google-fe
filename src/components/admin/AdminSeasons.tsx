@@ -2,6 +2,19 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { adminGet, adminSend } from '@/lib/adminApi';
+import {
+  Badge,
+  Button,
+  Card,
+  Input,
+  Table,
+  THead,
+  TBody,
+  Tr,
+  Th,
+  Td,
+  TableEmpty,
+} from './ui';
 
 interface SeasonRow {
   monthKey: string;
@@ -106,89 +119,93 @@ export default function AdminSeasons() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Mùa giải (theo tháng)</h2>
-      <p className="text-sm opacity-70">
+      <p className="text-sm text-[var(--ad-muted)]">
         Chốt mùa giải sẽ đóng băng bảng xếp hạng (không đổi về sau) và gửi thông báo cho Top. Nên
         duyệt hết điểm nghi ngờ trước khi chốt.
       </p>
 
-      {err && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{err}</p>}
-      {msg && <p className="rounded bg-green-50 px-3 py-2 text-sm text-green-700">{msg}</p>}
+      {err && (
+        <p className="rounded-lg bg-[var(--ad-danger-weak)] px-3 py-2 text-sm text-[var(--ad-danger)]">
+          {err}
+        </p>
+      )}
+      {msg && (
+        <p className="rounded-lg bg-[var(--ad-ok-weak)] px-3 py-2 text-sm text-[var(--ad-ok)]">
+          {msg}
+        </p>
+      )}
 
-      <div className="overflow-x-auto rounded-lg border border-black/10">
-        <table className="w-full text-sm">
-          <thead className="bg-black/5 text-left">
-            <tr>
-              <th className="px-3 py-2">Tháng</th>
-              <th className="px-3 py-2 text-right">Người chơi</th>
-              <th className="px-3 py-2 text-right">Điểm nghi ngờ</th>
-              <th className="px-3 py-2">Trạng thái</th>
-              <th className="px-3 py-2 text-right">Hành động</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-black/5">
-            {rows.map((s) => (
-              <tr key={s.monthKey}>
-                <td className="px-3 py-2 font-medium">
-                  {s.monthKey}
-                  {s.isCurrent && <span className="ml-1 text-xs opacity-60">(hiện tại)</span>}
-                </td>
-                <td className="px-3 py-2 text-right tabular-nums">{s.players}</td>
-                <td className="px-3 py-2 text-right tabular-nums">
-                  {s.pendingFlagged > 0 ? (
-                    <span className="text-yellow-600">{s.pendingFlagged}</span>
-                  ) : (
-                    0
+      <Table minWidth={560}>
+        <THead>
+          <Tr hover={false}>
+            <Th>Tháng</Th>
+            <Th className="text-right">Người chơi</Th>
+            <Th className="text-right">Điểm nghi ngờ</Th>
+            <Th>Trạng thái</Th>
+            <Th className="text-right">Hành động</Th>
+          </Tr>
+        </THead>
+        <TBody>
+          {rows.map((s) => (
+            <Tr key={s.monthKey}>
+              <Td className="font-medium">
+                {s.monthKey}
+                {s.isCurrent && (
+                  <span className="ml-1 text-xs text-[var(--ad-muted)]">(hiện tại)</span>
+                )}
+              </Td>
+              <Td className="text-right tabular-nums">{s.players}</Td>
+              <Td className="text-right tabular-nums">
+                {s.pendingFlagged > 0 ? (
+                  <span className="text-[var(--ad-warn)]">{s.pendingFlagged}</span>
+                ) : (
+                  0
+                )}
+              </Td>
+              <Td>
+                {s.status === 'closed' ? (
+                  <Badge tone="success">Đã chốt</Badge>
+                ) : (
+                  <Badge tone="neutral">Đang mở</Badge>
+                )}
+              </Td>
+              <Td className="text-right">
+                <div className="flex justify-end gap-2">
+                  <Button variant="secondary" size="sm" onClick={() => openPreview(s.monthKey)}>
+                    Xem
+                  </Button>
+                  {s.status === 'open' && (
+                    <Button size="sm" onClick={() => openCloseModal(s)} disabled={busy}>
+                      Chốt
+                    </Button>
                   )}
-                </td>
-                <td className="px-3 py-2">
-                  {s.status === 'closed' ? (
-                    <span className="text-green-600">Đã chốt</span>
-                  ) : (
-                    <span className="opacity-70">Đang mở</span>
-                  )}
-                </td>
-                <td className="px-3 py-2 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => openPreview(s.monthKey)}
-                      className="rounded bg-black/5 px-2 py-1 text-xs hover:bg-black/10"
-                    >
-                      Xem
-                    </button>
-                    {s.status === 'open' && (
-                      <button
-                        onClick={() => openCloseModal(s)}
-                        disabled={busy}
-                        className="rounded bg-snake px-2 py-1 text-xs font-medium text-white disabled:opacity-60"
-                      >
-                        Chốt
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+              </Td>
+            </Tr>
+          ))}
+          {rows.length === 0 && <TableEmpty colSpan={5}>Chưa có mùa giải.</TableEmpty>}
+        </TBody>
+      </Table>
 
       {preview && (
-        <div className="rounded-lg border border-black/10 p-4">
+        <Card>
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-semibold">
               Top 10 — {preview.monthKey}{' '}
-              <span className="text-sm font-normal opacity-60">
+              <span className="text-sm font-normal text-[var(--ad-muted)]">
                 ({preview.frozen ? 'đã đóng băng' : 'đang tính sống'} · {preview.total} người ·
                 thưởng Top {preview.rewardTiers})
               </span>
             </h3>
-            <button onClick={() => setPreview(null)} className="text-sm opacity-60 hover:underline">
+            <button
+              onClick={() => setPreview(null)}
+              className="text-sm text-[var(--ad-muted)] hover:underline"
+            >
               Đóng
             </button>
           </div>
           {preview.pendingFlagged > 0 && (
-            <p className="mb-2 text-sm text-yellow-700">
+            <p className="mb-2 text-sm text-[var(--ad-warn)]">
               ⚠ Còn {preview.pendingFlagged} điểm nghi ngờ chưa duyệt.
             </p>
           )}
@@ -197,7 +214,9 @@ export default function AdminSeasons() {
               <li
                 key={e.userId}
                 className={`flex justify-between rounded px-2 py-1 ${
-                  e.rank <= preview.rewardTiers ? 'bg-snake/10 font-medium' : ''
+                  e.rank <= preview.rewardTiers
+                    ? 'bg-[var(--ad-accent-weak)] font-medium text-[var(--ad-accent)]'
+                    : ''
                 }`}
               >
                 <span>
@@ -206,47 +225,48 @@ export default function AdminSeasons() {
                 <span className="tabular-nums">{e.best}</span>
               </li>
             ))}
-            {preview.rows.length === 0 && <li className="opacity-60">Chưa có dữ liệu.</li>}
+            {preview.rows.length === 0 && (
+              <li className="text-[var(--ad-muted)]">Chưa có dữ liệu.</li>
+            )}
           </ol>
-        </div>
+        </Card>
       )}
 
       {closeTarget && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
           onClick={() => setCloseTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl"
+            className="w-full max-w-md rounded-xl border border-[var(--ad-border)] bg-[var(--ad-surface)] p-5 text-[var(--ad-text)] shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold">Chốt mùa giải {closeTarget.monthKey}</h3>
-            <p className="mt-1 text-sm opacity-70">
+            <p className="mt-1 text-sm text-[var(--ad-muted)]">
               Chốt sẽ đóng băng bảng xếp hạng (không đổi về sau) và gửi thông báo cho Top.
             </p>
 
             <label className="mt-3 block">
-              <span className="mb-1 block text-sm opacity-70">
-                Số bậc được thưởng (Top mấy)?<span className="text-red-600"> *</span>
+              <span className="mb-1 block text-sm text-[var(--ad-muted)]">
+                Số bậc được thưởng (Top mấy)?<span className="text-[var(--ad-danger)]"> *</span>
               </span>
-              <input
+              <Input
                 type="number"
                 min={1}
                 value={tiersInput}
                 onChange={(e) => setTiersInput(e.target.value)}
-                className="w-full rounded border border-black/15 px-3 py-2 text-sm outline-none focus:border-snake"
                 autoFocus
               />
             </label>
 
             {closeTarget.pendingFlagged > 0 && (
-              <div className="mt-3 rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+              <div className="mt-3 rounded-lg bg-[var(--ad-warn-weak)] px-3 py-2 text-sm text-[var(--ad-warn)]">
                 ⚠ Còn <b>{closeTarget.pendingFlagged}</b> điểm nghi ngờ chưa duyệt trong tháng này.
                 Nên duyệt hết trước khi chốt.
               </div>
             )}
             {closeTarget.pendingFlagged === 0 && closeTarget.isCurrent && (
-              <div className="mt-3 rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+              <div className="mt-3 rounded-lg bg-[var(--ad-warn-weak)] px-3 py-2 text-sm text-[var(--ad-warn)]">
                 ⚠ Đây là <b>tháng hiện tại</b>, chưa kết thúc. Chốt sớm sẽ đóng băng ngay bây giờ.
               </div>
             )}
@@ -264,21 +284,15 @@ export default function AdminSeasons() {
             )}
 
             <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={() => setCloseTarget(null)}
-                className="rounded bg-black/5 px-4 py-2 text-sm hover:bg-black/10"
-              >
+              <Button variant="secondary" onClick={() => setCloseTarget(null)}>
                 Hủy
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={confirmClose}
-                disabled={
-                  (closeTarget.pendingFlagged > 0 || closeTarget.isCurrent) && !forceChecked
-                }
-                className="rounded bg-snake px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                disabled={(closeTarget.pendingFlagged > 0 || closeTarget.isCurrent) && !forceChecked}
               >
                 Chốt mùa giải
-              </button>
+              </Button>
             </div>
           </div>
         </div>

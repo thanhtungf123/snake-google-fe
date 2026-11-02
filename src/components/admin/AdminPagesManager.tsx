@@ -14,8 +14,10 @@ export default function AdminPagesManager() {
   const tab = (key: Sub, label: string) => (
     <button
       onClick={() => setSub(key)}
-      className={`rounded px-3 py-1.5 text-sm ${
-        sub === key ? 'bg-snake text-white' : 'bg-black/5 hover:bg-black/10'
+      className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+        sub === key
+          ? 'bg-[var(--ad-accent)] text-[var(--ad-on-accent)]'
+          : 'border border-[var(--ad-border)] bg-[var(--ad-surface)] text-[var(--ad-muted)] hover:bg-[var(--ad-hover)]'
       }`}
     >
       {label}
